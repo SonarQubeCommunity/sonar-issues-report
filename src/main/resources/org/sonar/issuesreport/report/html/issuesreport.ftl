@@ -2,7 +2,7 @@
 <html>
 <head>
   <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-  <title>${report.getTitle()}</title>
+  <title>Issues report of ${report.getTitle()}</title>
   <link href="issuesreport_files/sonar.css" media="all" rel="stylesheet" type="text/css">
   <link rel="shortcut icon" type="image/x-icon" href="issuesreport_files/favicon.ico">
   <script type="text/javascript" src="issuesreport_files/prototypejs.js"></script>
@@ -96,7 +96,7 @@
 <body>
 <div id="reportHeader">
   <div id="logo"><img src="issuesreport_files/sonar.png" alt="Sonar"/></div>
-  <div class="title">TODO</div>
+  <div class="title">Issues Report</div>
   <div class="subtitle">${report.getTitle()} - ${report.getDate()?datetime}</div>
 </div>
 
