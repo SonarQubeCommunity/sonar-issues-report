@@ -19,9 +19,9 @@
  */
 package org.sonar.issuesreport;
 
-import org.sonar.issuesreport.report.html.HTMLPrinter;
-import org.sonar.issuesreport.report.html.HTMLReport;
+import org.sonar.issuesreport.report.IssuesReport;
 
+import org.sonar.issuesreport.report.html.HTMLPrinter;
 import org.junit.Test;
 import org.sonar.api.batch.SensorContext;
 import org.sonar.api.batch.SonarIndex;
@@ -50,7 +50,7 @@ public class ReportJobTest {
 
     job.executeOn(mock(Project.class), mock(SensorContext.class));
 
-    verify(printer, never()).print(any(HTMLReport.class), any(File.class));
+    verify(printer, never()).print(any(IssuesReport.class), any(File.class));
   }
 
   @Test
@@ -65,7 +65,7 @@ public class ReportJobTest {
 
     job.executeOn(mock(Project.class), mock(SensorContext.class));
 
-    verify(printer).print(any(HTMLReport.class), any(File.class));
+    verify(printer).print(any(IssuesReport.class), any(File.class));
   }
 
   @Test
@@ -74,7 +74,7 @@ public class ReportJobTest {
     when(fs.workingDir()).thenReturn(new File("."));
     Settings settings = new Settings(new PropertyDefinitions(IssuesReportPlugin.class));
     HTMLPrinter printer = mock(HTMLPrinter.class);
-    HTMLReport report = mock(HTMLReport.class);
+    IssuesReport report = mock(IssuesReport.class);
     ReportJob job = new ReportJob(null, settings, fs, printer);
 
     File reportFile = job.printHTMLReport(report);
@@ -85,7 +85,7 @@ public class ReportJobTest {
   @Test
   public void shouldConfigureReportLocation() throws IOException {
     Settings settings = new Settings(new PropertyDefinitions(IssuesReportPlugin.class));
-    HTMLReport report = mock(HTMLReport.class);
+    IssuesReport report = mock(IssuesReport.class);
     File f = new File("target/path/to/report.html");
     settings.setProperty(IssuesReportConstants.HTML_REPORT_LOCATION_KEY, f.getCanonicalPath());
     HTMLPrinter printer = mock(HTMLPrinter.class);

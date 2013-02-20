@@ -23,4 +23,6 @@ public interface IssuesReportConstants {
   String HTML_REPORT_ENABLED_KEY = "sonar.issuesReport.html.enable";
   String HTML_REPORT_LOCATION_KEY = "sonar.issuesReport.html.location";
   String HTML_REPORT_LOCATION_DEFAULT = "issues-report.html";
+
+  String CONSOLE_REPORT_ENABLED_KEY = "sonar.issuesReport.console.enable";
 }

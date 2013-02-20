@@ -17,7 +17,7 @@
  * License along with this program; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02
  */
-package org.sonar.issuesreport.report.html;
+package org.sonar.issuesreport.report;
 
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
@@ -28,10 +28,6 @@ import org.sonar.api.resources.Resource;
 import org.sonar.api.resources.Scopes;
 import org.sonar.api.rules.Rule;
 import org.sonar.api.rules.Violation;
-import org.sonar.issuesreport.report.ResourceStatus;
-import org.sonar.issuesreport.report.RuleComparatorByName;
-import org.sonar.issuesreport.report.RuleMeasuresFilter;
-import org.sonar.issuesreport.report.RuleStatus;
 
 import java.util.Collection;
 import java.util.Date;
@@ -41,18 +37,18 @@ import java.util.Set;
 import java.util.SortedSet;
 import java.util.TreeSet;
 
-public class HTMLReport {
+public class IssuesReport {
 
   private final Project project;
   private final String title;
   private final SortedSet<ResourceStatus> fileStatuses;
   private final ResourceStatus total;
 
-  public HTMLReport(Project project, String title, SonarIndex index) {
+  public IssuesReport(Project project, String title, SonarIndex index) {
     this(project, title, index, getFiles(index));
   }
 
-  HTMLReport(Project project, String title, SonarIndex index, Collection<Resource> resources) {
+  IssuesReport(Project project, String title, SonarIndex index, Collection<Resource> resources) {
     this.project = project;
     this.title = title;
     this.fileStatuses = new TreeSet<ResourceStatus>();

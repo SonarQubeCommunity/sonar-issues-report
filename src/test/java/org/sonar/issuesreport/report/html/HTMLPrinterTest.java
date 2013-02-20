@@ -19,6 +19,8 @@
  */
 package org.sonar.issuesreport.report.html;
 
+import org.sonar.issuesreport.report.IssuesReport;
+
 import com.google.common.base.Charsets;
 import org.junit.Rule;
 import org.junit.Test;
@@ -49,7 +51,7 @@ public class HTMLPrinterTest {
     HTMLPrinter printer = new HTMLPrinter(ruleNames, fs);
     Project project = mock(Project.class);
     when(project.getAnalysisDate()).thenReturn(new Date());
-    HTMLReport report = new HTMLReport(project, "Title", mock(SonarIndex.class));
+    IssuesReport report = new IssuesReport(project, "Title", mock(SonarIndex.class));
     File reportDir = temp.newFolder();
     File reportFile = new File(reportDir, "report.html");
     printer.print(report, reportFile);

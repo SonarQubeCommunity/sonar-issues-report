@@ -19,9 +19,7 @@
  */
 package org.sonar.issuesreport;
 
-import org.sonar.issuesreport.report.html.HTMLPrinter;
-import org.sonar.issuesreport.report.html.HTMLReport;
-
+import com.google.common.collect.Maps;
 import org.apache.commons.io.FileUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -30,10 +28,16 @@ import org.sonar.api.batch.SensorContext;
 import org.sonar.api.batch.SonarIndex;
 import org.sonar.api.config.Settings;
 import org.sonar.api.resources.Project;
+import org.sonar.api.rules.RulePriority;
 import org.sonar.api.scan.filesystem.ModuleFileSystem;
+import org.sonar.issuesreport.report.IssuesReport;
+import org.sonar.issuesreport.report.RuleStatus;
+import org.sonar.issuesreport.report.html.HTMLPrinter;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.Map;
+import java.util.concurrent.atomic.AtomicInteger;
 
 public class ReportJob implements PostJob {
 
@@ -44,6 +48,8 @@ public class ReportJob implements PostJob {
   private final ModuleFileSystem fs;
   private final HTMLPrinter htmlPrinter;
 
+  private IssuesReport report;
+
   public ReportJob(SonarIndex index, Settings settings, ModuleFileSystem fs, HTMLPrinter htmlPrinter) {
     this.index = index;
     this.settings = settings;
@@ -53,12 +59,21 @@ public class ReportJob implements PostJob {
 
   public void executeOn(Project project, SensorContext context) {
     if (settings.getBoolean(IssuesReportConstants.HTML_REPORT_ENABLED_KEY)) {
-      HTMLReport report = new HTMLReport(project, project.getName(), index);
-      printHTMLReport(report);
+      printHTMLReport(getIssuesReport(project));
+    }
+    if (settings.getBoolean(IssuesReportConstants.CONSOLE_REPORT_ENABLED_KEY)) {
+      printConsoleReport(getIssuesReport(project));
     }
   }
 
-  File printHTMLReport(HTMLReport report) {
+  private IssuesReport getIssuesReport(Project project) {
+    if (report == null) {
+      report = new IssuesReport(project, project.getName(), index);
+    }
+    return report;
+  }
+
+  File printHTMLReport(IssuesReport report) {
     String reportFileStr = settings.getString(IssuesReportConstants.HTML_REPORT_LOCATION_KEY);
     File reportFile = new File(reportFileStr);
     if (!reportFile.isAbsolute()) {
@@ -74,6 +89,38 @@ public class ReportJob implements PostJob {
     htmlPrinter.print(report, reportFile);
     LOG.info("HTML Report generated: " + reportFile.getAbsolutePath());
     return reportFile;
+  }
+
+  private void printConsoleReport(IssuesReport report) {
+    int newViolations = 0;
+    Map<RulePriority, AtomicInteger> variationBySeverity = Maps.newHashMap();
+    for (RulePriority rulePriority : RulePriority.values()) {
+      variationBySeverity.put(rulePriority, new AtomicInteger(0));
+    }
+    for (RuleStatus ruleStatus : report.getTotal().getRuleStatuses()) {
+      variationBySeverity.get(ruleStatus.getSeverity()).addAndGet(ruleStatus.getVariation());
+      newViolations += ruleStatus.getVariation();
+    }
+    LOG.info("-------------  Issues Report  -------------");
+    if (newViolations > 0) {
+      LOG.info(newViolations + " new violation" + (newViolations > 1 ? "s" : ""));
+      printNewViolations(variationBySeverity, RulePriority.BLOCKER, "blocking");
+      printNewViolations(variationBySeverity, RulePriority.CRITICAL, "critical");
+      printNewViolations(variationBySeverity, RulePriority.MAJOR, "major");
+      printNewViolations(variationBySeverity, RulePriority.MINOR, "minor");
+      printNewViolations(variationBySeverity, RulePriority.INFO, "info");
+    }
+    else {
+      LOG.info("No new violation");
+    }
+    LOG.info("-------------------------------------------");
+  }
+
+  private void printNewViolations(Map<RulePriority, AtomicInteger> variationBySeverity, RulePriority severity, String severityLabel) {
+    int violationCount = variationBySeverity.get(severity).get();
+    if (violationCount > 0) {
+      LOG.info("+{} {} violation" + (violationCount > 1 ? "s" : ""), violationCount, severityLabel);
+    }
   }
 
 }

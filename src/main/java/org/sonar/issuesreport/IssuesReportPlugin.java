@@ -19,14 +19,13 @@
  */
 package org.sonar.issuesreport;
 
-import org.sonar.issuesreport.report.html.HTMLPrinter;
-
 import com.google.common.collect.ImmutableList;
 import org.sonar.api.Properties;
 import org.sonar.api.Property;
 import org.sonar.api.PropertyType;
 import org.sonar.api.SonarPlugin;
 import org.sonar.issuesreport.report.RuleNames;
+import org.sonar.issuesreport.report.html.HTMLPrinter;
 
 import java.util.List;
 
@@ -35,7 +34,9 @@ import java.util.List;
     type = PropertyType.BOOLEAN, defaultValue = "false"),
   @Property(key = IssuesReportConstants.HTML_REPORT_LOCATION_KEY, name = "HTML Report location",
     description = "Location of the generated report. Can be absolute or relative to working directory",
-    type = PropertyType.STRING, defaultValue = IssuesReportConstants.HTML_REPORT_LOCATION_DEFAULT, global = false, project = false)})
+    type = PropertyType.STRING, defaultValue = IssuesReportConstants.HTML_REPORT_LOCATION_DEFAULT, global = false, project = false),
+  @Property(key = IssuesReportConstants.CONSOLE_REPORT_ENABLED_KEY, name = "Enable console report", description = "Set this to true to generate a report in console output",
+    type = PropertyType.BOOLEAN, defaultValue = "false")})
 public final class IssuesReportPlugin extends SonarPlugin {
 
   public List getExtensions() {

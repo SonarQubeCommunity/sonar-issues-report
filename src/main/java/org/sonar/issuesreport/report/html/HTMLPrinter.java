@@ -27,6 +27,7 @@ import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
 import org.sonar.api.BatchExtension;
 import org.sonar.api.scan.filesystem.ModuleFileSystem;
+import org.sonar.issuesreport.report.IssuesReport;
 import org.sonar.issuesreport.report.RuleNames;
 
 import java.io.File;
@@ -48,13 +49,13 @@ public class HTMLPrinter implements BatchExtension {
     this.fs = fs;
   }
 
-  public void print(HTMLReport report, File toFile) {
+  public void print(IssuesReport report, File toFile) {
     Writer writer = null;
     FileOutputStream fos = null;
     try {
       Logger.selectLoggerLibrary(Logger.LIBRARY_NONE);
       freemarker.template.Configuration cfg = new freemarker.template.Configuration();
-      cfg.setClassForTemplateLoading(HTMLReport.class, "");
+      cfg.setClassForTemplateLoading(HTMLPrinter.class, "");
       cfg.setObjectWrapper(new DefaultObjectWrapper());
 
       Map<String, Object> root = Maps.newHashMap();
