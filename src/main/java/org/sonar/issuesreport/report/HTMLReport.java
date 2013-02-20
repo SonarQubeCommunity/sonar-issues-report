@@ -37,18 +37,18 @@ import java.util.Set;
 import java.util.SortedSet;
 import java.util.TreeSet;
 
-public class Report {
+public class HTMLReport {
 
   private final Project project;
   private final String title;
   private final SortedSet<ResourceStatus> fileStatuses;
   private final ResourceStatus total;
 
-  public Report(Project project, String title, SonarIndex index) {
+  public HTMLReport(Project project, String title, SonarIndex index) {
     this(project, title, index, getFiles(index));
   }
 
-  Report(Project project, String title, SonarIndex index, Collection<Resource> resources) {
+  HTMLReport(Project project, String title, SonarIndex index, Collection<Resource> resources) {
     this.project = project;
     this.title = title;
     this.fileStatuses = new TreeSet<ResourceStatus>();

@@ -20,11 +20,20 @@
 package org.sonar.issuesreport;
 
 import com.google.common.collect.ImmutableList;
+import org.sonar.api.Properties;
+import org.sonar.api.Property;
+import org.sonar.api.PropertyType;
 import org.sonar.api.SonarPlugin;
 import org.sonar.issuesreport.report.RuleNames;
 
 import java.util.List;
 
+@Properties({
+  @Property(key = IssuesReportConstants.HTML_REPORT_ENABLED_KEY, name = "Enable HTML report", description = "Set this to true to generate an HTML report",
+    type = PropertyType.BOOLEAN, defaultValue = "false"),
+  @Property(key = IssuesReportConstants.HTML_REPORT_LOCATION_KEY, name = "HTML Report location",
+    description = "Location of the generated report. Can be absolute or relative to working directory",
+    type = PropertyType.STRING, defaultValue = IssuesReportConstants.HTML_REPORT_LOCATION_DEFAULT, global = false, project = false)})
 public final class IssuesReportPlugin extends SonarPlugin {
 
   public List getExtensions() {

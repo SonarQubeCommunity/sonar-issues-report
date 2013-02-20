@@ -20,6 +20,7 @@
 package org.sonar.issuesreport;
 
 public interface IssuesReportConstants {
-  String HTML_ENABLE_KEY = "sonar.issuesreport.html.enable";
-  String REPORT_DIR_KEY = "sonar.issuesreport.reportDir";
+  String HTML_REPORT_ENABLED_KEY = "sonar.issuesReport.html.enable";
+  String HTML_REPORT_LOCATION_KEY = "sonar.issuesReport.html.location";
+  String HTML_REPORT_LOCATION_DEFAULT = "issues-report.html";
 }

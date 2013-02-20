@@ -37,12 +37,12 @@ import java.util.Map;
 
 public class Printer {
 
-  public void print(Report report, File toFile, RuleNames ruleNames) {
+  public void print(HTMLReport report, File toFile, RuleNames ruleNames) {
     Writer writer = null;
     try {
       Logger.selectLoggerLibrary(Logger.LIBRARY_NONE);
       freemarker.template.Configuration cfg = new freemarker.template.Configuration();
-      cfg.setClassForTemplateLoading(Report.class, "");
+      cfg.setClassForTemplateLoading(HTMLReport.class, "");
       cfg.setObjectWrapper(new DefaultObjectWrapper());
 
       Map<String, Object> root = Maps.newHashMap();

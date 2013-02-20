@@ -20,7 +20,6 @@
 package org.sonar.issuesreport;
 
 import org.apache.commons.io.FileUtils;
-import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.sonar.api.batch.PostJob;
@@ -28,8 +27,9 @@ import org.sonar.api.batch.SensorContext;
 import org.sonar.api.batch.SonarIndex;
 import org.sonar.api.config.Settings;
 import org.sonar.api.resources.Project;
+import org.sonar.api.scan.filesystem.ModuleFileSystem;
+import org.sonar.issuesreport.report.HTMLReport;
 import org.sonar.issuesreport.report.Printer;
-import org.sonar.issuesreport.report.Report;
 import org.sonar.issuesreport.report.RuleNames;
 
 import java.io.File;
@@ -42,30 +42,34 @@ public class ReportJob implements PostJob {
   private final SonarIndex index;
   private final Settings settings;
   private final RuleNames ruleNames;
+  private final ModuleFileSystem fs;
 
-  public ReportJob(SonarIndex index, Settings settings, RuleNames ruleNames) {
+  public ReportJob(SonarIndex index, Settings settings, RuleNames ruleNames, ModuleFileSystem fs) {
     this.index = index;
     this.settings = settings;
     this.ruleNames = ruleNames;
+    this.fs = fs;
   }
 
   public void executeOn(Project project, SensorContext context) {
-    if (settings.getBoolean(IssuesReportConstants.HTML_ENABLE_KEY)) {
-      Report report = new Report(project, project.getName(), index);
-
-      printReport(report, new Printer());
+    if (settings.getBoolean(IssuesReportConstants.HTML_REPORT_ENABLED_KEY)) {
+      HTMLReport report = new HTMLReport(project, project.getName(), index);
+      printHTMLReport(report, new Printer());
     }
   }
 
-  File printReport(Report report, Printer printer) {
-    File dir = new File(StringUtils.defaultIfBlank(settings.getString(IssuesReportConstants.REPORT_DIR_KEY), "."));
-    try {
-      FileUtils.forceMkdir(dir);
-    } catch (IOException e) {
-      throw new IllegalStateException("Fail to create the directory " + dir, e);
+  File printHTMLReport(HTMLReport report, Printer printer) {
+    String reportFileStr = settings.getString(IssuesReportConstants.HTML_REPORT_LOCATION_KEY);
+    File reportFile = new File(reportFileStr);
+    if (!reportFile.isAbsolute()) {
+      reportFile = new File(fs.workingDir(), reportFileStr);
     }
-    File reportFile = new File(dir, "issuesreport.html");
-
+    File parentDir = reportFile.getParentFile();
+    try {
+      FileUtils.forceMkdir(parentDir);
+    } catch (IOException e) {
+      throw new IllegalStateException("Fail to create the directory " + parentDir, e);
+    }
     LOG.debug("Generating HTML Report to: " + reportFile.getAbsolutePath());
     printer.print(report, reportFile, ruleNames);
     LOG.info("HTML Report generated: " + reportFile.getAbsolutePath());

@@ -22,39 +22,45 @@ package org.sonar.issuesreport;
 import org.junit.Test;
 import org.sonar.api.config.PropertyDefinitions;
 import org.sonar.api.config.Settings;
+import org.sonar.api.scan.filesystem.ModuleFileSystem;
+import org.sonar.issuesreport.report.HTMLReport;
 import org.sonar.issuesreport.report.Printer;
-import org.sonar.issuesreport.report.Report;
 import org.sonar.issuesreport.report.RuleNames;
 
 import java.io.File;
+import java.io.IOException;
 
 import static org.fest.assertions.Assertions.assertThat;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 public class ReportJobTest {
 
   @Test
   public void shouldPrintIntoDefaultReportFile() {
+    ModuleFileSystem fs = mock(ModuleFileSystem.class);
+    when(fs.workingDir()).thenReturn(new File("."));
     Settings settings = new Settings(new PropertyDefinitions(IssuesReportPlugin.class));
     Printer printer = mock(Printer.class);
-    Report report = mock(Report.class);
-    ReportJob job = new ReportJob(null, settings, mock(RuleNames.class));
+    HTMLReport report = mock(HTMLReport.class);
+    ReportJob job = new ReportJob(null, settings, mock(RuleNames.class), fs);
 
-    File reportFile = job.printReport(report, printer);
+    File reportFile = job.printHTMLReport(report, printer);
 
-    assertThat(reportFile).isEqualTo(new File(".", "issuesreport.html"));
+    assertThat(reportFile).isEqualTo(new File(".", "issues-report.html"));
   }
 
   @Test
-  public void shouldConfigureReportLocation() {
+  public void shouldConfigureReportLocation() throws IOException {
     Settings settings = new Settings(new PropertyDefinitions(IssuesReportPlugin.class));
-    Report report = mock(Report.class);
-    settings.setProperty(IssuesReportConstants.REPORT_DIR_KEY, "target/path/to/report");
-    ReportJob job = new ReportJob(null, settings, mock(RuleNames.class));
+    HTMLReport report = mock(HTMLReport.class);
+    File f = new File("target/path/to/report.html");
+    settings.setProperty(IssuesReportConstants.HTML_REPORT_LOCATION_KEY, f.getCanonicalPath());
+    ReportJob job = new ReportJob(null, settings, mock(RuleNames.class), mock(ModuleFileSystem.class));
     Printer printer = mock(Printer.class);
 
-    File reportFile = job.printReport(report, printer);
+    File reportFile = job.printHTMLReport(report, printer);
 
-    assertThat(reportFile).isEqualTo(new File("target/path/to/report", "issuesreport.html"));
+    assertThat(reportFile.getCanonicalFile()).isEqualTo(f.getCanonicalFile());
   }
 }
