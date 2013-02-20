@@ -165,7 +165,7 @@
   <hr/>
 
   <div id="filters">
-    <input type="checkbox" id="new_filter" onclick="refreshFilters()"/> <label for="new_filter">Only NEW
+    <input type="checkbox" id="new_filter" onclick="refreshFilters()" checked="checked" /> <label for="new_filter">Only NEW
     violations</label>
     &nbsp;&nbsp;&nbsp;&nbsp;
     <select id="rule_filter" onchange="refreshFilters()">
