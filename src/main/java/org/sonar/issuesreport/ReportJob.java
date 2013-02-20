@@ -87,7 +87,7 @@ public class ReportJob implements PostJob {
     }
     LOG.debug("Generating HTML Report to: " + reportFile.getAbsolutePath());
     htmlPrinter.print(report, reportFile);
-    LOG.info("HTML Report generated: " + reportFile.getAbsolutePath());
+    LOG.info("HTML Issues Report generated: " + reportFile.getAbsolutePath());
     return reportFile;
   }
 

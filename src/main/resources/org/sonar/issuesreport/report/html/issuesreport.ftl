@@ -109,7 +109,7 @@
     <tr>
       <th colspan="2" align="left"></th>
       <th align="right" width="1%" nowrap>Current Analysis</th>
-      <th align="right" width="1%" nowrap>Variation</th>
+      <th align="right" width="1%" nowrap>New violations</th>
     </tr>
     <tr class="total">
       <th colspan="2" align="left">

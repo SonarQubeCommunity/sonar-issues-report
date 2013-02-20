@@ -53,7 +53,10 @@ public class IssuesReport {
     this.title = title;
     this.fileStatuses = new TreeSet<ResourceStatus>();
     for (Resource resource : resources) {
-      fileStatuses.add(newResourceStatus(index, resource));
+      ResourceStatus newResourceStatus = newResourceStatus(index, resource);
+      if (newResourceStatus.getValue() > 0) {
+        fileStatuses.add(newResourceStatus);
+      }
     }
     total = newTotalStatus(fileStatuses);
   }
