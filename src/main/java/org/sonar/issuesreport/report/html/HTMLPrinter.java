@@ -25,7 +25,7 @@ import freemarker.template.DefaultObjectWrapper;
 import freemarker.template.Template;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
-import org.sonar.api.BatchComponent;
+import org.sonar.api.BatchExtension;
 import org.sonar.api.scan.filesystem.ModuleFileSystem;
 import org.sonar.issuesreport.report.RuleNames;
 
@@ -38,7 +38,7 @@ import java.io.Writer;
 import java.net.URISyntaxException;
 import java.util.Map;
 
-public class HTMLPrinter implements BatchComponent {
+public class HTMLPrinter implements BatchExtension {
 
   private final RuleNames ruleNames;
   private final ModuleFileSystem fs;
