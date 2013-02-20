@@ -17,7 +17,7 @@
  * License along with this program; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02
  */
-package org.sonar.issuesreport.report;
+package org.sonar.issuesreport.report.html;
 
 import com.google.common.collect.Maps;
 import freemarker.log.Logger;
@@ -25,20 +25,32 @@ import freemarker.template.DefaultObjectWrapper;
 import freemarker.template.Template;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
+import org.sonar.api.BatchComponent;
+import org.sonar.api.scan.filesystem.ModuleFileSystem;
+import org.sonar.issuesreport.report.RuleNames;
 
 import java.io.File;
 import java.io.FileOutputStream;
-import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.OutputStreamWriter;
 import java.io.Writer;
 import java.net.URISyntaxException;
 import java.util.Map;
 
-public class Printer {
+public class HTMLPrinter implements BatchComponent {
 
-  public void print(HTMLReport report, File toFile, RuleNames ruleNames) {
+  private final RuleNames ruleNames;
+  private final ModuleFileSystem fs;
+
+  public HTMLPrinter(RuleNames ruleNames, ModuleFileSystem fs) {
+    this.ruleNames = ruleNames;
+    this.fs = fs;
+  }
+
+  public void print(HTMLReport report, File toFile) {
     Writer writer = null;
+    FileOutputStream fos = null;
     try {
       Logger.selectLoggerLibrary(Logger.LIBRARY_NONE);
       freemarker.template.Configuration cfg = new freemarker.template.Configuration();
@@ -50,7 +62,8 @@ public class Printer {
       root.put("ruleNames", ruleNames);
 
       Template template = cfg.getTemplate("issuesreport.ftl");
-      writer = new FileWriter(toFile);
+      fos = new FileOutputStream(toFile);
+      writer = new OutputStreamWriter(fos, fs.sourceCharset());
       template.process(root, writer);
       writer.flush();
 
@@ -61,6 +74,7 @@ public class Printer {
 
     } finally {
       IOUtils.closeQuietly(writer);
+      IOUtils.closeQuietly(fos);
     }
   }
 
@@ -87,7 +101,7 @@ public class Printer {
     InputStream input = null;
     FileOutputStream output = null;
     try {
-      input = getClass().getResourceAsStream("/org/sonar/issuesreport/report/issuesreport_files/" + filename);
+      input = getClass().getResourceAsStream("/org/sonar/issuesreport/report/html/issuesreport_files/" + filename);
       output = new FileOutputStream(new File(target, filename));
       IOUtils.copy(input, output);
 

@@ -17,7 +17,7 @@
  * License along with this program; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02
  */
-package org.sonar.issuesreport.report;
+package org.sonar.issuesreport.report.html;
 
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
@@ -28,6 +28,10 @@ import org.sonar.api.resources.Resource;
 import org.sonar.api.resources.Scopes;
 import org.sonar.api.rules.Rule;
 import org.sonar.api.rules.Violation;
+import org.sonar.issuesreport.report.ResourceStatus;
+import org.sonar.issuesreport.report.RuleComparatorByName;
+import org.sonar.issuesreport.report.RuleMeasuresFilter;
+import org.sonar.issuesreport.report.RuleStatus;
 
 import java.util.Collection;
 import java.util.Date;

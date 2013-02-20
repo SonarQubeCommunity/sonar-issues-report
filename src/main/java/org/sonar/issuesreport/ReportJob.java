@@ -19,6 +19,9 @@
  */
 package org.sonar.issuesreport;
 
+import org.sonar.issuesreport.report.html.HTMLPrinter;
+import org.sonar.issuesreport.report.html.HTMLReport;
+
 import org.apache.commons.io.FileUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -28,9 +31,6 @@ import org.sonar.api.batch.SonarIndex;
 import org.sonar.api.config.Settings;
 import org.sonar.api.resources.Project;
 import org.sonar.api.scan.filesystem.ModuleFileSystem;
-import org.sonar.issuesreport.report.HTMLReport;
-import org.sonar.issuesreport.report.Printer;
-import org.sonar.issuesreport.report.RuleNames;
 
 import java.io.File;
 import java.io.IOException;
@@ -41,24 +41,24 @@ public class ReportJob implements PostJob {
 
   private final SonarIndex index;
   private final Settings settings;
-  private final RuleNames ruleNames;
   private final ModuleFileSystem fs;
+  private final HTMLPrinter htmlPrinter;
 
-  public ReportJob(SonarIndex index, Settings settings, RuleNames ruleNames, ModuleFileSystem fs) {
+  public ReportJob(SonarIndex index, Settings settings, ModuleFileSystem fs, HTMLPrinter htmlPrinter) {
     this.index = index;
     this.settings = settings;
-    this.ruleNames = ruleNames;
     this.fs = fs;
+    this.htmlPrinter = htmlPrinter;
   }
 
   public void executeOn(Project project, SensorContext context) {
     if (settings.getBoolean(IssuesReportConstants.HTML_REPORT_ENABLED_KEY)) {
       HTMLReport report = new HTMLReport(project, project.getName(), index);
-      printHTMLReport(report, new Printer());
+      printHTMLReport(report);
     }
   }
 
-  File printHTMLReport(HTMLReport report, Printer printer) {
+  File printHTMLReport(HTMLReport report) {
     String reportFileStr = settings.getString(IssuesReportConstants.HTML_REPORT_LOCATION_KEY);
     File reportFile = new File(reportFileStr);
     if (!reportFile.isAbsolute()) {
@@ -71,7 +71,7 @@ public class ReportJob implements PostJob {
       throw new IllegalStateException("Fail to create the directory " + parentDir, e);
     }
     LOG.debug("Generating HTML Report to: " + reportFile.getAbsolutePath());
-    printer.print(report, reportFile, ruleNames);
+    htmlPrinter.print(report, reportFile);
     LOG.info("HTML Report generated: " + reportFile.getAbsolutePath());
     return reportFile;
   }

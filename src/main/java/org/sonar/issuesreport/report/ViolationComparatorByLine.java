@@ -22,22 +22,10 @@ package org.sonar.issuesreport.report;
 import org.apache.commons.lang.ObjectUtils;
 import org.sonar.api.rules.Violation;
 
-import java.io.NotSerializableException;
-import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
-import java.io.Serializable;
 import java.util.Comparator;
 
-public class ViolationComparatorByLine implements Serializable, Comparator<Violation> {
+public class ViolationComparatorByLine implements Comparator<Violation> {
   public int compare(Violation v1, Violation v2) {
     return ObjectUtils.compare(v1.getLineId(), v2.getLineId());
-  }
-
-  private void readObject(ObjectInputStream ois) throws NotSerializableException {
-    throw new NotSerializableException();
-  }
-
-  private void writeObject(ObjectOutputStream ois) throws NotSerializableException {
-    throw new NotSerializableException();
   }
 }

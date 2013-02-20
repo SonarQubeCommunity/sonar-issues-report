@@ -19,6 +19,8 @@
  */
 package org.sonar.issuesreport;
 
+import org.sonar.issuesreport.report.html.HTMLPrinter;
+
 import com.google.common.collect.ImmutableList;
 import org.sonar.api.Properties;
 import org.sonar.api.Property;
@@ -37,6 +39,6 @@ import java.util.List;
 public final class IssuesReportPlugin extends SonarPlugin {
 
   public List getExtensions() {
-    return ImmutableList.of(ReportJob.class, RuleNames.class);
+    return ImmutableList.of(ReportJob.class, RuleNames.class, HTMLPrinter.class);
   }
 }
