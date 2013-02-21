@@ -80,12 +80,12 @@
       <artifactId>sonar-testing-harness</artifactId>
       <version>${sonar.buildVersion}</version>
       <scope>test</scope>
-    </dependency>
-    <dependency>
-      <groupId>org.codehaus.sonar</groupId>
-      <artifactId>sonar-core</artifactId>
-      <version>${sonar.buildVersion}</version>
-      <scope>test</scope>
+      <exclusions>
+        <exclusion>
+          <artifactId>sonar-update-center-common</artifactId>
+          <groupId>org.codehaus.sonar</groupId>
+        </exclusion>
+      </exclusions>
     </dependency>
     <dependency>
       <groupId>org.easytesting</groupId>
