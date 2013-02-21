@@ -25,10 +25,9 @@ import org.sonar.api.rules.Rule;
 import org.sonar.api.rules.RulePriority;
 import org.sonar.api.rules.Violation;
 
-import java.util.Comparator;
 import java.util.List;
 
-public final class RuleStatus {
+public class RuleStatus {
 
   public static final class Key {
     private Rule rule;
@@ -56,12 +55,6 @@ public final class RuleStatus {
       int result = rule.hashCode();
       result = 31 * result + severity.hashCode();
       return result;
-    }
-  }
-
-  public static final class ComparatorByValue implements Comparator<RuleStatus> {
-    public int compare(RuleStatus m1, RuleStatus m2) {
-      return ObjectUtils.compare(m2.getValue(), m1.getValue());
     }
   }
 

@@ -93,14 +93,14 @@ public final class ResourceStatus implements Comparable<ResourceStatus> {
       }
     }
     // rules are ordered by number of violations
-    Collections.sort(ruleStatuses, new RuleStatus.ComparatorByValue());
+    Collections.sort(ruleStatuses, new RuleStatusComparatorByValue());
     computeRuleValues();
   }
 
   public void setRuleStatuses(Collection<RuleStatus> collection) {
     // rules are ordered by number of violations
     this.ruleStatuses = Lists.newArrayList(collection);
-    Collections.sort(ruleStatuses, new RuleStatus.ComparatorByValue());
+    Collections.sort(ruleStatuses, new RuleStatusComparatorByValue());
     computeRuleValues();
   }
 

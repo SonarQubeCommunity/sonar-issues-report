@@ -19,80 +19,66 @@
  */
 package org.sonar.issuesreport;
 
-import org.sonar.issuesreport.report.IssuesReport;
-
-import org.sonar.issuesreport.report.html.HTMLPrinter;
 import org.junit.Test;
 import org.sonar.api.batch.SensorContext;
 import org.sonar.api.batch.SonarIndex;
 import org.sonar.api.config.PropertyDefinitions;
 import org.sonar.api.config.Settings;
 import org.sonar.api.resources.Project;
-import org.sonar.api.scan.filesystem.ModuleFileSystem;
+import org.sonar.issuesreport.report.IssuesReport;
+import org.sonar.issuesreport.report.console.ConsolePrinter;
+import org.sonar.issuesreport.report.html.HTMLPrinter;
 
 import java.io.File;
-import java.io.IOException;
 
-import static org.fest.assertions.Assertions.assertThat;
 import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
 
 public class ReportJobTest {
 
   @Test
   public void shouldBeDisabledByDefault() {
     Settings settings = new Settings(new PropertyDefinitions(IssuesReportPlugin.class));
-    HTMLPrinter printer = mock(HTMLPrinter.class);
-    ReportJob job = new ReportJob(null, settings, mock(ModuleFileSystem.class), printer);
+    HTMLPrinter htmlPrinter = mock(HTMLPrinter.class);
+    ConsolePrinter consolePrinter = mock(ConsolePrinter.class);
+    ReportJob job = new ReportJob(null, settings, htmlPrinter, consolePrinter);
 
     job.executeOn(mock(Project.class), mock(SensorContext.class));
 
-    verify(printer, never()).print(any(IssuesReport.class), any(File.class));
+    verify(htmlPrinter, never()).writeToFile(any(IssuesReport.class), any(File.class));
+    verify(consolePrinter, never()).printConsoleReport(any(IssuesReport.class));
   }
 
   @Test
   public void shouldEnableHTMLReport() {
-    ModuleFileSystem fs = mock(ModuleFileSystem.class);
-    when(fs.workingDir()).thenReturn(new File("."));
     Settings settings = new Settings(new PropertyDefinitions(IssuesReportPlugin.class));
     settings.setProperty(IssuesReportConstants.HTML_REPORT_ENABLED_KEY, "true");
-    HTMLPrinter printer = mock(HTMLPrinter.class);
+    HTMLPrinter htmlPrinter = mock(HTMLPrinter.class);
+    ConsolePrinter consolePrinter = mock(ConsolePrinter.class);
     SonarIndex index = mock(SonarIndex.class);
-    ReportJob job = new ReportJob(index, settings, fs, printer);
+    ReportJob job = new ReportJob(index, settings, htmlPrinter, consolePrinter);
 
     job.executeOn(mock(Project.class), mock(SensorContext.class));
 
-    verify(printer).print(any(IssuesReport.class), any(File.class));
+    verify(htmlPrinter).writeToFile(any(IssuesReport.class));
+    verify(consolePrinter, never()).printConsoleReport(any(IssuesReport.class));
   }
 
   @Test
-  public void shouldPrintIntoDefaultReportFile() {
-    ModuleFileSystem fs = mock(ModuleFileSystem.class);
-    when(fs.workingDir()).thenReturn(new File("."));
+  public void shouldEnableConsoleReport() {
     Settings settings = new Settings(new PropertyDefinitions(IssuesReportPlugin.class));
-    HTMLPrinter printer = mock(HTMLPrinter.class);
-    IssuesReport report = mock(IssuesReport.class);
-    ReportJob job = new ReportJob(null, settings, fs, printer);
+    settings.setProperty(IssuesReportConstants.CONSOLE_REPORT_ENABLED_KEY, "true");
+    HTMLPrinter htmlPrinter = mock(HTMLPrinter.class);
+    ConsolePrinter consolePrinter = mock(ConsolePrinter.class);
+    SonarIndex index = mock(SonarIndex.class);
+    ReportJob job = new ReportJob(index, settings, htmlPrinter, consolePrinter);
 
-    File reportFile = job.printHTMLReport(report);
+    job.executeOn(mock(Project.class), mock(SensorContext.class));
 
-    assertThat(reportFile).isEqualTo(new File(".", "issues-report.html"));
+    verify(htmlPrinter, never()).writeToFile(any(IssuesReport.class));
+    verify(consolePrinter).printConsoleReport(any(IssuesReport.class));
   }
 
-  @Test
-  public void shouldConfigureReportLocation() throws IOException {
-    Settings settings = new Settings(new PropertyDefinitions(IssuesReportPlugin.class));
-    IssuesReport report = mock(IssuesReport.class);
-    File f = new File("target/path/to/report.html");
-    settings.setProperty(IssuesReportConstants.HTML_REPORT_LOCATION_KEY, f.getCanonicalPath());
-    HTMLPrinter printer = mock(HTMLPrinter.class);
-    ReportJob job = new ReportJob(null, settings, mock(ModuleFileSystem.class), printer);
-
-    File reportFile = job.printHTMLReport(report);
-
-    assertThat(reportFile.getCanonicalFile()).isEqualTo(f.getCanonicalFile());
-  }
 }

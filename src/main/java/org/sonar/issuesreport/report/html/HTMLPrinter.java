@@ -25,8 +25,11 @@ import freemarker.template.DefaultObjectWrapper;
 import freemarker.template.Template;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
+import org.slf4j.LoggerFactory;
 import org.sonar.api.BatchExtension;
+import org.sonar.api.config.Settings;
 import org.sonar.api.scan.filesystem.ModuleFileSystem;
+import org.sonar.issuesreport.IssuesReportConstants;
 import org.sonar.issuesreport.report.IssuesReport;
 import org.sonar.issuesreport.report.RuleNames;
 
@@ -41,15 +44,37 @@ import java.util.Map;
 
 public class HTMLPrinter implements BatchExtension {
 
+  private static final org.slf4j.Logger LOG = LoggerFactory.getLogger(HTMLPrinter.class);
+
   private final RuleNames ruleNames;
   private final ModuleFileSystem fs;
+  private Settings settings;
 
-  public HTMLPrinter(RuleNames ruleNames, ModuleFileSystem fs) {
+  public HTMLPrinter(RuleNames ruleNames, ModuleFileSystem fs, Settings settings) {
     this.ruleNames = ruleNames;
     this.fs = fs;
+    this.settings = settings;
   }
 
-  public void print(IssuesReport report, File toFile) {
+  public File writeToFile(IssuesReport report) {
+    String reportFileStr = settings.getString(IssuesReportConstants.HTML_REPORT_LOCATION_KEY);
+    File reportFile = new File(reportFileStr);
+    if (!reportFile.isAbsolute()) {
+      reportFile = new File(fs.workingDir(), reportFileStr);
+    }
+    File parentDir = reportFile.getParentFile();
+    try {
+      FileUtils.forceMkdir(parentDir);
+    } catch (IOException e) {
+      throw new IllegalStateException("Fail to create the directory " + parentDir, e);
+    }
+    LOG.debug("Generating HTML Report to: " + reportFile.getAbsolutePath());
+    writeToFile(report, reportFile);
+    LOG.info("HTML Issues Report generated: " + reportFile.getAbsolutePath());
+    return reportFile;
+  }
+
+  public void writeToFile(IssuesReport report, File toFile) {
     Writer writer = null;
     FileOutputStream fos = null;
     try {
