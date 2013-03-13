@@ -37,6 +37,7 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.io.Writer;
 import java.net.URISyntaxException;
@@ -125,7 +126,7 @@ public class HTMLPrinter implements BatchExtension {
 
   private void copyDependency(File target, String filename) {
     InputStream input = null;
-    FileOutputStream output = null;
+    OutputStream output = null;
     try {
       input = getClass().getResourceAsStream("/org/sonar/issuesreport/report/html/issuesreport_files/" + filename);
       output = new FileOutputStream(new File(target, filename));

@@ -20,6 +20,7 @@
 package org.sonar.issuesreport.report.console;
 
 import com.google.common.collect.Maps;
+import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.sonar.api.BatchExtension;
 import org.sonar.api.rules.RulePriority;
@@ -31,7 +32,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 public class ConsolePrinter implements BatchExtension {
 
-  private final static org.slf4j.Logger LOG = LoggerFactory.getLogger(ConsolePrinter.class);
+  private static final Logger LOG = LoggerFactory.getLogger(ConsolePrinter.class);
 
   public void printConsoleReport(IssuesReport report) {
     int newViolations = 0;
@@ -51,8 +52,7 @@ public class ConsolePrinter implements BatchExtension {
       printNewViolations(variationBySeverity, RulePriority.MAJOR, "major");
       printNewViolations(variationBySeverity, RulePriority.MINOR, "minor");
       printNewViolations(variationBySeverity, RulePriority.INFO, "info");
-    }
-    else {
+    } else {
       LOG.info("No new violation");
     }
     LOG.info("-------------------------------------------");
