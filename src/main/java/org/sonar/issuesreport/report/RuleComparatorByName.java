@@ -22,9 +22,10 @@ package org.sonar.issuesreport.report;
 import org.apache.commons.lang.ObjectUtils;
 import org.sonar.api.rules.Rule;
 
+import java.io.Serializable;
 import java.util.Comparator;
 
-public class RuleComparatorByName implements Comparator<Rule> {
+public class RuleComparatorByName implements Comparator<Rule>, Serializable {
   public int compare(Rule r1, Rule r2) {
     return ObjectUtils.compare(r1.getName(), r2.getName());
   }

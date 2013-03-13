@@ -22,9 +22,10 @@ package org.sonar.issuesreport.report;
 import org.apache.commons.lang.ObjectUtils;
 import org.sonar.api.rules.Violation;
 
+import java.io.Serializable;
 import java.util.Comparator;
 
-public class ViolationComparatorByLine implements Comparator<Violation> {
+public class ViolationComparatorByLine implements Comparator<Violation>, Serializable {
   public int compare(Violation v1, Violation v2) {
     return ObjectUtils.compare(v1.getLineId(), v2.getLineId());
   }

@@ -21,9 +21,10 @@ package org.sonar.issuesreport.report;
 
 import org.apache.commons.lang.ObjectUtils;
 
+import java.io.Serializable;
 import java.util.Comparator;
 
-public final class RuleStatusComparatorByValue implements Comparator<RuleStatus> {
+public final class RuleStatusComparatorByValue implements Comparator<RuleStatus>, Serializable {
   public int compare(RuleStatus m1, RuleStatus m2) {
     return ObjectUtils.compare(m2.getValue(), m1.getValue());
   }
