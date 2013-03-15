@@ -46,7 +46,7 @@
   </issueManagement>
 
   <properties>
-    <sonar.buildVersion>3.5-SNAPSHOT</sonar.buildVersion>
+    <sonar.buildVersion>3.5</sonar.buildVersion>
     <maven.test.redirectTestOutputToFile>true</maven.test.redirectTestOutputToFile>
   </properties>
 
