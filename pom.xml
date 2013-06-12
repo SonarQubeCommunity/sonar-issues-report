@@ -10,7 +10,7 @@
   <version>1.1-SNAPSHOT</version>
   <name>Sonar :: Issues Report :: Plugin</name>
   <packaging>sonar-plugin</packaging>
-  <description>Generate a report of Sonar issues</description>
+  <description>Generate a report of SonarQube issues.</description>
   <url>http://docs.codehaus.org/x/v5u7DQ</url>
 
   <inceptionYear>2013</inceptionYear>
