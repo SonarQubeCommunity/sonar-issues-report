@@ -55,7 +55,7 @@
     }
      function hideAll() {
            $$('tr.row').invoke('hide');
-           $$('div.violation').invoke('hide');
+           $$('div.issue').invoke('hide');
            for (var separatorIndex = 0; separatorIndex < separators.length; separatorIndex++) {
              separators[separatorIndex].removeClassName('visible');
            }
@@ -109,14 +109,14 @@
     <tr>
       <th colspan="2" align="left"></th>
       <th align="right" width="1%" nowrap>Current Analysis</th>
-      <th align="right" width="1%" nowrap>New violations</th>
+      <th align="right" width="1%" nowrap>New issues</th>
     </tr>
     <tr class="total">
       <th colspan="2" align="left">
         <#if resourceStatus.getResource()??>
           <a href="#${resourceStatus_index-1}">${resourceStatus.getName()}</a>
           <#else>
-          Total Number of Violations
+          Total Number of Issues
         </#if>
       </th>
       <th align="right">
@@ -166,7 +166,7 @@
 
   <div id="filters">
     <input type="checkbox" id="new_filter" onclick="refreshFilters()" checked="checked" /> <label for="new_filter">Only NEW
-    violations</label>
+    issues</label>
     &nbsp;&nbsp;&nbsp;&nbsp;
     <select id="rule_filter" onchange="refreshFilters()">
       <option value="" selected>Filter by:</option>
@@ -198,7 +198,7 @@
       </div>
       <#assign violations=resourceStatus.getViolations(0)>
       <#if violations?has_content>
-        <table cellpadding="0" cellspacing="0" class="globalViolations">
+        <table cellpadding="0" cellspacing="0" class="globalIssues">
           <tbody>
           <tr>
             <td>
@@ -211,7 +211,7 @@
                     &nbsp;
                     <img src="issuesreport_files/sep12.png">&nbsp;
 
-                    <span class="violation_date">
+                    <span class="issue_date">
                       <#if violation.isNew()>
                         NEW
                         <#else>
@@ -249,9 +249,9 @@
             <#if violations?has_content>
               <tr id="${resourceStatus_index?c}LV${lineIndex?c}" class="row">
                 <td class="lid"></td>
-                <td class="violations">
+                <td class="issues">
                   <#list violations as violation>
-                    <div class="violation" id="${resourceStatus_index?c}V${violationId?c}">
+                    <div class="issue" id="${resourceStatus_index?c}V${violationId?c}">
                       <div class="vtitle">
                         <img alt="${violation.getSeverity()}" title="${violation.getSeverity()}" src="issuesreport_files/${violation.getSeverity()}.png">&nbsp;
                         <img src="issuesreport_files/sep12.png">&nbsp;<span
@@ -259,7 +259,7 @@
                         &nbsp;
                         <img src="issuesreport_files/sep12.png">&nbsp;
 
-                        <span class="violation_date">
+                        <span class="issue_date">
                           <#if violation.isNew()>
                             NEW
                             <#else>

@@ -36,7 +36,7 @@ body {
   font-size: 93%;
   color: #777;
 }
-.globalViolations {
+.globalIssues {
   width: 100%;
   border: 0;
   margin-left: 37px;
@@ -215,7 +215,7 @@ td.sep {
   color: #444;
   min-width: 25px;
 }
-div.violation {
+div.issue {
   background-color: #FFF;
   border: 1px solid #DDD;
   margin: 7px;
@@ -238,7 +238,7 @@ span.rulename, span.rulename a {
   font-weight: bold;
 }
 
-span.violation_date {
+span.issue_date {
   color: #777;
   font-size: 90%;
 }
@@ -268,7 +268,7 @@ span.rulename a:hover {
   height: 40px;
 }
 
-td.violations {
+td.issues {
   background-color: #FFF;
   border-right: 1px solid #DDD;
   margin: 0;

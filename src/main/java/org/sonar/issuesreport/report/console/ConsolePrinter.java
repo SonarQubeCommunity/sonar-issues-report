@@ -35,33 +35,33 @@ public class ConsolePrinter implements BatchExtension {
   private static final Logger LOG = LoggerFactory.getLogger(ConsolePrinter.class);
 
   public void printConsoleReport(IssuesReport report) {
-    int newViolations = 0;
+    int newIssues = 0;
     Map<RulePriority, AtomicInteger> variationBySeverity = Maps.newHashMap();
     for (RulePriority rulePriority : RulePriority.values()) {
       variationBySeverity.put(rulePriority, new AtomicInteger(0));
     }
     for (RuleStatus ruleStatus : report.getTotal().getRuleStatuses()) {
       variationBySeverity.get(ruleStatus.getSeverity()).addAndGet(ruleStatus.getVariation());
-      newViolations += ruleStatus.getVariation();
+      newIssues += ruleStatus.getVariation();
     }
     LOG.info("-------------  Issues Report  -------------");
-    if (newViolations > 0) {
-      LOG.info(newViolations + " new violation" + (newViolations > 1 ? "s" : ""));
-      printNewViolations(variationBySeverity, RulePriority.BLOCKER, "blocking");
-      printNewViolations(variationBySeverity, RulePriority.CRITICAL, "critical");
-      printNewViolations(variationBySeverity, RulePriority.MAJOR, "major");
-      printNewViolations(variationBySeverity, RulePriority.MINOR, "minor");
-      printNewViolations(variationBySeverity, RulePriority.INFO, "info");
+    if (newIssues > 0) {
+      LOG.info(newIssues + " new issue" + (newIssues > 1 ? "s" : ""));
+      printNewIssues(variationBySeverity, RulePriority.BLOCKER, "blocking");
+      printNewIssues(variationBySeverity, RulePriority.CRITICAL, "critical");
+      printNewIssues(variationBySeverity, RulePriority.MAJOR, "major");
+      printNewIssues(variationBySeverity, RulePriority.MINOR, "minor");
+      printNewIssues(variationBySeverity, RulePriority.INFO, "info");
     } else {
-      LOG.info("No new violation");
+      LOG.info("No new issue");
     }
     LOG.info("-------------------------------------------");
   }
 
-  private void printNewViolations(Map<RulePriority, AtomicInteger> variationBySeverity, RulePriority severity, String severityLabel) {
-    int violationCount = variationBySeverity.get(severity).get();
-    if (violationCount > 0) {
-      LOG.info("+{} {} violation" + (violationCount > 1 ? "s" : ""), violationCount, severityLabel);
+  private void printNewIssues(Map<RulePriority, AtomicInteger> variationBySeverity, RulePriority severity, String severityLabel) {
+    int issueCount = variationBySeverity.get(severity).get();
+    if (issueCount > 0) {
+      LOG.info("+{} {} issue" + (issueCount > 1 ? "s" : ""), issueCount, severityLabel);
     }
   }
 }
