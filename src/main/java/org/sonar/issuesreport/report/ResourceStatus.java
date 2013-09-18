@@ -25,6 +25,7 @@ import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.ObjectUtils;
+import org.apache.commons.lang.StringEscapeUtils;
 import org.apache.commons.lang.StringUtils;
 import org.sonar.api.batch.SonarIndex;
 import org.sonar.api.measures.RuleMeasure;
@@ -115,7 +116,8 @@ public final class ResourceStatus implements Comparable<ResourceStatus> {
 
   public List<String> getLines() throws IOException {
     String source = StringUtils.defaultString(index.getSource(resource));
-    return IOUtils.readLines(new StringReader(source));
+    String escapedSource = StringEscapeUtils.escapeHtml(source);
+    return IOUtils.readLines(new StringReader(escapedSource));
   }
 
   public boolean isDisplayableLine(Integer lineId) {
