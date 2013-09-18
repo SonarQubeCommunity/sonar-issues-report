@@ -121,7 +121,8 @@ public class HTMLPrinterTest {
     SonarIndex index = mock(SonarIndex.class);
     Resource file = mock(Resource.class);
     when(file.getScope()).thenReturn(Scopes.FILE);
-    when(file.getName()).thenReturn("Foo.java");
+    when(file.getName()).thenReturn("Foo");
+    when(file.getLongName()).thenReturn("foo.bar.Foo");
     when(index.getVertices()).thenReturn(Sets.newHashSet(file));
     org.sonar.api.rules.Rule rule = org.sonar.api.rules.Rule.create("foo", "bar").setSeverity(RulePriority.BLOCKER);
     rule.setId(1);

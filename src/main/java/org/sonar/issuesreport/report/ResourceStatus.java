@@ -43,7 +43,7 @@ import java.util.Map;
 
 public final class ResourceStatus implements Comparable<ResourceStatus> {
   private SonarIndex index;
-  private Resource resource;
+  private Resource<?> resource;
   private int value;
   private int variation;
   private List<RuleStatus> ruleStatuses;
@@ -51,7 +51,7 @@ public final class ResourceStatus implements Comparable<ResourceStatus> {
   private ListMultimap<Integer, Violation> violationsPerLine;
   private Map<Rule, List<Violation>> violationsByRule;
 
-  public ResourceStatus(SonarIndex index, Resource resource) {
+  public ResourceStatus(SonarIndex index, Resource<?> resource) {
     this.index = index;
     this.resource = resource;
   }
@@ -67,11 +67,11 @@ public final class ResourceStatus implements Comparable<ResourceStatus> {
   }
 
   public String getKey() {
-    return (resource != null ? resource.getKey() : "total");
+    return resource != null ? resource.getKey() : "total";
   }
 
   public String getName() {
-    return (resource != null ? resource.getName() : null);
+    return resource != null ? resource.getLongName() : null;
   }
 
   public int getValue() {
