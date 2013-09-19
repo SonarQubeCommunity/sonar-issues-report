@@ -47,7 +47,7 @@
   </issueManagement>
 
   <properties>
-    <sonar.buildVersion>3.5</sonar.buildVersion>
+    <sonar.buildVersion>4.0-SNAPSHOT</sonar.buildVersion>
     <maven.test.redirectTestOutputToFile>true</maven.test.redirectTestOutputToFile>
   </properties>
 
@@ -87,12 +87,6 @@
       <groupId>org.easytesting</groupId>
       <artifactId>fest-assert</artifactId>
       <version>1.4</version>
-      <scope>test</scope>
-    </dependency>
-    <dependency>
-      <groupId>org.slf4j</groupId>
-      <artifactId>slf4j-simple</artifactId>
-      <version>1.6.2</version>
       <scope>test</scope>
     </dependency>
     <dependency>

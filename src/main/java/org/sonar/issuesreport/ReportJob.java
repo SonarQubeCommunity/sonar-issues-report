@@ -21,43 +21,32 @@ package org.sonar.issuesreport;
 
 import org.sonar.api.batch.PostJob;
 import org.sonar.api.batch.SensorContext;
-import org.sonar.api.batch.SonarIndex;
-import org.sonar.api.config.Settings;
 import org.sonar.api.resources.Project;
+import org.sonar.issuesreport.printer.ReportPrinter;
 import org.sonar.issuesreport.report.IssuesReport;
-import org.sonar.issuesreport.report.console.ConsolePrinter;
-import org.sonar.issuesreport.report.html.HTMLPrinter;
+import org.sonar.issuesreport.report.IssuesReportBuilder;
 
 public class ReportJob implements PostJob {
 
-  private final SonarIndex index;
-  private final Settings settings;
-  private final HTMLPrinter htmlPrinter;
-  private final ConsolePrinter consolePrinter;
+  private IssuesReportBuilder builder;
+  private ReportPrinter[] printers;
 
-  private IssuesReport report;
-
-  public ReportJob(SonarIndex index, Settings settings, HTMLPrinter htmlPrinter, ConsolePrinter consolePrinter) {
-    this.index = index;
-    this.settings = settings;
-    this.htmlPrinter = htmlPrinter;
-    this.consolePrinter = consolePrinter;
+  public ReportJob(IssuesReportBuilder builder, ReportPrinter[] printers) {
+    this.builder = builder;
+    this.printers = printers;
   }
 
   public void executeOn(Project project, SensorContext context) {
-    if (settings.getBoolean(IssuesReportConstants.HTML_REPORT_ENABLED_KEY)) {
-      htmlPrinter.writeToFile(getIssuesReport(project));
+    // For performance only initialize IssuesReport if there is on Printer enabled
+    IssuesReport report = null;
+    for (ReportPrinter printer : printers) {
+      if (printer.isEnabled()) {
+        if (report == null) {
+          report = builder.buildReport(project);
+        }
+        printer.print(report);
+      }
     }
-    if (settings.getBoolean(IssuesReportConstants.CONSOLE_REPORT_ENABLED_KEY)) {
-      consolePrinter.printConsoleReport(getIssuesReport(project));
-    }
-  }
-
-  private IssuesReport getIssuesReport(Project project) {
-    if (report == null) {
-      report = new IssuesReport(project, project.getName(), index);
-    }
-    return report;
   }
 
 }

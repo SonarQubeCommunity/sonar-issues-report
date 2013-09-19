@@ -17,8 +17,15 @@
  * License along with this program; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02
  */
-@ParametersAreNonnullByDefault
-package org.sonar.issuesreport.report.console;
+package org.sonar.issuesreport.printer;
 
-import javax.annotation.ParametersAreNonnullByDefault;
+import org.sonar.api.BatchExtension;
+import org.sonar.issuesreport.report.IssuesReport;
 
+public interface ReportPrinter extends BatchExtension {
+
+  boolean isEnabled();
+
+  void print(IssuesReport report);
+
+}

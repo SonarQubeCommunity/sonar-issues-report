@@ -19,13 +19,30 @@
  */
 package org.sonar.issuesreport.report;
 
-import org.apache.commons.lang.ObjectUtils;
+import org.sonar.api.rules.Rule;
 
-import java.io.Serializable;
-import java.util.Comparator;
+public final class RuleReport {
+  private final ReportRuleKey reportRuleKey;
+  private final IssueVariation total = new IssueVariation();
 
-public final class RuleStatusComparatorByValue implements Comparator<RuleStatus>, Serializable {
-  public int compare(RuleStatus m1, RuleStatus m2) {
-    return ObjectUtils.compare(m2.getValue(), m1.getValue());
+  public RuleReport(ReportRuleKey reportRuleKey) {
+    this.reportRuleKey = reportRuleKey;
   }
+
+  public IssueVariation getTotal() {
+    return total;
+  }
+
+  public ReportRuleKey getReportRuleKey() {
+    return reportRuleKey;
+  }
+
+  public String getSeverity() {
+    return reportRuleKey.getSeverity().toString();
+  }
+
+  public Rule getRule() {
+    return reportRuleKey.getRule();
+  }
+
 }

@@ -17,16 +17,8 @@
  * License along with this program; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02
  */
-package org.sonar.issuesreport.report;
+@ParametersAreNonnullByDefault
+package org.sonar.issuesreport.printer;
 
-import org.apache.commons.lang.ObjectUtils;
-import org.sonar.api.rules.Rule;
+import javax.annotation.ParametersAreNonnullByDefault;
 
-import java.io.Serializable;
-import java.util.Comparator;
-
-public class RuleComparatorByName implements Comparator<Rule>, Serializable {
-  public int compare(Rule r1, Rule r2) {
-    return ObjectUtils.compare(r1.getName(), r2.getName());
-  }
-}

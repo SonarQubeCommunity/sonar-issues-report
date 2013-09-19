@@ -19,66 +19,75 @@
  */
 package org.sonar.issuesreport;
 
+import org.junit.Before;
 import org.junit.Test;
 import org.sonar.api.batch.SensorContext;
-import org.sonar.api.batch.SonarIndex;
-import org.sonar.api.config.PropertyDefinitions;
-import org.sonar.api.config.Settings;
 import org.sonar.api.resources.Project;
+import org.sonar.issuesreport.printer.ReportPrinter;
 import org.sonar.issuesreport.report.IssuesReport;
-import org.sonar.issuesreport.report.console.ConsolePrinter;
-import org.sonar.issuesreport.report.html.HTMLPrinter;
-
-import java.io.File;
+import org.sonar.issuesreport.report.IssuesReportBuilder;
 
 import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.only;
+import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 public class ReportJobTest {
 
-  @Test
-  public void shouldBeDisabledByDefault() {
-    Settings settings = new Settings(new PropertyDefinitions(IssuesReportPlugin.class));
-    HTMLPrinter htmlPrinter = mock(HTMLPrinter.class);
-    ConsolePrinter consolePrinter = mock(ConsolePrinter.class);
-    ReportJob job = new ReportJob(null, settings, htmlPrinter, consolePrinter);
+  private IssuesReportBuilder issuesReportBuilder;
+  private ReportPrinter printer1;
+  private ReportPrinter printer2;
+  private ReportJob job;
 
-    job.executeOn(mock(Project.class), mock(SensorContext.class));
+  @Before
+  public void prepare() {
+    issuesReportBuilder = mock(IssuesReportBuilder.class);
+    when(issuesReportBuilder.buildReport(any(Project.class))).thenReturn(new IssuesReport());
+    printer1 = mock(ReportPrinter.class);
+    when(printer1.isEnabled()).thenReturn(false);
+    printer2 = mock(ReportPrinter.class);
+    when(printer2.isEnabled()).thenReturn(false);
 
-    verify(htmlPrinter, never()).writeToFile(any(IssuesReport.class), any(File.class));
-    verify(consolePrinter, never()).printConsoleReport(any(IssuesReport.class));
+    job = new ReportJob(issuesReportBuilder, new ReportPrinter[] {printer1, printer2});
   }
 
   @Test
-  public void shouldEnableHTMLReport() {
-    Settings settings = new Settings(new PropertyDefinitions(IssuesReportPlugin.class));
-    settings.setProperty(IssuesReportConstants.HTML_REPORT_ENABLED_KEY, "true");
-    HTMLPrinter htmlPrinter = mock(HTMLPrinter.class);
-    ConsolePrinter consolePrinter = mock(ConsolePrinter.class);
-    SonarIndex index = mock(SonarIndex.class);
-    ReportJob job = new ReportJob(index, settings, htmlPrinter, consolePrinter);
+  public void shouldNotBuildReportWhenNoPrinterEnabled() {
+    when(printer1.isEnabled()).thenReturn(false);
+    when(printer2.isEnabled()).thenReturn(false);
 
     job.executeOn(mock(Project.class), mock(SensorContext.class));
 
-    verify(htmlPrinter).writeToFile(any(IssuesReport.class));
-    verify(consolePrinter, never()).printConsoleReport(any(IssuesReport.class));
+    verify(issuesReportBuilder, never()).buildReport(any(Project.class));
+    verify(printer1, never()).print(any(IssuesReport.class));
+    verify(printer2, never()).print(any(IssuesReport.class));
   }
 
   @Test
-  public void shouldEnableConsoleReport() {
-    Settings settings = new Settings(new PropertyDefinitions(IssuesReportPlugin.class));
-    settings.setProperty(IssuesReportConstants.CONSOLE_REPORT_ENABLED_KEY, "true");
-    HTMLPrinter htmlPrinter = mock(HTMLPrinter.class);
-    ConsolePrinter consolePrinter = mock(ConsolePrinter.class);
-    SonarIndex index = mock(SonarIndex.class);
-    ReportJob job = new ReportJob(index, settings, htmlPrinter, consolePrinter);
+  public void shouldPrintOnlyOnEnabledPrinter() {
+    when(printer1.isEnabled()).thenReturn(true);
+    when(printer2.isEnabled()).thenReturn(false);
 
     job.executeOn(mock(Project.class), mock(SensorContext.class));
 
-    verify(htmlPrinter, never()).writeToFile(any(IssuesReport.class));
-    verify(consolePrinter).printConsoleReport(any(IssuesReport.class));
+    verify(issuesReportBuilder, only()).buildReport(any(Project.class));
+    verify(printer1, times(1)).print(any(IssuesReport.class));
+    verify(printer2, never()).print(any(IssuesReport.class));
+  }
+
+  @Test
+  public void shouldBuildReportOnlyOnceWhenTwoPrintersEnabled() {
+    when(printer1.isEnabled()).thenReturn(true);
+    when(printer2.isEnabled()).thenReturn(true);
+
+    job.executeOn(mock(Project.class), mock(SensorContext.class));
+
+    verify(issuesReportBuilder, only()).buildReport(any(Project.class));
+    verify(printer1, times(1)).print(any(IssuesReport.class));
+    verify(printer2, times(1)).print(any(IssuesReport.class));
   }
 
 }

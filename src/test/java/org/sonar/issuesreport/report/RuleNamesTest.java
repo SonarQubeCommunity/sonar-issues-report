@@ -19,10 +19,9 @@
  */
 package org.sonar.issuesreport.report;
 
-import org.sonar.issuesreport.report.RuleNames;
-
 import org.junit.Test;
 import org.sonar.api.i18n.I18n;
+import org.sonar.api.rule.RuleKey;
 import org.sonar.api.rules.Rule;
 
 import java.util.Locale;
@@ -33,7 +32,7 @@ import static org.mockito.Mockito.when;
 
 public class RuleNamesTest {
   @Test
-  public void name_from_database() {
+  public void name_from_database_or_key() {
     String propertyKey = "rule.checkstyle.com.puppycrawl.tools.checkstyle.checks.annotation.AnnotationUseStyleCheck.name";
     I18n i18n = mock(I18n.class);
     when(i18n.message(Locale.ENGLISH, propertyKey, null)).thenReturn(null);
@@ -43,6 +42,10 @@ public class RuleNamesTest {
     Rule rule = Rule.create("checkstyle", "com.puppycrawl.tools.checkstyle.checks.annotation.AnnotationUseStyleCheck", ruleName);
 
     assertThat(names.name(rule)).isEqualTo(ruleName);
+    assertThat(names.name(RuleKey.of("checkstyle", "com.puppycrawl.tools.checkstyle.checks.annotation.AnnotationUseStyleCheck"))).isEqualTo(
+      "checkstyle:com.puppycrawl.tools.checkstyle.checks.annotation.AnnotationUseStyleCheck");
+    assertThat(names.name("checkstyle:com.puppycrawl.tools.checkstyle.checks.annotation.AnnotationUseStyleCheck")).isEqualTo(
+      "checkstyle:com.puppycrawl.tools.checkstyle.checks.annotation.AnnotationUseStyleCheck");
   }
 
   @Test
@@ -54,5 +57,7 @@ public class RuleNamesTest {
 
     Rule rule = Rule.create("checkstyle", "com.puppycrawl.tools.checkstyle.checks.annotation.AnnotationUseStyleCheck");
     assertThat(names.name(rule)).isEqualTo("Annotation Use Style");
+    assertThat(names.name(RuleKey.of("checkstyle", "com.puppycrawl.tools.checkstyle.checks.annotation.AnnotationUseStyleCheck"))).isEqualTo("Annotation Use Style");
+    assertThat(names.name("checkstyle:com.puppycrawl.tools.checkstyle.checks.annotation.AnnotationUseStyleCheck")).isEqualTo("Annotation Use Style");
   }
 }

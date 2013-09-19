@@ -21,6 +21,7 @@ package org.sonar.issuesreport.report;
 
 import org.sonar.api.BatchExtension;
 import org.sonar.api.i18n.I18n;
+import org.sonar.api.rule.RuleKey;
 import org.sonar.api.rules.Rule;
 
 import java.util.Locale;
@@ -34,10 +35,18 @@ public class RuleNames implements BatchExtension {
     this.i18n = i18n;
   }
 
+  public String name(RuleKey ruleKey) {
+    String name = message(ruleKey.repository(), ruleKey.rule(), Locale.ENGLISH, NAME_SUFFIX);
+    return name != null ? name : ruleKey.toString();
+  }
+
+  public String name(String ruleKey) {
+    return name(RuleKey.parse(ruleKey));
+  }
+
   public String name(Rule rule) {
     String name = message(rule.getRepositoryKey(), rule.getKey(), Locale.ENGLISH, NAME_SUFFIX);
     return name != null ? name : rule.getName();
-
   }
 
   String message(String repositoryKey, String ruleKey, Locale locale, String suffix) {

@@ -19,121 +19,81 @@
  */
 package org.sonar.issuesreport.report;
 
-import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
-import com.google.common.collect.Sets;
-import org.sonar.api.batch.SonarIndex;
-import org.sonar.api.resources.Project;
+import org.sonar.api.issue.Issue;
 import org.sonar.api.resources.Resource;
-import org.sonar.api.resources.Scopes;
 import org.sonar.api.rules.Rule;
-import org.sonar.api.rules.Violation;
+import org.sonar.api.rules.RulePriority;
 
-import java.util.Collection;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
-import java.util.SortedSet;
-import java.util.TreeSet;
 
 public class IssuesReport {
 
-  private final Project project;
-  private final String title;
-  private final SortedSet<ResourceStatus> fileStatuses;
-  private final ResourceStatus total;
+  private String title;
+  private Date date;
+  private final ReportSummary summary = new ReportSummary();
+  private final Map<Resource, ResourceReport> resourceReportsByResource = Maps.newLinkedHashMap();
 
-  public IssuesReport(Project project, String title, SonarIndex index) {
-    this(project, title, index, getFiles(index));
+  public IssuesReport() {
   }
 
-  IssuesReport(Project project, String title, SonarIndex index, Collection<Resource> resources) {
-    this.project = project;
-    this.title = title;
-    this.fileStatuses = new TreeSet<ResourceStatus>();
-    for (Resource resource : resources) {
-      ResourceStatus newResourceStatus = newResourceStatus(index, resource);
-      if (newResourceStatus.getValue() > 0) {
-        fileStatuses.add(newResourceStatus);
-      }
-    }
-    total = newTotalStatus(fileStatuses);
-  }
-
-  private static List<Resource> getFiles(SonarIndex index) {
-    List<Resource> files = Lists.newArrayList();
-    for (Resource resource : index.getResources()) {
-      if (Scopes.isFile(resource)) {
-        files.add(resource);
-      }
-    }
-    return files;
-  }
-
-  public Set<ResourceStatus> getFileStatuses() {
-    return fileStatuses;
-  }
-
-  public List<ResourceStatus> getStatuses() {
-    List<ResourceStatus> result = Lists.newArrayList();
-    result.add(total);
-    if (fileStatuses.size() > 1) {
-      result.addAll(fileStatuses);
-    }
-    return result;
-  }
-
-  public Project getProject() {
-    return project;
-  }
-
-  public Date getDate() {
-    return project.getAnalysisDate();
+  public ReportSummary getSummary() {
+    return summary;
   }
 
   public String getTitle() {
     return title;
   }
 
-  public ResourceStatus getTotal() {
-    return total;
+  public void setTitle(String title) {
+    this.title = title;
   }
 
-  public SortedSet<Rule> getRules() {
-    // This method is executed to create the select-box of rule filtering.
-    // Rules are sorted by name
-    SortedSet<Rule> rules = Sets.newTreeSet(new RuleComparatorByName());
-    for (ResourceStatus resourceStatus : fileStatuses) {
-      for (Violation violation : resourceStatus.getViolations()) {
-        rules.add(violation.getRule());
-      }
+  public Date getDate() {
+    return date;
+  }
+
+  public void setDate(Date date) {
+    this.date = date;
+  }
+
+  public Map<Resource, ResourceReport> getResourceReportsByResource() {
+    return resourceReportsByResource;
+  }
+
+  public List<ResourceReport> getResourceReports() {
+    return new ArrayList<ResourceReport>(resourceReportsByResource.values());
+  }
+
+  public List<Resource> getResourcesWithReport() {
+    return new ArrayList<Resource>(resourceReportsByResource.keySet());
+  }
+
+  public void addIssueOnResource(Resource resource, Issue issue, Rule rule, RulePriority severity) {
+    getSummary().addIssue(issue, rule, severity);
+
+    resourceReportsByResource.get(resource).getTotal().incrementCountInCurrentAnalysis();
+    resourceReportsByResource.get(resource).addIssue(issue, rule, RulePriority.valueOf(issue.severity()));
+    if (issue.isNew()) {
+      resourceReportsByResource.get(resource).getTotal().incrementNewIssuesCount();
     }
-    return rules;
   }
 
-  static ResourceStatus newResourceStatus(SonarIndex index, Resource resource) {
-    ResourceStatus status = new ResourceStatus(index, resource);
-    status.setViolations(index.getViolations(resource));
-    status.setRuleMeasures(index.getMeasures(resource, new RuleMeasuresFilter()));
-    return status;
-  }
+  public void addResolvedIssueOnResource(Resource resource, Issue issue, Rule rule, RulePriority severity) {
+    getSummary().addResolvedIssue(issue, rule, severity);
 
-  static ResourceStatus newTotalStatus(Collection<ResourceStatus> fileStatuses) {
-    ResourceStatus status = new ResourceStatus();
-    Map<RuleStatus.Key, RuleStatus> map = Maps.newHashMap();
-    for (ResourceStatus fileStatus : fileStatuses) {
-      for (RuleStatus ruleStatus : fileStatus.getRuleStatuses()) {
-        RuleStatus rs = map.get(ruleStatus.getKey());
-        if (rs == null) {
-          rs = new RuleStatus(ruleStatus);
-          map.put(ruleStatus.getKey(), rs);
-        } else {
-          rs.addRuleStatus(ruleStatus);
-        }
-      }
+    if (resourceReportsByResource.containsKey(resource)) {
+      resourceReportsByResource.get(resource).getTotal().incrementResolvedIssuesCount();
     }
-    status.setRuleStatuses(map.values());
-    return status;
   }
+
+  public void addResource(Resource resource, List<String> sourceCode) {
+    if (!resourceReportsByResource.containsKey(resource)) {
+      resourceReportsByResource.put(resource, new ResourceReport(resource, sourceCode));
+    }
+  }
+
 }

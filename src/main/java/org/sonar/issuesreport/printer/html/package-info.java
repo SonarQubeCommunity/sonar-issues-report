@@ -17,16 +17,8 @@
  * License along with this program; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02
  */
-package org.sonar.issuesreport.report;
+@ParametersAreNonnullByDefault
+package org.sonar.issuesreport.printer.html;
 
-import org.apache.commons.lang.ObjectUtils;
-import org.sonar.api.rules.Violation;
+import javax.annotation.ParametersAreNonnullByDefault;
 
-import java.io.Serializable;
-import java.util.Comparator;
-
-public class ViolationComparatorByLine implements Comparator<Violation>, Serializable {
-  public int compare(Violation v1, Violation v2) {
-    return ObjectUtils.compare(v1.getLineId(), v2.getLineId());
-  }
-}

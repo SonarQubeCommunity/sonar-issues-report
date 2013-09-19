@@ -24,9 +24,10 @@ import org.sonar.api.Properties;
 import org.sonar.api.Property;
 import org.sonar.api.PropertyType;
 import org.sonar.api.SonarPlugin;
+import org.sonar.issuesreport.printer.console.ConsolePrinter;
+import org.sonar.issuesreport.printer.html.HtmlPrinter;
+import org.sonar.issuesreport.report.IssuesReportBuilder;
 import org.sonar.issuesreport.report.RuleNames;
-import org.sonar.issuesreport.report.console.ConsolePrinter;
-import org.sonar.issuesreport.report.html.HTMLPrinter;
 
 import java.util.List;
 
@@ -41,6 +42,11 @@ import java.util.List;
 public final class IssuesReportPlugin extends SonarPlugin {
 
   public List getExtensions() {
-    return ImmutableList.of(ReportJob.class, RuleNames.class, HTMLPrinter.class, ConsolePrinter.class);
+    return ImmutableList.of(
+      ReportJob.class,
+      IssuesReportBuilder.class,
+      RuleNames.class,
+      HtmlPrinter.class,
+      ConsolePrinter.class);
   }
 }
