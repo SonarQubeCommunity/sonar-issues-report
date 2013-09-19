@@ -125,7 +125,7 @@ public class HtmlPrinter implements ReportPrinter {
     copyDependency(target, "prototypejs.js");
     copyDependency(target, "sep12.png");
     copyDependency(target, "sonar.css");
-    copyDependency(target, "sonar.png");
+    copyDependency(target, "sonarqube-24x100.png");
   }
 
   private void copyDependency(File target, String filename) {

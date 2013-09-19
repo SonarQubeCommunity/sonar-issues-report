@@ -95,7 +95,7 @@
 </head>
 <body>
 <div id="reportHeader">
-  <div id="logo"><img src="issuesreport_files/sonar.png" alt="Sonar"/></div>
+  <div id="logo"><img src="issuesreport_files/sonarqube-24x100.png" alt="SonarQube"/></div>
   <div class="title">Issues Report</div>
   <div class="subtitle">${report.getTitle()} - ${report.getDate()?datetime}</div>
 </div>
