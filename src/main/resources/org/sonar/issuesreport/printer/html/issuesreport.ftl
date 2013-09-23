@@ -113,7 +113,7 @@
     </tr>
     <tr class="total">
       <th colspan="2" align="left">
-          Rules
+          Total Number of Issues
       </th>
       <th align="right">
         <span id="current-total">${report.getSummary().getTotal().getCountInCurrentAnalysis()?c}</span>
@@ -167,6 +167,42 @@
   </table>
   </div>
 
+  <div id="summary-per-file">
+  <#list report.getResourceReports() as resourceReport>
+  <table width="100%" class="data">
+    <thead>
+    <tr>
+      <th colspan="2" align="left"></th>
+      <th align="right" width="1%" nowrap>Current Analysis</th>
+      <th align="right" width="1%" nowrap>Resolved issues</th>
+      <th align="right" width="1%" nowrap>New issues</th>
+    </tr>
+    <tr class="total">
+      <th colspan="2" align="left">
+          <a href="#${resourceReport_index-1}">${resourceReport.getName()}</a>
+      </th>
+      <th align="right">
+        <span id="current-total">${resourceReport.getTotal().getCountInCurrentAnalysis()?c}</span>
+      </th>
+      <th align="right">
+        <#if resourceReport.getTotal().getResolvedIssuesCount() gt 0>
+          <span class="better" id="resolved-total">-${resourceReport.getTotal().getResolvedIssuesCount()?c}</span>
+        <#else>
+          <span id="resolved-total">0</span>
+        </#if>
+      </th>
+      <th align="right">
+        <#if resourceReport.getTotal().getNewIssuesCount() gt 0>
+          <span class="worst" id="new-total">+${resourceReport.getTotal().getNewIssuesCount()?c}</span>
+        <#else>
+          <span id="new-total">0</span>
+        </#if>
+      </th>
+    </tr>
+    </thead>
+  </table>
+  </#list>
+  </div>
   <hr/>
 
   <div id="filters">
@@ -199,6 +235,7 @@
   <div>
   <#list report.getResourceReports() as resourceReport>
     <#assign issueId=0>
+    <a name="${resourceReport_index?c}"></a>
     <div id="file${resourceReport_index?c}">
       <div class="file_title">
         <img src="issuesreport_files/CLA.png" title="Class"> ${resourceReport.getName()}
