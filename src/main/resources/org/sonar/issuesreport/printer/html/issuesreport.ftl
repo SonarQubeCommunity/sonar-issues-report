@@ -76,6 +76,13 @@
       var ruleFilter = $('#rule_filter').val();
 
       hideAll();
+      if (onlyNewIssues) {
+        $('.all').hide();
+        $('.new').show();
+      } else {
+        $('.new').hide();
+        $('.all').show();
+      }
       for (var resourceIndex = 0; resourceIndex < nbResources; resourceIndex++) {
         var filteredIssues = $.grep(issuesPerResource[resourceIndex], function(v) {
               return (!onlyNewIssues || v['new']) && (ruleFilter == '' || v['r'] == ruleFilter || v['s'] == ruleFilter);
@@ -101,6 +108,19 @@
 </div>
 
 <div id="content">
+
+  <div class="filter">
+    <input type="checkbox" id="new_filter" onclick="refreshFilters()" checked="checked" /> <label for="new_filter">Only NEW
+    issues</label>
+  </div>
+
+  <#if report.getSummary().getTotal().getNewIssuesCount() = 0>
+  <span class="new">No new issue</span>
+  <#assign globalCss = 'all'>
+  <#else>
+  <#assign globalCss = 'new all'>
+  </#if>
+  <div class="${globalCss}">
 
   <div id="summary">
   <table width="100%" class="data">
@@ -137,6 +157,11 @@
     <tbody>
       <#list report.getSummary().getRuleReports() as ruleReport>
         <#assign trCss = (ruleReport_index % 2 == 0)?string("even","odd")>
+        <#if ruleReport.getTotal().getNewIssuesCount() = 0>
+        <#assign trCss = trCss + ' all'>
+        <#else>
+        <#assign trCss = trCss + ' new all'>
+        </#if>
       <tr class="${trCss}">
         <td width="20">
           <img alt="${ruleReport.getSeverity()}" title="${ruleReport.getSeverity()}" src="issuesreport_files/${ruleReport.getSeverity()}.png">
@@ -169,7 +194,12 @@
 
   <div id="summary-per-file">
   <#list report.getResourceReports() as resourceReport>
-  <table width="100%" class="data">
+    <#if resourceReport.getTotal().getNewIssuesCount() = 0>
+    <#assign tableCss = 'all'>
+    <#else>
+    <#assign tableCss = 'new all'>
+    </#if>
+  <table width="100%" class="data ${tableCss}">
     <thead>
     <tr>
       <th colspan="2" align="left"></th>
@@ -205,10 +235,7 @@
   </div>
   <hr/>
 
-  <div id="filters">
-    <input type="checkbox" id="new_filter" onclick="refreshFilters()" checked="checked" /> <label for="new_filter">Only NEW
-    issues</label>
-    &nbsp;&nbsp;&nbsp;&nbsp;
+  <div class="filter">
     <select id="rule_filter" onchange="refreshFilters()">
       <option value="" selected>Filter by:</option>
       <optgroup label="Severity">
@@ -235,10 +262,15 @@
   <div>
   <#list report.getResourceReports() as resourceReport>
     <#assign issueId=0>
+    <#if resourceReport.getTotal().getNewIssuesCount() = 0>
+    <#assign divCss = 'all'>
+    <#else>
+    <#assign divCss = 'new all'>
+    </#if>
     <a name="${resourceReport_index?c}"></a>
-    <div id="file${resourceReport_index?c}">
+    <div id="file${resourceReport_index?c}" class="${divCss}">
       <div class="file_title">
-        <img src="issuesreport_files/CLA.png" title="Class"> ${resourceReport.getName()}
+        <img src="issuesreport_files/${resourceReport.getType()}.png" title="Class"> ${resourceReport.getName()}
       </div>
       <#assign issues=resourceReport.getIssuesAtLine(0)>
       <#if issues?has_content>
@@ -329,6 +361,8 @@
       </table>
     </div>
   </#list>
+  </div>
+
   </div>
 </div>
 <script type="text/javascript">

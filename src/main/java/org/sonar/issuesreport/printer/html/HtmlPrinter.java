@@ -126,7 +126,13 @@ public class HtmlPrinter implements ReportPrinter {
     copyDependency(target, "MINOR.png");
     copyDependency(target, "INFO.png");
     copyDependency(target, "favicon.ico");
+    copyDependency(target, "BRC.png");
     copyDependency(target, "CLA.png");
+    copyDependency(target, "DIR.png");
+    copyDependency(target, "FIL.png");
+    copyDependency(target, "PAC.png");
+    copyDependency(target, "TRK.png");
+    copyDependency(target, "UTS.png");
     copyDependency(target, "jquery.min.js");
     copyDependency(target, "sep12.png");
     copyDependency(target, "sonar.css");

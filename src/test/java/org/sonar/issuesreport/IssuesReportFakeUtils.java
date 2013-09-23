@@ -69,6 +69,7 @@ public class IssuesReportFakeUtils {
     ResourceNode file = mock(ResourceNode.class);
     when(file.getName()).thenReturn("foo.bar.Foo");
     when(file.getKey()).thenReturn(effectiveKey);
+    when(file.getScope()).thenReturn("CLA");
     return file;
   }
 

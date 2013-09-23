@@ -52,6 +52,10 @@ public final class ResourceReport {
     return resource.getName();
   }
 
+  public String getType() {
+    return resource.getScope();
+  }
+
   public IssueVariation getTotal() {
     return total;
   }
