@@ -17,21 +17,21 @@
  * License along with this program; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02
  */
-package org.sonar.issuesreport.report;
+package org.sonar.issuesreport.provider;
 
-import org.sonar.api.BatchExtension;
 import org.sonar.api.i18n.I18n;
 import org.sonar.api.rule.RuleKey;
 import org.sonar.api.rules.Rule;
+import org.sonar.api.task.TaskExtension;
 
 import java.util.Locale;
 
-public class RuleNames implements BatchExtension {
+public class RuleNameProvider implements TaskExtension {
   private static final String RULE_PREFIX = "rule.";
   private static final String NAME_SUFFIX = ".name";
   private I18n i18n;
 
-  public RuleNames(I18n i18n) {
+  public RuleNameProvider(I18n i18n) {
     this.i18n = i18n;
   }
 

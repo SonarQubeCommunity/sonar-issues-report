@@ -19,66 +19,50 @@
  */
 package org.sonar.issuesreport.report;
 
-import com.google.common.collect.Maps;
-import org.apache.commons.io.IOUtils;
-import org.apache.commons.lang.StringEscapeUtils;
-import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.sonar.api.BatchExtension;
-import org.sonar.api.batch.SonarIndex;
+import org.sonar.api.batch.bootstrap.ProjectReactor;
 import org.sonar.api.issue.Issue;
-import org.sonar.api.issue.ModuleIssues;
+import org.sonar.api.issue.ProjectIssues;
 import org.sonar.api.resources.Project;
-import org.sonar.api.resources.Resource;
-import org.sonar.api.resources.ResourceUtils;
 import org.sonar.api.rule.RuleKey;
 import org.sonar.api.rules.Rule;
 import org.sonar.api.rules.RuleFinder;
 import org.sonar.api.rules.RulePriority;
-
-import java.io.IOException;
-import java.io.StringReader;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.List;
-import java.util.Map;
+import org.sonar.issuesreport.tree.ResourceNode;
+import org.sonar.issuesreport.tree.ResourceTree;
 
 public class IssuesReportBuilder implements BatchExtension {
 
   private static final Logger LOG = LoggerFactory.getLogger(IssuesReportBuilder.class);
 
-  private SonarIndex index;
-  private ModuleIssues moduleIssues;
-  private RuleFinder ruleFinder;
+  private final ProjectIssues moduleIssues;
+  private final RuleFinder ruleFinder;
+  private final ResourceTree resourceTree;
+  private final ProjectReactor reactor;
 
-  public IssuesReportBuilder(SonarIndex index, ModuleIssues moduleIssues, RuleFinder ruleFinder) {
-    this.index = index;
+  public IssuesReportBuilder(ProjectReactor reactor, ProjectIssues moduleIssues, RuleFinder ruleFinder, ResourceTree resourceTree) {
+    this.reactor = reactor;
     this.moduleIssues = moduleIssues;
     this.ruleFinder = ruleFinder;
+    this.resourceTree = resourceTree;
   }
 
   public IssuesReport buildReport(Project project) {
-    Map<String, Resource> resourcesByKey = Maps.newHashMap();
-    Collection<Resource> resources = index.getResources();
-    for (Resource resource : resources) {
-      // Don't want to deal with libraries, methods and classes
-      if (ResourceUtils.isPersistable(resource) && !ResourceUtils.isLibrary(resource)) {
-        resourcesByKey.put(resource.getEffectiveKey(), resource);
-      }
-    }
-
     IssuesReport issuesReport = new IssuesReport();
     issuesReport.setTitle(project.getName());
     issuesReport.setDate(project.getAnalysisDate());
 
-    processIssues(resourcesByKey, issuesReport, moduleIssues.issues(), false);
-    processIssues(resourcesByKey, issuesReport, moduleIssues.resolvedIssues(), true);
+    issuesReport.setMultimodule(reactor.getProjects().size() > 1);
+
+    processIssues(issuesReport, moduleIssues.issues(), false);
+    processIssues(issuesReport, moduleIssues.resolvedIssues(), true);
 
     return issuesReport;
   }
 
-  private void processIssues(Map<String, Resource> resourcesByKey, IssuesReport issuesReport, Iterable<Issue> issues, boolean resolved) {
+  private void processIssues(IssuesReport issuesReport, Iterable<Issue> issues, boolean resolved) {
     for (Issue issue : issues) {
       Rule rule = findRule(issue);
       if (rule == null) {
@@ -86,28 +70,17 @@ public class IssuesReportBuilder implements BatchExtension {
         continue;
       }
       RulePriority severity = RulePriority.valueOf(issue.severity());
-      Resource resource = resourcesByKey.get(issue.componentKey());
+      ResourceNode resource = resourceTree.getResource(issue.componentKey());
       if (resource == null) {
         LOG.warn("Unknow resource with key {}", issue.componentKey());
         continue;
       }
-      issuesReport.addResource(resource, getSourceCode(resource));
+      issuesReport.addResource(resource);
       if (resolved) {
         issuesReport.addResolvedIssueOnResource(resource, issue, rule, severity);
       } else {
         issuesReport.addIssueOnResource(resource, issue, rule, severity);
       }
-    }
-  }
-
-  private List<String> getSourceCode(Resource resource) {
-    String source = StringUtils.defaultString(index.getSource(resource));
-    String escapedSource = StringEscapeUtils.escapeHtml(source);
-    try {
-      return IOUtils.readLines(new StringReader(escapedSource));
-    } catch (IOException e) {
-      LOG.warn("Unable to read source code of resource {}", resource, e);
-      return Collections.emptyList();
     }
   }
 

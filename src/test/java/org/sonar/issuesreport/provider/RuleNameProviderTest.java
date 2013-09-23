@@ -17,7 +17,9 @@
  * License along with this program; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02
  */
-package org.sonar.issuesreport.report;
+package org.sonar.issuesreport.provider;
+
+import org.sonar.issuesreport.provider.RuleNameProvider;
 
 import org.junit.Test;
 import org.sonar.api.i18n.I18n;
@@ -30,13 +32,13 @@ import static org.fest.assertions.Assertions.assertThat;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-public class RuleNamesTest {
+public class RuleNameProviderTest {
   @Test
   public void name_from_database_or_key() {
     String propertyKey = "rule.checkstyle.com.puppycrawl.tools.checkstyle.checks.annotation.AnnotationUseStyleCheck.name";
     I18n i18n = mock(I18n.class);
     when(i18n.message(Locale.ENGLISH, propertyKey, null)).thenReturn(null);
-    RuleNames names = new RuleNames(i18n);
+    RuleNameProvider names = new RuleNameProvider(i18n);
 
     String ruleName = "RULE_NAME";
     Rule rule = Rule.create("checkstyle", "com.puppycrawl.tools.checkstyle.checks.annotation.AnnotationUseStyleCheck", ruleName);
@@ -53,7 +55,7 @@ public class RuleNamesTest {
     String propertyKey = "rule.checkstyle.com.puppycrawl.tools.checkstyle.checks.annotation.AnnotationUseStyleCheck.name";
     I18n i18n = mock(I18n.class);
     when(i18n.message(Locale.ENGLISH, propertyKey, null)).thenReturn("Annotation Use Style");
-    RuleNames names = new RuleNames(i18n);
+    RuleNameProvider names = new RuleNameProvider(i18n);
 
     Rule rule = Rule.create("checkstyle", "com.puppycrawl.tools.checkstyle.checks.annotation.AnnotationUseStyleCheck");
     assertThat(names.name(rule)).isEqualTo("Annotation Use Style");

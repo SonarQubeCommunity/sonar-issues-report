@@ -29,8 +29,9 @@ import org.sonar.api.config.Settings;
 import org.sonar.api.scan.filesystem.ModuleFileSystem;
 import org.sonar.issuesreport.IssuesReportConstants;
 import org.sonar.issuesreport.printer.ReportPrinter;
+import org.sonar.issuesreport.provider.RuleNameProvider;
+import org.sonar.issuesreport.provider.SourceProvider;
 import org.sonar.issuesreport.report.IssuesReport;
-import org.sonar.issuesreport.report.RuleNames;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -46,12 +47,15 @@ public class HtmlPrinter implements ReportPrinter {
 
   private static final org.slf4j.Logger LOG = LoggerFactory.getLogger(HtmlPrinter.class);
 
-  private final RuleNames ruleNames;
+  private final RuleNameProvider ruleNameProvider;
   private final ModuleFileSystem fs;
   private Settings settings;
 
-  public HtmlPrinter(RuleNames ruleNames, ModuleFileSystem fs, Settings settings) {
-    this.ruleNames = ruleNames;
+  private SourceProvider sourceProvider;
+
+  public HtmlPrinter(RuleNameProvider ruleNameProvider, SourceProvider sourceProvider, ModuleFileSystem fs, Settings settings) {
+    this.ruleNameProvider = ruleNameProvider;
+    this.sourceProvider = sourceProvider;
     this.fs = fs;
     this.settings = settings;
   }
@@ -90,7 +94,8 @@ public class HtmlPrinter implements ReportPrinter {
 
       Map<String, Object> root = Maps.newHashMap();
       root.put("report", report);
-      root.put("ruleNames", ruleNames);
+      root.put("ruleNameProvider", ruleNameProvider);
+      root.put("sourceProvider", sourceProvider);
 
       Template template = cfg.getTemplate("issuesreport.ftl");
       fos = new FileOutputStream(toFile);

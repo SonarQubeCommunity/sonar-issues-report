@@ -142,7 +142,7 @@
           <img alt="${ruleReport.getSeverity()}" title="${ruleReport.getSeverity()}" src="issuesreport_files/${ruleReport.getSeverity()}.png">
         </td>
         <td align="left">
-          ${ruleNames.name(ruleReport.getRule())}
+          ${ruleNameProvider.name(ruleReport.getRule())}
         </td>
         <td align="right">
           ${ruleReport.getTotal().getCountInCurrentAnalysis()?c}
@@ -188,7 +188,7 @@
       <#assign rules = report.getSummary().getCountByRuleKey()>
       <#list rules?keys as ruleKey>
         <option value="R${ruleKey}">
-          ${ruleNames.name(ruleKey)}
+          ${ruleNameProvider.name(ruleKey)}
           (${rules[ruleKey]?c})
         </option>
       </#list>
@@ -214,7 +214,7 @@
                   <div class="vtitle">
 
                     <img alt="${issue.severity()}" title="${issue.severity()}" src="issuesreport_files/${issue.severity()}.png">&nbsp;
-                    <img src="issuesreport_files/sep12.png"> <span class="rulename">${ruleNames.name(issue.ruleKey())}</span>
+                    <img src="issuesreport_files/sep12.png"> <span class="rulename">${ruleNameProvider.name(issue.ruleKey())}</span>
                     &nbsp;
                     <img src="issuesreport_files/sep12.png">&nbsp;
 
@@ -240,7 +240,7 @@
         </table>
       </#if>
       <table class="sources" border="0" cellpadding="0" cellspacing="0">
-        <#list resourceReport.getSourceCode() as line>
+        <#list sourceProvider.getEscapedSource(resourceReport.getResourceNode()) as line>
           <#assign lineIndex=line_index+1>
           <#if resourceReport.isDisplayableLine(lineIndex)>
             <tr id="${resourceReport_index?c}L${lineIndex?c}" class="row">
@@ -262,7 +262,7 @@
                       <div class="vtitle">
                         <img alt="${issue.severity()}" title="${issue.severity()}" src="issuesreport_files/${issue.severity()}.png">&nbsp;
                         <img src="issuesreport_files/sep12.png">&nbsp;<span
-                          class="rulename">${ruleNames.name(issue.ruleKey())}</span>
+                          class="rulename">${ruleNameProvider.name(issue.ruleKey())}</span>
                         &nbsp;
                         <img src="issuesreport_files/sep12.png">&nbsp;
 

@@ -21,9 +21,9 @@ package org.sonar.issuesreport.report;
 
 import com.google.common.collect.Maps;
 import org.sonar.api.issue.Issue;
-import org.sonar.api.resources.Resource;
 import org.sonar.api.rules.Rule;
 import org.sonar.api.rules.RulePriority;
+import org.sonar.issuesreport.tree.ResourceNode;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -32,7 +32,7 @@ import java.util.Map;
 import java.util.concurrent.atomic.AtomicInteger;
 
 public final class ResourceReport {
-  private final Resource resource;
+  private final ResourceNode resource;
   private final IssueVariation total = new IssueVariation();
 
   private List<Issue> issues = new ArrayList<Issue>();
@@ -40,19 +40,16 @@ public final class ResourceReport {
   private Map<Rule, AtomicInteger> issuesByRule = Maps.newHashMap();
   private Map<RulePriority, AtomicInteger> issuesBySeverity = Maps.newHashMap();
 
-  private final List<String> sourceCode;
-
-  public ResourceReport(Resource resource, List<String> sourceCode) {
+  public ResourceReport(ResourceNode resource) {
     this.resource = resource;
-    this.sourceCode = sourceCode;
   }
 
-  public Resource getResource() {
+  public ResourceNode getResourceNode() {
     return resource;
   }
 
   public String getName() {
-    return resource.getLongName();
+    return resource.getName();
   }
 
   public IssueVariation getTotal() {
@@ -91,18 +88,14 @@ public final class ResourceReport {
     issuesBySeverity.get(severity).incrementAndGet();
   }
 
-  public List<String> getSourceCode() {
-    return sourceCode;
-  }
-
   public boolean isDisplayableLine(Integer lineId) {
     if (lineId == null || lineId < 1) {
       return false;
     }
-    return hasViolations(lineId - 2) || hasViolations(lineId - 1) || hasViolations(lineId) || hasViolations(lineId + 1) || hasViolations(lineId + 2);
+    return hasIssues(lineId - 2) || hasIssues(lineId - 1) || hasIssues(lineId) || hasIssues(lineId + 1) || hasIssues(lineId + 2);
   }
 
-  private boolean hasViolations(Integer lineId) {
+  private boolean hasIssues(Integer lineId) {
     List<Issue> issues = issuesPerLine.get(lineId);
     return issues != null && !issues.isEmpty();
   }

@@ -21,9 +21,9 @@ package org.sonar.issuesreport.report;
 
 import com.google.common.collect.Maps;
 import org.sonar.api.issue.Issue;
-import org.sonar.api.resources.Resource;
 import org.sonar.api.rules.Rule;
 import org.sonar.api.rules.RulePriority;
+import org.sonar.issuesreport.tree.ResourceNode;
 
 import java.util.ArrayList;
 import java.util.Date;
@@ -34,8 +34,9 @@ public class IssuesReport {
 
   private String title;
   private Date date;
+  private boolean multimodule;
   private final ReportSummary summary = new ReportSummary();
-  private final Map<Resource, ResourceReport> resourceReportsByResource = Maps.newLinkedHashMap();
+  private final Map<ResourceNode, ResourceReport> resourceReportsByResource = Maps.newLinkedHashMap();
 
   public IssuesReport() {
   }
@@ -60,7 +61,15 @@ public class IssuesReport {
     this.date = date;
   }
 
-  public Map<Resource, ResourceReport> getResourceReportsByResource() {
+  public boolean isMultimodule() {
+    return multimodule;
+  }
+
+  public void setMultimodule(boolean multimodule) {
+    this.multimodule = multimodule;
+  }
+
+  public Map<ResourceNode, ResourceReport> getResourceReportsByResource() {
     return resourceReportsByResource;
   }
 
@@ -68,11 +77,11 @@ public class IssuesReport {
     return new ArrayList<ResourceReport>(resourceReportsByResource.values());
   }
 
-  public List<Resource> getResourcesWithReport() {
-    return new ArrayList<Resource>(resourceReportsByResource.keySet());
+  public List<ResourceNode> getResourcesWithReport() {
+    return new ArrayList<ResourceNode>(resourceReportsByResource.keySet());
   }
 
-  public void addIssueOnResource(Resource resource, Issue issue, Rule rule, RulePriority severity) {
+  public void addIssueOnResource(ResourceNode resource, Issue issue, Rule rule, RulePriority severity) {
     getSummary().addIssue(issue, rule, severity);
 
     resourceReportsByResource.get(resource).getTotal().incrementCountInCurrentAnalysis();
@@ -82,7 +91,7 @@ public class IssuesReport {
     }
   }
 
-  public void addResolvedIssueOnResource(Resource resource, Issue issue, Rule rule, RulePriority severity) {
+  public void addResolvedIssueOnResource(ResourceNode resource, Issue issue, Rule rule, RulePriority severity) {
     getSummary().addResolvedIssue(issue, rule, severity);
 
     if (resourceReportsByResource.containsKey(resource)) {
@@ -90,9 +99,9 @@ public class IssuesReport {
     }
   }
 
-  public void addResource(Resource resource, List<String> sourceCode) {
+  public void addResource(ResourceNode resource) {
     if (!resourceReportsByResource.containsKey(resource)) {
-      resourceReportsByResource.put(resource, new ResourceReport(resource, sourceCode));
+      resourceReportsByResource.put(resource, new ResourceReport(resource));
     }
   }
 

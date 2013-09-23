@@ -20,14 +20,12 @@
 package org.sonar.issuesreport;
 
 import org.sonar.api.issue.Issue;
-import org.sonar.api.resources.Resource;
-import org.sonar.api.resources.Scopes;
 import org.sonar.api.rule.RuleKey;
 import org.sonar.api.rules.Rule;
 import org.sonar.api.rules.RulePriority;
 import org.sonar.issuesreport.report.IssuesReport;
+import org.sonar.issuesreport.tree.ResourceNode;
 
-import java.util.Arrays;
 import java.util.Date;
 
 import static org.mockito.Mockito.mock;
@@ -35,7 +33,7 @@ import static org.mockito.Mockito.when;
 
 public class IssuesReportFakeUtils {
 
-  public static IssuesReport sampleReportWith2Issues(Resource file) {
+  public static IssuesReport sampleReportWith2Issues(ResourceNode file) {
     Rule rule = fakeRule(RuleKey.of("foo", "bar"));
 
     Issue issue1 = fakeIssue(true, RuleKey.of("foo", "bar"), "com.foo.Bar");
@@ -44,7 +42,7 @@ public class IssuesReportFakeUtils {
     IssuesReport report = new IssuesReport();
     report.setTitle("Fake report");
     report.setDate(new Date());
-    report.addResource(file, Arrays.asList("foo", "bar"));
+    report.addResource(file);
     report.addIssueOnResource(file, issue1, rule, RulePriority.BLOCKER);
     report.addIssueOnResource(file, issue2, rule, RulePriority.BLOCKER);
 
@@ -54,7 +52,7 @@ public class IssuesReportFakeUtils {
   public static Issue fakeIssue(boolean isNew, RuleKey ruleKey, String componentKey) {
     Issue issue = mock(Issue.class);
     when(issue.isNew()).thenReturn(isNew);
-    when(issue.line()).thenReturn(1);
+    when(issue.line()).thenReturn(4);
     when(issue.ruleKey()).thenReturn(ruleKey);
     when(issue.severity()).thenReturn("BLOCKER");
     when(issue.creationDate()).thenReturn(new Date());
@@ -67,12 +65,10 @@ public class IssuesReportFakeUtils {
     return rule;
   }
 
-  public static Resource fakeFile(String effectiveKey) {
-    Resource file = mock(Resource.class);
-    when(file.getScope()).thenReturn(Scopes.FILE);
-    when(file.getName()).thenReturn("Foo");
-    when(file.getLongName()).thenReturn("foo.bar.Foo");
-    when(file.getEffectiveKey()).thenReturn(effectiveKey);
+  public static ResourceNode fakeFile(String effectiveKey) {
+    ResourceNode file = mock(ResourceNode.class);
+    when(file.getName()).thenReturn("foo.bar.Foo");
+    when(file.getKey()).thenReturn(effectiveKey);
     return file;
   }
 

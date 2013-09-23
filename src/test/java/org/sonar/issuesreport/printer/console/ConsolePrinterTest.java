@@ -24,12 +24,12 @@ import org.junit.Test;
 import org.sonar.api.config.PropertyDefinitions;
 import org.sonar.api.config.Settings;
 import org.sonar.api.resources.Project;
-import org.sonar.api.resources.Resource;
 import org.sonar.issuesreport.IssuesReportConstants;
 import org.sonar.issuesreport.IssuesReportFakeUtils;
 import org.sonar.issuesreport.IssuesReportPlugin;
 import org.sonar.issuesreport.printer.console.ConsolePrinter.ConsoleLogger;
 import org.sonar.issuesreport.report.IssuesReport;
+import org.sonar.issuesreport.tree.ResourceNode;
 
 import java.io.IOException;
 import java.util.Date;
@@ -77,7 +77,7 @@ public class ConsolePrinterTest {
 
     Project project = mock(Project.class);
     when(project.getAnalysisDate()).thenReturn(new Date());
-    Resource file = IssuesReportFakeUtils.fakeFile("com.foo.Bar");
+    ResourceNode file = IssuesReportFakeUtils.fakeFile("com.foo.Bar");
 
     IssuesReport report = IssuesReportFakeUtils.sampleReportWith2Issues(file);
 
