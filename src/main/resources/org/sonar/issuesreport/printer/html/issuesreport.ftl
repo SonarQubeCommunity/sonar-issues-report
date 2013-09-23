@@ -179,7 +179,7 @@
     </tr>
     <tr class="total">
       <th colspan="2" align="left">
-          <a href="#${resourceReport_index-1}">${resourceReport.getName()}</a>
+          <a href="#${resourceReport_index}">${resourceReport.getName()}</a>
       </th>
       <th align="right">
         <span id="current-total">${resourceReport.getTotal().getCountInCurrentAnalysis()?c}</span>
