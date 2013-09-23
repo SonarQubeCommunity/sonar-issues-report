@@ -5,7 +5,7 @@
   <title>Issues report of ${report.getTitle()}</title>
   <link href="issuesreport_files/sonar.css" media="all" rel="stylesheet" type="text/css">
   <link rel="shortcut icon" type="image/x-icon" href="issuesreport_files/favicon.ico">
-  <script type="text/javascript" src="issuesreport_files/prototypejs.js"></script>
+  <script type="text/javascript" src="issuesreport_files/jquery.min.js"></script>
   <script type="text/javascript">
     var issuesPerResource = [
     <#list report.getResourceReports() as resourceReport>
@@ -22,11 +22,11 @@
     var separators = new Array();
 
     function showLine(fileIndex, lineId) {
-      var elt = $(fileIndex + 'L' + lineId);
+      var elt = $('#' + fileIndex + 'L' + lineId);
       if (elt != null) {
         elt.show();
       }
-      elt = $(fileIndex + 'LV' + lineId);
+      elt = $('#' + fileIndex + 'LV' + lineId);
       if (elt != null) {
         elt.show();
       }
@@ -41,7 +41,7 @@
           if (lineId > lastSeparatorId) {
             var separator = $(fileIndex + 'S' + lastSeparatorId);
             if (separator != null) {
-              separator.addClassName('visible');
+              separator.addClass('visible');
               separators.push(separator);
             }
           }
@@ -54,35 +54,35 @@
       }
     }
      function hideAll() {
-       $$('tr.row').invoke('hide');
-       $$('div.issue').invoke('hide');
+       $('tr.row').hide();
+       $('div.issue').hide();
        for (var separatorIndex = 0; separatorIndex < separators.length; separatorIndex++) {
-         separators[separatorIndex].removeClassName('visible');
+         separators[separatorIndex].removeClass('visible');
        }
-       separators.clear();
-       $$('.sources td.ko').invoke('removeClassName', 'ko');
+       separators.length = 0;
+       $('.sources td.ko').removeClass('ko');
      }
 
      function showIssues(fileIndex, issues) {
-       issues.each(function(issue) {
-         $(fileIndex + 'V' + issue['i']).show();
-         $$('#' + fileIndex + 'L' + issue['l'] + ' td.line').invoke('addClassName', 'ko');
+       $.each(issues, function(index, issue) {
+         $('#' + fileIndex + 'V' + issue['i']).show();
+         $('#' + fileIndex + 'L' + issue['l'] + ' td.line').addClass('ko');
        });
      }
 
 
     function refreshFilters() {
-      var onlyNewIssues = $('new_filter').checked;
-      var ruleFilter = Form.Element.getValue($('rule_filter'));
+      var onlyNewIssues = $('#new_filter').is(':checked');
+      var ruleFilter = $('#rule_filter').val();
 
       hideAll();
       for (var resourceIndex = 0; resourceIndex < nbResources; resourceIndex++) {
-        var filteredIssues = issuesPerResource[resourceIndex].findAll(function(v) {
+        var filteredIssues = $.grep(issuesPerResource[resourceIndex], function(v) {
               return (!onlyNewIssues || v['new']) && (ruleFilter == '' || v['r'] == ruleFilter || v['s'] == ruleFilter);
             }
         );
 
-        var linesToDisplay = filteredIssues.collect(function(v) {
+        var linesToDisplay = $.map(filteredIssues, function(v, i) {
           return v['l'];
         });
 
@@ -331,6 +331,10 @@
   </#list>
   </div>
 </div>
-<script type="text/javascript">refreshFilters();</script>
+<script type="text/javascript">
+  $(function() {
+    refreshFilters();
+  });
+</script>
 </body>
 </html>
