@@ -79,7 +79,7 @@ public class ConsolePrinterTest {
     when(project.getAnalysisDate()).thenReturn(new Date());
     ResourceNode file = IssuesReportFakeUtils.fakeFile("com.foo.Bar");
 
-    IssuesReport report = IssuesReportFakeUtils.sampleReportWith2Issues(file);
+    IssuesReport report = IssuesReportFakeUtils.sampleReportWith2IssuesPerFile(file);
 
     printer.print(report);
 

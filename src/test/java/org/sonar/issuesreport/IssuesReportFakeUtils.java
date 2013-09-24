@@ -33,18 +33,21 @@ import static org.mockito.Mockito.when;
 
 public class IssuesReportFakeUtils {
 
-  public static IssuesReport sampleReportWith2Issues(ResourceNode file) {
-    Rule rule = fakeRule(RuleKey.of("foo", "bar"));
-
-    Issue issue1 = fakeIssue(true, RuleKey.of("foo", "bar"), "com.foo.Bar");
-    Issue issue2 = fakeIssue(false, RuleKey.of("foo", "bar"), "com.foo.Bar");
-
+  public static IssuesReport sampleReportWith2IssuesPerFile(ResourceNode... files) {
     IssuesReport report = new IssuesReport();
     report.setTitle("Fake report");
     report.setDate(new Date());
-    report.addResource(file);
-    report.addIssueOnResource(file, issue1, rule, RulePriority.BLOCKER);
-    report.addIssueOnResource(file, issue2, rule, RulePriority.BLOCKER);
+
+    for (ResourceNode file : files) {
+      Rule rule1 = fakeRule(RuleKey.of("foo", "bar"));
+      Issue issue1 = fakeIssue(true, RuleKey.of("foo", "bar"), file.getKey());
+      Rule rule2 = fakeRule(RuleKey.of("foo", "bar2"));
+      Issue issue2 = fakeIssue(false, RuleKey.of("foo", "bar2"), file.getKey());
+
+      report.addResource(file);
+      report.addIssueOnResource(file, issue1, rule1, RulePriority.BLOCKER);
+      report.addIssueOnResource(file, issue2, rule2, RulePriority.BLOCKER);
+    }
 
     return report;
   }
