@@ -21,7 +21,6 @@ package org.sonar.issuesreport.report;
 
 import org.junit.Before;
 import org.junit.Test;
-import org.sonar.api.batch.bootstrap.ProjectReactor;
 import org.sonar.api.issue.Issue;
 import org.sonar.api.issue.ProjectIssues;
 import org.sonar.api.resources.Project;
@@ -46,15 +45,13 @@ public class IssuesReportBuilderTest {
   private RuleFinder ruleFinder;
   private IssuesReportBuilder builder;
   private ResourceTree resourceTree;
-  private ProjectReactor reactor;
 
   @Before
   public void prepare() {
     moduleIssues = mock(ProjectIssues.class);
     ruleFinder = mock(RuleFinder.class);
     resourceTree = mock(ResourceTree.class);
-    reactor = mock(ProjectReactor.class);
-    builder = new IssuesReportBuilder(reactor, moduleIssues, ruleFinder, resourceTree);
+    builder = new IssuesReportBuilder(moduleIssues, ruleFinder, resourceTree);
   }
 
   @Test

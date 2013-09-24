@@ -22,7 +22,6 @@ package org.sonar.issuesreport.report;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.sonar.api.BatchExtension;
-import org.sonar.api.batch.bootstrap.ProjectReactor;
 import org.sonar.api.issue.Issue;
 import org.sonar.api.issue.ProjectIssues;
 import org.sonar.api.resources.Project;
@@ -40,10 +39,8 @@ public class IssuesReportBuilder implements BatchExtension {
   private final ProjectIssues moduleIssues;
   private final RuleFinder ruleFinder;
   private final ResourceTree resourceTree;
-  private final ProjectReactor reactor;
 
-  public IssuesReportBuilder(ProjectReactor reactor, ProjectIssues moduleIssues, RuleFinder ruleFinder, ResourceTree resourceTree) {
-    this.reactor = reactor;
+  public IssuesReportBuilder(ProjectIssues moduleIssues, RuleFinder ruleFinder, ResourceTree resourceTree) {
     this.moduleIssues = moduleIssues;
     this.ruleFinder = ruleFinder;
     this.resourceTree = resourceTree;
@@ -53,8 +50,6 @@ public class IssuesReportBuilder implements BatchExtension {
     IssuesReport issuesReport = new IssuesReport();
     issuesReport.setTitle(project.getName());
     issuesReport.setDate(project.getAnalysisDate());
-
-    issuesReport.setMultimodule(reactor.getProjects().size() > 1);
 
     processIssues(issuesReport, moduleIssues.issues(), false);
     processIssues(issuesReport, moduleIssues.resolvedIssues(), true);

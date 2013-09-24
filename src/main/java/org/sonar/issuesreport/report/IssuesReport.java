@@ -34,7 +34,6 @@ public class IssuesReport {
 
   private String title;
   private Date date;
-  private boolean multimodule;
   private final ReportSummary summary = new ReportSummary();
   private final Map<ResourceNode, ResourceReport> resourceReportsByResource = Maps.newLinkedHashMap();
 
@@ -59,14 +58,6 @@ public class IssuesReport {
 
   public void setDate(Date date) {
     this.date = date;
-  }
-
-  public boolean isMultimodule() {
-    return multimodule;
-  }
-
-  public void setMultimodule(boolean multimodule) {
-    this.multimodule = multimodule;
   }
 
   public Map<ResourceNode, ResourceReport> getResourceReportsByResource() {

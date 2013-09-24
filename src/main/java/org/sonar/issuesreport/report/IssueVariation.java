@@ -29,10 +29,6 @@ public class IssueVariation {
     return countInCurrentAnalysis;
   }
 
-  public void setCountInCurrentAnalysis(int countInCurrentAnalysis) {
-    this.countInCurrentAnalysis = countInCurrentAnalysis;
-  }
-
   public void incrementCountInCurrentAnalysis() {
     this.countInCurrentAnalysis++;
   }
@@ -41,20 +37,12 @@ public class IssueVariation {
     return newIssuesCount;
   }
 
-  public void setNewIssuesCount(int newIssuesCount) {
-    this.newIssuesCount = newIssuesCount;
-  }
-
   public void incrementNewIssuesCount() {
     this.newIssuesCount++;
   }
 
   public int getResolvedIssuesCount() {
     return resolvedIssuesCount;
-  }
-
-  public void setResolvedIssuesCount(int resolvedIssuesCount) {
-    this.resolvedIssuesCount = resolvedIssuesCount;
   }
 
   public void incrementResolvedIssuesCount() {
