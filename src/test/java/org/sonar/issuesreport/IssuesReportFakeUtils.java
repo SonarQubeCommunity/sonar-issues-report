@@ -44,7 +44,6 @@ public class IssuesReportFakeUtils {
       Rule rule2 = fakeRule(RuleKey.of("foo", "bar2"));
       Issue issue2 = fakeIssue(false, RuleKey.of("foo", "bar2"), file.getKey(), 6);
 
-      report.addResource(file);
       report.addIssueOnResource(file, issue1, rule1, RulePriority.BLOCKER);
       report.addIssueOnResource(file, issue2, rule2, RulePriority.BLOCKER);
     }

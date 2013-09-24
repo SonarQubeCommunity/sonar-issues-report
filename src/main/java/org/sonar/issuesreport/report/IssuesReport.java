@@ -73,24 +73,18 @@ public class IssuesReport {
   }
 
   public void addIssueOnResource(ResourceNode resource, Issue issue, Rule rule, RulePriority severity) {
+    addResource(resource);
     getSummary().addIssue(issue, rule, severity);
-
-    resourceReportsByResource.get(resource).getTotal().incrementCountInCurrentAnalysis();
     resourceReportsByResource.get(resource).addIssue(issue, rule, RulePriority.valueOf(issue.severity()));
-    if (issue.isNew()) {
-      resourceReportsByResource.get(resource).getTotal().incrementNewIssuesCount();
-    }
   }
 
   public void addResolvedIssueOnResource(ResourceNode resource, Issue issue, Rule rule, RulePriority severity) {
+    addResource(resource);
     getSummary().addResolvedIssue(issue, rule, severity);
-
-    if (resourceReportsByResource.containsKey(resource)) {
-      resourceReportsByResource.get(resource).getTotal().incrementResolvedIssuesCount();
-    }
+    resourceReportsByResource.get(resource).addResolvedIssue(issue, rule, RulePriority.valueOf(issue.severity()));
   }
 
-  public void addResource(ResourceNode resource) {
+  private void addResource(ResourceNode resource) {
     if (!resourceReportsByResource.containsKey(resource)) {
       resourceReportsByResource.put(resource, new ResourceReport(resource));
     }

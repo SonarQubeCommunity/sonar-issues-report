@@ -35,9 +35,11 @@ import java.util.concurrent.atomic.AtomicInteger;
 public final class ResourceReport {
   private final ResourceNode resource;
   private final IssueVariation total = new IssueVariation();
+  private final Map<ReportRuleKey, RuleReport> ruleReportByRuleKey = Maps.newHashMap();
 
   private List<Issue> issues = new ArrayList<Issue>();
   private Map<Integer, List<Issue>> issuesPerLine = Maps.newHashMap();
+  private Map<Integer, List<Issue>> newIssuesPerLine = Maps.newHashMap();
   private Map<Rule, AtomicInteger> issuesByRule = Maps.newHashMap();
   private Map<RulePriority, AtomicInteger> issuesBySeverity = Maps.newHashMap();
 
@@ -69,14 +71,19 @@ public final class ResourceReport {
     return issuesPerLine;
   }
 
-  public List<Issue> getIssuesAtLine(int lineId) {
-    if (issuesPerLine.containsKey(lineId)) {
+  public List<Issue> getIssuesAtLine(int lineId, boolean all) {
+    if (all && issuesPerLine.containsKey(lineId)) {
       return issuesPerLine.get(lineId);
+    }
+    if (!all && newIssuesPerLine.containsKey(lineId)) {
+      return newIssuesPerLine.get(lineId);
     }
     return Collections.emptyList();
   }
 
   public void addIssue(Issue issue, Rule rule, RulePriority severity) {
+    ReportRuleKey reportRuleKey = new ReportRuleKey(rule, severity);
+    initMaps(reportRuleKey);
     issues.add(issue);
     Integer line = issue.line();
     line = line != null ? line : 0;
@@ -92,22 +99,56 @@ public final class ResourceReport {
       issuesBySeverity.put(severity, new AtomicInteger());
     }
     issuesBySeverity.get(severity).incrementAndGet();
+    ruleReportByRuleKey.get(reportRuleKey).getTotal().incrementCountInCurrentAnalysis();
+    total.incrementCountInCurrentAnalysis();
+    if (issue.isNew()) {
+      if (!newIssuesPerLine.containsKey(line)) {
+        newIssuesPerLine.put(line, new ArrayList<Issue>());
+      }
+      newIssuesPerLine.get(line).add(issue);
+      total.incrementNewIssuesCount();
+      ruleReportByRuleKey.get(reportRuleKey).getTotal().incrementNewIssuesCount();
+    }
   }
 
-  public boolean isDisplayableLine(Integer lineNumber) {
+  public void addResolvedIssue(Issue issue, Rule rule, RulePriority severity) {
+    ReportRuleKey reportRuleKey = new ReportRuleKey(rule, severity);
+    initMaps(reportRuleKey);
+    total.incrementResolvedIssuesCount();
+    ruleReportByRuleKey.get(reportRuleKey).getTotal().incrementResolvedIssuesCount();
+  }
+
+  private void initMaps(ReportRuleKey reportRuleKey) {
+    if (!ruleReportByRuleKey.containsKey(reportRuleKey)) {
+      ruleReportByRuleKey.put(reportRuleKey, new RuleReport(reportRuleKey));
+    }
+  }
+
+  public boolean isDisplayableLine(Integer lineNumber, boolean all) {
     if (lineNumber == null || lineNumber < 1) {
       return false;
     }
     for (int i = lineNumber - 2; i <= lineNumber + 2; i++) {
-      if (hasIssues(i)) {
+      if (hasIssues(i, all)) {
         return true;
       }
     }
     return false;
   }
 
-  private boolean hasIssues(Integer lineId) {
-    return CollectionUtils.isNotEmpty(issuesPerLine.get(lineId));
+  private boolean hasIssues(Integer lineId, boolean all) {
+    if (all) {
+      return CollectionUtils.isNotEmpty(issuesPerLine.get(lineId));
+    } else if (!all) {
+      return CollectionUtils.isNotEmpty(newIssuesPerLine.get(lineId));
+    }
+    return false;
+  }
+
+  public List<RuleReport> getRuleReports() {
+    List<RuleReport> result = new ArrayList<RuleReport>(ruleReportByRuleKey.values());
+    Collections.sort(result, new RuleReportComparator());
+    return result;
   }
 
 }

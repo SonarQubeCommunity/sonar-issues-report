@@ -26,31 +26,10 @@ import org.sonar.api.rules.RulePriority;
 
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
 
 public class ReportSummary {
-
-  private final class RuleReportComparator implements Comparator<RuleReport> {
-    @Override
-    public int compare(RuleReport o1, RuleReport o2) {
-      if (o1.getTotal().getNewIssuesCount() == 0 && o2.getTotal().getNewIssuesCount() == 0) {
-        // Compare with severity then name
-        return o1.getReportRuleKey().compareTo(o2.getReportRuleKey());
-      } else if (o1.getTotal().getNewIssuesCount() > 0 && o2.getTotal().getNewIssuesCount() > 0) {
-        // Compare with severity then number of new issues
-        if (o1.getSeverity().equals(o2.getSeverity())) {
-          return o1.getTotal().getNewIssuesCount() - o2.getTotal().getNewIssuesCount();
-        } else {
-          return o1.getReportRuleKey().compareTo(o2.getReportRuleKey());
-        }
-      } else {
-        // Compare with number of new issues
-        return o1.getTotal().getNewIssuesCount() - o2.getTotal().getNewIssuesCount();
-      }
-    }
-  }
 
   private final IssueVariation total = new IssueVariation();
 
@@ -73,7 +52,6 @@ public class ReportSummary {
     totalByRuleKey.get(rule.ruleKey().toString()).incrementCountInCurrentAnalysis();
     totalBySeverity.get(severity.toString()).incrementCountInCurrentAnalysis();
     if (issue.isNew()) {
-      initMaps(reportRuleKey);
       total.incrementNewIssuesCount();
       ruleReportByRuleKey.get(reportRuleKey).getTotal().incrementNewIssuesCount();
       totalByRuleKey.get(rule.ruleKey().toString()).incrementNewIssuesCount();

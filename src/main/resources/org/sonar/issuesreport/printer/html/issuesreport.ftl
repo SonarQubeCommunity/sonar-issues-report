@@ -262,7 +262,7 @@
   <table width="100%" class="data ${tableCss}">
     <thead>
     <tr class="total">
-      <th align="left">
+      <th align="left" colspan="2">
         <div class="file_title">
           <img src="issuesreport_files/${resourceReport.getType()}.png" title="Resource icon"/>
           <a href="#" onclick="$('.resource-details-${resourceReport_index?c}').toggle(); return false;" style="color: black">${resourceReport.getName()}</a>
@@ -294,12 +294,51 @@
     </tr>
     </thead>
     <tbody class="resource-details-${resourceReport_index?c}">
+    <#list resourceReport.getRuleReports() as ruleReport>
+      <#if complete || (ruleReport.getTotal().getNewIssuesCount() > 0)>
+        <#assign trCss = (ruleReport_index % 2 == 0)?string("even","odd")>
+        <#if ruleReport.getTotal().getNewIssuesCount() = 0>
+        <#assign trCss = trCss + ' all'>
+        <#else>
+        <#assign trCss = trCss + ' new all'>
+        </#if>
+      <tr class="${trCss}">
+        <td width="20">
+          <img alt="${ruleReport.getSeverity()}" title="${ruleReport.getSeverity()}" src="issuesreport_files/${ruleReport.getSeverity()}.png">
+        </td>
+        <td align="left">
+          ${ruleNameProvider.name(ruleReport.getRule())}
+        </td>
+        <#if complete>
+        <td align="right">
+          ${ruleReport.getTotal().getCountInCurrentAnalysis()?c}
+        </td>
+        </#if>
+        <#if complete>
+        <td align="right">
+          <#if ruleReport.getTotal().getResolvedIssuesCount() gt 0>
+            <span class="better">-${ruleReport.getTotal().getResolvedIssuesCount()?c}</span>
+          <#else>
+            <span>0</span>
+          </#if>
+        </td>
+        </#if>
+        <td align="right">
+          <#if ruleReport.getTotal().getNewIssuesCount() gt 0>
+            <span class="worst">+${ruleReport.getTotal().getNewIssuesCount()?c}</span>
+          <#else>
+            <span>0</span>
+          </#if>
+        </td>
+      </tr>
+      </#if>
+    </#list>
     <#if complete>
-      <#assign colspan = '4'>
+      <#assign colspan = '5'>
     <#else>
-      <#assign colspan = '2'>
+      <#assign colspan = '3'>
     </#if>
-    <#assign issues=resourceReport.getIssuesAtLine(0)>
+    <#assign issues=resourceReport.getIssuesAtLine(0, complete)>
       <#if issues?has_content>
       <tr class="globalIssues">
         <td colspan="${colspan}">
@@ -336,7 +375,7 @@
           <table class="sources" border="0" cellpadding="0" cellspacing="0">
             <#list sourceProvider.getEscapedSource(resourceReport.getResourceNode()) as line>
               <#assign lineIndex=line_index+1>
-              <#if resourceReport.isDisplayableLine(lineIndex)>
+              <#if resourceReport.isDisplayableLine(lineIndex, complete)>
                 <tr id="${resourceReport_index?c}L${lineIndex?c}" class="row">
                   <td class="lid ">${lineIndex?c}</td>
                   <td class="line ">
@@ -346,7 +385,7 @@
                 <tr id="${resourceReport_index}S${lineIndex?c}" class="blockSep">
                   <td colspan="2"></td>
                 </tr>
-                <#assign issues=resourceReport.getIssuesAtLine(lineIndex)>
+                <#assign issues=resourceReport.getIssuesAtLine(lineIndex, complete)>
                 <#if issues?has_content>
                   <tr id="${resourceReport_index?c}LV${lineIndex?c}" class="row">
                     <td class="lid"></td>

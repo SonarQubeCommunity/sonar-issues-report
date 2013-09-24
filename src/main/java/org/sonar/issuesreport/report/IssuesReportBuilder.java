@@ -70,7 +70,6 @@ public class IssuesReportBuilder implements BatchExtension {
         LOG.warn("Unknow resource with key {}", issue.componentKey());
         continue;
       }
-      issuesReport.addResource(resource);
       if (resolved) {
         issuesReport.addResolvedIssueOnResource(resource, issue, rule, severity);
       } else {

@@ -84,7 +84,7 @@ public class IssuesReportBuilderTest {
     when(resourceTree.getResource("project:com.foo.Bar")).thenReturn(fakeFile);
 
     RuleKey ruleKey = RuleKey.of("foo", "bar");
-    Issue fakeIssue = IssuesReportFakeUtils.fakeIssue(false, ruleKey, "project:com.foo.Bar", null);
+    Issue fakeIssue = IssuesReportFakeUtils.fakeIssue(false, ruleKey, "project:com.foo.Bar", 4);
 
     when(moduleIssues.issues()).thenReturn(Arrays.asList(fakeIssue));
     when(moduleIssues.resolvedIssues()).thenReturn(Collections.<Issue> emptyList());
@@ -97,10 +97,24 @@ public class IssuesReportBuilderTest {
     assertThat(report.getSummary().getTotal().getNewIssuesCount()).isEqualTo(0);
     assertThat(report.getSummary().getTotal().getResolvedIssuesCount()).isEqualTo(0);
     assertThat(report.getResourceReports()).hasSize(1);
-    assertThat(report.getResourceReports().get(0).getName()).isEqualTo("foo.bar.Foo");
-    assertThat(report.getResourceReports().get(0).getTotal().getCountInCurrentAnalysis()).isEqualTo(1);
-    assertThat(report.getResourceReports().get(0).getTotal().getNewIssuesCount()).isEqualTo(0);
-    assertThat(report.getResourceReports().get(0).getTotal().getResolvedIssuesCount()).isEqualTo(0);
+    ResourceReport resourceReport = report.getResourceReports().get(0);
+    assertThat(resourceReport.getName()).isEqualTo("foo.bar.Foo");
+    assertThat(resourceReport.getTotal().getCountInCurrentAnalysis()).isEqualTo(1);
+    assertThat(resourceReport.getTotal().getNewIssuesCount()).isEqualTo(0);
+    assertThat(resourceReport.getTotal().getResolvedIssuesCount()).isEqualTo(0);
+
+    assertThat(resourceReport.isDisplayableLine(1, false)).isEqualTo(false);
+    assertThat(resourceReport.isDisplayableLine(2, false)).isEqualTo(false);
+    assertThat(resourceReport.isDisplayableLine(2, true)).isEqualTo(true);
+    assertThat(resourceReport.isDisplayableLine(3, false)).isEqualTo(false);
+    assertThat(resourceReport.isDisplayableLine(3, true)).isEqualTo(true);
+    assertThat(resourceReport.isDisplayableLine(4, false)).isEqualTo(false);
+    assertThat(resourceReport.isDisplayableLine(4, true)).isEqualTo(true);
+    assertThat(resourceReport.isDisplayableLine(5, false)).isEqualTo(false);
+    assertThat(resourceReport.isDisplayableLine(5, true)).isEqualTo(true);
+    assertThat(resourceReport.isDisplayableLine(6, false)).isEqualTo(false);
+    assertThat(resourceReport.isDisplayableLine(6, true)).isEqualTo(true);
+    assertThat(resourceReport.isDisplayableLine(7, false)).isEqualTo(false);
   }
 
   @Test
@@ -128,13 +142,13 @@ public class IssuesReportBuilderTest {
     assertThat(resourceReport.getTotal().getNewIssuesCount()).isEqualTo(1);
     assertThat(resourceReport.getTotal().getResolvedIssuesCount()).isEqualTo(0);
 
-    assertThat(resourceReport.isDisplayableLine(1)).isEqualTo(false);
-    assertThat(resourceReport.isDisplayableLine(2)).isEqualTo(true);
-    assertThat(resourceReport.isDisplayableLine(3)).isEqualTo(true);
-    assertThat(resourceReport.isDisplayableLine(4)).isEqualTo(true);
-    assertThat(resourceReport.isDisplayableLine(5)).isEqualTo(true);
-    assertThat(resourceReport.isDisplayableLine(6)).isEqualTo(true);
-    assertThat(resourceReport.isDisplayableLine(7)).isEqualTo(false);
+    assertThat(resourceReport.isDisplayableLine(1, false)).isEqualTo(false);
+    assertThat(resourceReport.isDisplayableLine(2, false)).isEqualTo(true);
+    assertThat(resourceReport.isDisplayableLine(3, false)).isEqualTo(true);
+    assertThat(resourceReport.isDisplayableLine(4, false)).isEqualTo(true);
+    assertThat(resourceReport.isDisplayableLine(5, false)).isEqualTo(true);
+    assertThat(resourceReport.isDisplayableLine(6, false)).isEqualTo(true);
+    assertThat(resourceReport.isDisplayableLine(7, false)).isEqualTo(false);
   }
 
   @Test
