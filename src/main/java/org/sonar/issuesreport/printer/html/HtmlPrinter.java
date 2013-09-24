@@ -90,7 +90,6 @@ public class HtmlPrinter implements ReportPrinter {
       Logger.selectLoggerLibrary(Logger.LIBRARY_NONE);
       freemarker.template.Configuration cfg = new freemarker.template.Configuration();
       cfg.setClassForTemplateLoading(HtmlPrinter.class, "");
-      // cfg.setObjectWrapper(new DefaultObjectWrapper());
 
       Map<String, Object> root = Maps.newHashMap();
       root.put("report", report);

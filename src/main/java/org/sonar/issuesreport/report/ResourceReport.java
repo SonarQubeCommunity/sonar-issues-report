@@ -20,6 +20,7 @@
 package org.sonar.issuesreport.report;
 
 import com.google.common.collect.Maps;
+import org.apache.commons.collections.CollectionUtils;
 import org.sonar.api.issue.Issue;
 import org.sonar.api.rules.Rule;
 import org.sonar.api.rules.RulePriority;
@@ -77,7 +78,8 @@ public final class ResourceReport {
 
   public void addIssue(Issue issue, Rule rule, RulePriority severity) {
     issues.add(issue);
-    int line = issue.line() != null ? issue.line() : 0;
+    Integer line = issue.line();
+    line = line != null ? line : 0;
     if (!issuesPerLine.containsKey(line)) {
       issuesPerLine.put(line, new ArrayList<Issue>());
     }
@@ -92,16 +94,20 @@ public final class ResourceReport {
     issuesBySeverity.get(severity).incrementAndGet();
   }
 
-  public boolean isDisplayableLine(Integer lineId) {
-    if (lineId == null || lineId < 1) {
+  public boolean isDisplayableLine(Integer lineNumber) {
+    if (lineNumber == null || lineNumber < 1) {
       return false;
     }
-    return hasIssues(lineId - 2) || hasIssues(lineId - 1) || hasIssues(lineId) || hasIssues(lineId + 1) || hasIssues(lineId + 2);
+    for (int i = lineNumber - 2; i <= lineNumber + 2; i++) {
+      if (hasIssues(i)) {
+        return true;
+      }
+    }
+    return false;
   }
 
   private boolean hasIssues(Integer lineId) {
-    List<Issue> issues = issuesPerLine.get(lineId);
-    return issues != null && !issues.isEmpty();
+    return CollectionUtils.isNotEmpty(issuesPerLine.get(lineId));
   }
 
 }

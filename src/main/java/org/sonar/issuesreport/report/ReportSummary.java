@@ -33,6 +33,26 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 public class ReportSummary {
 
+  private final class RuleReportComparator implements Comparator<RuleReport> {
+    @Override
+    public int compare(RuleReport o1, RuleReport o2) {
+      if (o1.getTotal().getNewIssuesCount() == 0 && o2.getTotal().getNewIssuesCount() == 0) {
+        // Compare with severity then name
+        return o1.getReportRuleKey().compareTo(o2.getReportRuleKey());
+      } else if (o1.getTotal().getNewIssuesCount() > 0 && o2.getTotal().getNewIssuesCount() > 0) {
+        // Compare with severity then number of new issues
+        if (o1.getSeverity().equals(o2.getSeverity())) {
+          return o1.getTotal().getNewIssuesCount() - o2.getTotal().getNewIssuesCount();
+        } else {
+          return o1.getReportRuleKey().compareTo(o2.getReportRuleKey());
+        }
+      } else {
+        // Compare with number of new issues
+        return o1.getTotal().getNewIssuesCount() - o2.getTotal().getNewIssuesCount();
+      }
+    }
+  }
+
   private final IssueVariation total = new IssueVariation();
 
   private final Map<ReportRuleKey, RuleReport> ruleReportByRuleKey = Maps.newHashMap();
@@ -90,25 +110,7 @@ public class ReportSummary {
 
   public List<RuleReport> getRuleReports() {
     List<RuleReport> result = new ArrayList<RuleReport>(ruleReportByRuleKey.values());
-    Collections.sort(result, new Comparator<RuleReport>() {
-      @Override
-      public int compare(RuleReport o1, RuleReport o2) {
-        if (o1.getTotal().getNewIssuesCount() == 0 && o2.getTotal().getNewIssuesCount() == 0) {
-          // Compare with severity then name
-          return o1.getReportRuleKey().compareTo(o2.getReportRuleKey());
-        } else if (o1.getTotal().getNewIssuesCount() > 0 && o2.getTotal().getNewIssuesCount() > 0) {
-          // Compare with severity then number of new issues
-          if (o1.getSeverity().equals(o2.getSeverity())) {
-            return o1.getTotal().getNewIssuesCount() - o2.getTotal().getNewIssuesCount();
-          } else {
-            return o1.getReportRuleKey().compareTo(o2.getReportRuleKey());
-          }
-        } else {
-          // Compare with number of new issues
-          return o1.getTotal().getNewIssuesCount() - o2.getTotal().getNewIssuesCount();
-        }
-      }
-    });
+    Collections.sort(result, new RuleReportComparator());
     return result;
   }
 }

@@ -34,7 +34,7 @@ import java.util.Map;
 
 public class ResourceTree implements Decorator {
 
-  private static final Map<String, ResourceNode> resourceByKey = new HashMap<String, ResourceNode>();
+  private static final Map<String, ResourceNode> RESOURCE_BY_KEY = new HashMap<String, ResourceNode>();
   private final ModuleFileSystem fs;
   private final ResourceToFileMapper fileMapper;
 
@@ -55,10 +55,10 @@ public class ResourceTree implements Decorator {
     }
     File path = fileMapper.getResourceFile(resource.getEffectiveKey());
     ResourceNode resourceNode = new ResourceNode(resource, path, fs.sourceCharset());
-    resourceByKey.put(resource.getEffectiveKey(), resourceNode);
+    RESOURCE_BY_KEY.put(resource.getEffectiveKey(), resourceNode);
     for (DecoratorContext childContext : context.getChildren()) {
       Resource child = childContext.getResource();
-      ResourceNode childNode = resourceByKey.get(child.getEffectiveKey());
+      ResourceNode childNode = RESOURCE_BY_KEY.get(child.getEffectiveKey());
       if (childNode != null) {
         resourceNode.addChild(childNode);
       }
@@ -67,7 +67,7 @@ public class ResourceTree implements Decorator {
 
   @CheckForNull
   public ResourceNode getResource(String componentKey) {
-    return resourceByKey.get(componentKey);
+    return RESOURCE_BY_KEY.get(componentKey);
   }
 
 }
