@@ -115,13 +115,6 @@
 
 <div id="content">
 
-  <#if complete>
-  <div class="filter">
-    <input type="checkbox" id="new_filter" onclick="refreshFilters()" checked="checked" /> <label for="new_filter">Only NEW
-    issues</label>
-  </div>
-  </#if>
-
   <#if report.getSummary().getTotal().getNewIssuesCount() = 0>
   <span class="new">No new issue</span>
   <#assign globalCss = 'all'>
@@ -132,37 +125,40 @@
 
   <div id="summary">
   <table width="100%" class="data">
-    <thead>
+    <tbody>
     <tr>
-      <th colspan="2" align="left"></th>
-      <th align="right" width="1%" nowrap>Current Analysis</th>
-      <th align="right" width="1%" nowrap>Resolved issues</th>
-      <th align="right" width="1%" nowrap>New issues</th>
+      <td align="center" width="33%"><span class="big">${report.getSummary().getTotal().getCountInCurrentAnalysis()?c}</span> <br/>Issues</td>
+      <td align="center" width="33%">
+      <#if report.getSummary().getTotal().getResolvedIssuesCount() gt 0>
+        <span class="big better">${report.getSummary().getTotal().getResolvedIssuesCount()?c}</span>
+      <#else>
+        <span class="big">0</span>
+      </#if>
+        <br/>Resolved issues
+      </td>
+      <td align="center" width="33%">
+      <#if report.getSummary().getTotal().getNewIssuesCount() gt 0>
+        <span class="big worst">${report.getSummary().getTotal().getNewIssuesCount()?c}</span>
+      <#else>
+        <span class="big">0</span>
+      </#if>
+        <br/>New issues
+      </td>
     </tr>
+    </tbody>
+  </table>
+  <table width="100%" class="data">
+    <thead>
     <tr class="total">
       <th colspan="2" align="left">
-          Total Number of Issues
+          <a href="#" onclick="$('.rule-details').toggle(); return false;"  style="color: black">Issues per Rule</a>
       </th>
-      <th align="right">
-        <span id="current-total">${report.getSummary().getTotal().getCountInCurrentAnalysis()?c}</span>
-      </th>
-      <th align="right">
-        <#if report.getSummary().getTotal().getResolvedIssuesCount() gt 0>
-          <span class="better" id="resolved-total">-${report.getSummary().getTotal().getResolvedIssuesCount()?c}</span>
-        <#else>
-          <span id="resolved-total">0</span>
-        </#if>
-      </th>
-      <th align="right">
-        <#if report.getSummary().getTotal().getNewIssuesCount() gt 0>
-          <span class="worst" id="new-total">+${report.getSummary().getTotal().getNewIssuesCount()?c}</span>
-        <#else>
-          <span id="new-total">0</span>
-        </#if>
-      </th>
+      <th class="rule-details" align="right" width="1%" nowrap>Issues</th>
+      <th class="rule-details" align="right" width="1%" nowrap>Resolved issues</th>
+      <th class="rule-details" align="right" width="1%" nowrap>New issues</th>
     </tr>
     </thead>
-    <tbody>
+    <tbody class="rule-details">
       <#list report.getSummary().getRuleReports() as ruleReport>
         <#if complete || (ruleReport.getTotal().getNewIssuesCount() > 0)>
           <#assign trCss = (ruleReport_index % 2 == 0)?string("even","odd")>
@@ -202,52 +198,15 @@
   </table>
   </div>
 
-  <div id="summary-per-file">
-  <#list report.getResourceReports() as resourceReport>
-    <#if complete || (resourceReport.getTotal().getNewIssuesCount() > 0)>
-      <#if resourceReport.getTotal().getNewIssuesCount() = 0>
-      <#assign tableCss = 'all'>
-      <#else>
-      <#assign tableCss = 'new all'>
-      </#if>
-  <table width="100%" class="data ${tableCss}">
-    <thead>
-    <tr>
-      <th colspan="2" align="left"></th>
-      <th align="right" width="1%" nowrap>Current Analysis</th>
-      <th align="right" width="1%" nowrap>Resolved issues</th>
-      <th align="right" width="1%" nowrap>New issues</th>
-    </tr>
-    <tr class="total">
-      <th colspan="2" align="left">
-          <a href="#${resourceReport_index}">${resourceReport.getName()}</a>
-      </th>
-      <th align="right">
-        <span id="current-total">${resourceReport.getTotal().getCountInCurrentAnalysis()?c}</span>
-      </th>
-      <th align="right">
-        <#if resourceReport.getTotal().getResolvedIssuesCount() gt 0>
-          <span class="better" id="resolved-total">-${resourceReport.getTotal().getResolvedIssuesCount()?c}</span>
-        <#else>
-          <span id="resolved-total">0</span>
-        </#if>
-      </th>
-      <th align="right">
-        <#if resourceReport.getTotal().getNewIssuesCount() gt 0>
-          <span class="worst" id="new-total">+${resourceReport.getTotal().getNewIssuesCount()?c}</span>
-        <#else>
-          <span id="new-total">0</span>
-        </#if>
-      </th>
-    </tr>
-    </thead>
-  </table>
-    </#if>
-  </#list>
-  </div>
-  <hr/>
+  <br/>
 
   <div class="filter">
+  <#if complete>
+    <input type="checkbox" id="new_filter" onclick="refreshFilters()" checked="checked" /> <label for="new_filter">Only NEW
+    issues</label>
+    &nbsp;&nbsp;&nbsp;&nbsp;
+  </#if>
+
     <select id="rule_filter" onchange="refreshFilters()">
       <option value="" selected>Filter by:</option>
       <optgroup label="Severity">
@@ -283,108 +242,135 @@
     </select>
   </div>
 
-  <div>
+  <div id="summary-per-file">
   <#list report.getResourceReports() as resourceReport>
     <#if complete || (resourceReport.getTotal().getNewIssuesCount() > 0)>
       <#assign issueId=0>
       <#if resourceReport.getTotal().getNewIssuesCount() = 0>
-      <#assign divCss = 'all'>
+      <#assign tableCss = 'all'>
       <#else>
-      <#assign divCss = 'new all'>
+      <#assign tableCss = 'new all'>
       </#if>
-    <a name="${resourceReport_index?c}"></a>
-    <div id="file${resourceReport_index?c}" class="${divCss}">
-      <div class="file_title">
-        <img src="issuesreport_files/${resourceReport.getType()}.png" title="Class"> ${resourceReport.getName()}
-      </div>
-      <#assign issues=resourceReport.getIssuesAtLine(0)>
+  <table width="100%" class="data ${tableCss}">
+    <thead>
+    <tr class="total">
+      <th align="left">
+        <div class="file_title">
+          <img src="issuesreport_files/${resourceReport.getType()}.png" title="Resource icon"/>
+          <a href="#" onclick="$('.resource-details-${resourceReport_index?c}').toggle(); return false;"  style="color: black">${resourceReport.getName()}</a>
+        </div>
+      </th>
+      <th align="right" width="1%" nowrap class="resource-details-${resourceReport_index?c}">
+        <span id="current-total">${resourceReport.getTotal().getCountInCurrentAnalysis()?c}</span><br/>Issues
+      </th>
+      <th align="right" width="1%" nowrap class="resource-details-${resourceReport_index?c}">
+        <#if resourceReport.getTotal().getResolvedIssuesCount() gt 0>
+          <span class="better" id="resolved-total">-${resourceReport.getTotal().getResolvedIssuesCount()?c}</span>
+        <#else>
+          <span id="resolved-total">0</span>
+        </#if>
+        <br/>Resolved issues
+      </th>
+      <th align="right" width="1%" nowrap class="resource-details-${resourceReport_index?c}">
+        <#if resourceReport.getTotal().getNewIssuesCount() gt 0>
+          <span class="worst" id="new-total">+${resourceReport.getTotal().getNewIssuesCount()?c}</span>
+        <#else>
+          <span id="new-total">0</span>
+        </#if>
+        <br/>New issues
+      </th>
+    </tr>
+    </thead>
+    <tbody class="resource-details-${resourceReport_index?c}">
+    <#assign issues=resourceReport.getIssuesAtLine(0)>
       <#if issues?has_content>
-        <table cellpadding="0" cellspacing="0" class="globalIssues">
-          <tbody>
-          <tr>
-            <td>
-              <#list issues as issue>
-                <div class="issue" id="${resourceReport_index?c}V${issueId?c}">
-                  <div class="vtitle">
+      <tr class="globalIssues">
+        <td>
+          <#list issues as issue>
+            <div class="issue" id="${resourceReport_index?c}V${issueId?c}">
+              <div class="vtitle">
 
-                    <img alt="${issue.severity()}" title="${issue.severity()}" src="issuesreport_files/${issue.severity()}.png">&nbsp;
-                    <img src="issuesreport_files/sep12.png"> <span class="rulename">${ruleNameProvider.name(issue.ruleKey())}</span>
-                    &nbsp;
-                    <img src="issuesreport_files/sep12.png">&nbsp;
+                <img alt="${issue.severity()}" title="${issue.severity()}" src="issuesreport_files/${issue.severity()}.png">&nbsp;
+                <img src="issuesreport_files/sep12.png"> <span class="rulename">${ruleNameProvider.name(issue.ruleKey())}</span>
+                &nbsp;
+                <img src="issuesreport_files/sep12.png">&nbsp;
 
-                    <span class="issue_date">
-                      <#if issue.isNew()>
-                        NEW
-                        <#else>
-                        ${issue.creationDate()?date}
-                      </#if>
-                    </span>
-                  </div>
-                  <#if issue.message()??>
-                    <div class="discussionComment">
-                    ${issue.message()}
-                    </div>
+                <span class="issue_date">
+                  <#if issue.isNew()>
+                    NEW
+                    <#else>
+                    ${issue.creationDate()?date}
                   </#if>
+                </span>
+              </div>
+              <#if issue.message()??>
+                <div class="discussionComment">
+                ${issue.message()}
                 </div>
-                <#assign issueId = issueId + 1>
-              </#list>
-            </td>
-          </tr>
-          </tbody>
-        </table>
+              </#if>
+            </div>
+            <#assign issueId = issueId + 1>
+          </#list>
+        </td>
+      </tr>
       </#if>
-      <table class="sources" border="0" cellpadding="0" cellspacing="0">
-        <#list sourceProvider.getEscapedSource(resourceReport.getResourceNode()) as line>
-          <#assign lineIndex=line_index+1>
-          <#if resourceReport.isDisplayableLine(lineIndex)>
-            <tr id="${resourceReport_index?c}L${lineIndex?c}" class="row">
-              <td class="lid ">${lineIndex?c}</td>
-              <td class="line ">
-                <pre>${line}</pre>
-              </td>
-            </tr>
-            <tr id="${resourceReport_index}S${lineIndex?c}" class="blockSep">
-              <td colspan="2"></td>
-            </tr>
-            <#assign issues=resourceReport.getIssuesAtLine(lineIndex)>
-            <#if issues?has_content>
-              <tr id="${resourceReport_index?c}LV${lineIndex?c}" class="row">
-                <td class="lid"></td>
-                <td class="issues">
-                  <#list issues as issue>
-                    <div class="issue" id="${resourceReport_index?c}V${issueId?c}">
-                      <div class="vtitle">
-                        <img alt="${issue.severity()}" title="${issue.severity()}" src="issuesreport_files/${issue.severity()}.png">&nbsp;
-                        <img src="issuesreport_files/sep12.png">&nbsp;<span
-                          class="rulename">${ruleNameProvider.name(issue.ruleKey())}</span>
-                        &nbsp;
-                        <img src="issuesreport_files/sep12.png">&nbsp;
+      <tr>
+        <td colspan="4">
+          <table class="sources" border="0" cellpadding="0" cellspacing="0">
+            <#list sourceProvider.getEscapedSource(resourceReport.getResourceNode()) as line>
+              <#assign lineIndex=line_index+1>
+              <#if resourceReport.isDisplayableLine(lineIndex)>
+                <tr id="${resourceReport_index?c}L${lineIndex?c}" class="row">
+                  <td class="lid ">${lineIndex?c}</td>
+                  <td class="line ">
+                    <pre>${line}</pre>
+                  </td>
+                </tr>
+                <tr id="${resourceReport_index}S${lineIndex?c}" class="blockSep">
+                  <td colspan="2"></td>
+                </tr>
+                <#assign issues=resourceReport.getIssuesAtLine(lineIndex)>
+                <#if issues?has_content>
+                  <tr id="${resourceReport_index?c}LV${lineIndex?c}" class="row">
+                    <td class="lid"></td>
+                    <td class="issues">
+                      <#list issues as issue>
+                        <div class="issue" id="${resourceReport_index?c}V${issueId?c}">
+                          <div class="vtitle">
+                            <img alt="${issue.severity()}" title="${issue.severity()}" src="issuesreport_files/${issue.severity()}.png">&nbsp;
+                            <img src="issuesreport_files/sep12.png">&nbsp;<span
+                              class="rulename">${ruleNameProvider.name(issue.ruleKey())}</span>
+                            &nbsp;
+                            <img src="issuesreport_files/sep12.png">&nbsp;
 
-                        <span class="issue_date">
-                          <#if issue.isNew()>
-                            NEW
-                            <#else>
-                            ${issue.creationDate()?date}
+                            <span class="issue_date">
+                              <#if issue.isNew()>
+                                NEW
+                                <#else>
+                                ${issue.creationDate()?date}
+                              </#if>
+                            </span>
+                            &nbsp;
+
+                          </div>
+                          <#if issue.message()??>
+                            <div class="discussionComment">
+                            ${issue.message()}
+                            </div>
                           </#if>
-                        </span>
-                        &nbsp;
-
-                      </div>
-                      <#if issue.message()??>
-                        <div class="discussionComment">
-                        ${issue.message()}
                         </div>
-                      </#if>
-                    </div>
-                    <#assign issueId = issueId + 1>
-                  </#list>
-                </td>
-              </tr>
-            </#if>
-          </#if>
-        </#list>
-      </table>
-    </div>
+                        <#assign issueId = issueId + 1>
+                      </#list>
+                    </td>
+                  </tr>
+                </#if>
+              </#if>
+            </#list>
+          </table>
+        </td>
+      </tr>
+    </tbody>
+  </table>
     </#if>
   </#list>
   </div>

@@ -330,3 +330,8 @@ tr.blockSep.visible {
   border-top:  1px dashed #DDD;
   border-bottom:  1px dashed #DDD;
 }
+
+.big {
+  font-size:24px;
+  font-weight: bold;
+}
