@@ -40,9 +40,9 @@ public class IssuesReportFakeUtils {
 
     for (ResourceNode file : files) {
       Rule rule1 = fakeRule(RuleKey.of("foo", "bar"));
-      Issue issue1 = fakeIssue(true, RuleKey.of("foo", "bar"), file.getKey());
+      Issue issue1 = fakeIssue(true, RuleKey.of("foo", "bar"), file.getKey(), null);
       Rule rule2 = fakeRule(RuleKey.of("foo", "bar2"));
-      Issue issue2 = fakeIssue(false, RuleKey.of("foo", "bar2"), file.getKey());
+      Issue issue2 = fakeIssue(false, RuleKey.of("foo", "bar2"), file.getKey(), 6);
 
       report.addResource(file);
       report.addIssueOnResource(file, issue1, rule1, RulePriority.BLOCKER);
@@ -52,10 +52,10 @@ public class IssuesReportFakeUtils {
     return report;
   }
 
-  public static Issue fakeIssue(boolean isNew, RuleKey ruleKey, String componentKey) {
+  public static Issue fakeIssue(boolean isNew, RuleKey ruleKey, String componentKey, Integer line) {
     Issue issue = mock(Issue.class);
     when(issue.isNew()).thenReturn(isNew);
-    when(issue.line()).thenReturn(4);
+    when(issue.line()).thenReturn(line);
     when(issue.ruleKey()).thenReturn(ruleKey);
     when(issue.severity()).thenReturn("BLOCKER");
     when(issue.creationDate()).thenReturn(new Date());

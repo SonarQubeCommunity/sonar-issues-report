@@ -40,8 +40,8 @@ import java.util.List;
   @Property(key = IssuesReportConstants.HTML_REPORT_LOCATION_KEY, name = "HTML Report location",
     description = "Location of the generated report. Can be absolute or relative to working directory",
     type = PropertyType.STRING, defaultValue = IssuesReportConstants.HTML_REPORT_LOCATION_DEFAULT, global = false, project = false),
-  @Property(key = IssuesReportConstants.HTML_REPORT_COMPLETE_KEY, name = "Generate complete HTML Report",
-    description = "Should a complete HTML report be generated, including all issues and not only new issues",
+  @Property(key = IssuesReportConstants.HTML_REPORT_SHORT_KEY, name = "Generate short HTML Report",
+    description = "Generate a short HTML report be generated, including only new issues",
     type = PropertyType.BOOLEAN, defaultValue = "false", global = false, project = false),
   @Property(key = IssuesReportConstants.CONSOLE_REPORT_ENABLED_KEY, name = "Enable console report", description = "Set this to true to generate a report in console output",
     type = PropertyType.BOOLEAN, defaultValue = "false")})

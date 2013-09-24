@@ -56,7 +56,7 @@ public class IssuesReportBuilderTest {
 
   @Test
   public void shouldNotFailWhenIssueOnUnknowResource() {
-    Issue fakeIssue = IssuesReportFakeUtils.fakeIssue(false, RuleKey.of("foo", "bar"), "com.foo.Bar");
+    Issue fakeIssue = IssuesReportFakeUtils.fakeIssue(false, RuleKey.of("foo", "bar"), "com.foo.Bar", null);
     when(moduleIssues.issues()).thenReturn(Arrays.asList(fakeIssue));
     when(moduleIssues.resolvedIssues()).thenReturn(Collections.<Issue> emptyList());
 
@@ -69,7 +69,7 @@ public class IssuesReportBuilderTest {
     ResourceNode fakeFile = IssuesReportFakeUtils.fakeFile("com.foo.Bar");
     when(resourceTree.getResource("com.foo.Bar")).thenReturn(fakeFile);
 
-    Issue fakeIssue = IssuesReportFakeUtils.fakeIssue(false, RuleKey.of("foo", "bar"), "com.foo.Bar");
+    Issue fakeIssue = IssuesReportFakeUtils.fakeIssue(false, RuleKey.of("foo", "bar"), "com.foo.Bar", null);
 
     when(moduleIssues.issues()).thenReturn(Arrays.asList(fakeIssue));
     when(moduleIssues.resolvedIssues()).thenReturn(Collections.<Issue> emptyList());
@@ -84,7 +84,7 @@ public class IssuesReportBuilderTest {
     when(resourceTree.getResource("project:com.foo.Bar")).thenReturn(fakeFile);
 
     RuleKey ruleKey = RuleKey.of("foo", "bar");
-    Issue fakeIssue = IssuesReportFakeUtils.fakeIssue(false, ruleKey, "project:com.foo.Bar");
+    Issue fakeIssue = IssuesReportFakeUtils.fakeIssue(false, ruleKey, "project:com.foo.Bar", null);
 
     when(moduleIssues.issues()).thenReturn(Arrays.asList(fakeIssue));
     when(moduleIssues.resolvedIssues()).thenReturn(Collections.<Issue> emptyList());
@@ -109,7 +109,7 @@ public class IssuesReportBuilderTest {
     when(resourceTree.getResource("project:com.foo.Bar")).thenReturn(fakeFile);
 
     RuleKey ruleKey = RuleKey.of("foo", "bar");
-    Issue fakeIssue = IssuesReportFakeUtils.fakeIssue(true, ruleKey, "project:com.foo.Bar");
+    Issue fakeIssue = IssuesReportFakeUtils.fakeIssue(true, ruleKey, "project:com.foo.Bar", 4);
 
     when(moduleIssues.issues()).thenReturn(Arrays.asList(fakeIssue));
     when(moduleIssues.resolvedIssues()).thenReturn(Collections.<Issue> emptyList());
@@ -143,8 +143,8 @@ public class IssuesReportBuilderTest {
     when(resourceTree.getResource("project:com.foo.Bar")).thenReturn(fakeFile);
 
     RuleKey ruleKey = RuleKey.of("foo", "bar");
-    Issue fakeNewIssue = IssuesReportFakeUtils.fakeIssue(true, ruleKey, "project:com.foo.Bar");
-    Issue fakeResolvedIssue = IssuesReportFakeUtils.fakeIssue(false, ruleKey, "project:com.foo.Bar");
+    Issue fakeNewIssue = IssuesReportFakeUtils.fakeIssue(true, ruleKey, "project:com.foo.Bar", null);
+    Issue fakeResolvedIssue = IssuesReportFakeUtils.fakeIssue(false, ruleKey, "project:com.foo.Bar", null);
 
     when(moduleIssues.issues()).thenReturn(Arrays.asList(fakeNewIssue));
     when(moduleIssues.resolvedIssues()).thenReturn(Arrays.asList(fakeResolvedIssue));

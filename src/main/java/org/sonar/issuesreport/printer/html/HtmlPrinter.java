@@ -66,7 +66,7 @@ public class HtmlPrinter implements ReportPrinter {
   }
 
   public boolean isComplete() {
-    return settings.getBoolean(IssuesReportConstants.HTML_REPORT_COMPLETE_KEY);
+    return !settings.getBoolean(IssuesReportConstants.HTML_REPORT_SHORT_KEY);
   }
 
   @Override

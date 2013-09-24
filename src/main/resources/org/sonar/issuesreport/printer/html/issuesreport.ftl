@@ -115,20 +115,23 @@
 
 <div id="content">
 
-  <#if report.getSummary().getTotal().getNewIssuesCount() = 0>
-  <span class="new">No new issue</span>
-  <#assign globalCss = 'all'>
-  <#else>
-  <#assign globalCss = 'new all'>
+  <#if !complete>
+  <div class="banner">Short report: only new issues are displayed</div>
   </#if>
-  <div class="${globalCss}">
 
   <div id="summary">
-  <table width="100%" class="data">
+  <table width="100%">
     <tbody>
     <tr>
-      <td align="center" width="33%"><span class="big">${report.getSummary().getTotal().getCountInCurrentAnalysis()?c}</span> <br/>Issues</td>
-      <td align="center" width="33%">
+    <#if complete>
+      <#assign size = '33'>
+    <#else>
+      <#assign size = '50'>
+    </#if>
+    <#if complete>
+      <td align="center" width="${size}%"><span class="big">${report.getSummary().getTotal().getCountInCurrentAnalysis()?c}</span> <br/>Issues</td>
+    </#if>
+      <td align="center" width="${size}%">
       <#if report.getSummary().getTotal().getResolvedIssuesCount() gt 0>
         <span class="big better">${report.getSummary().getTotal().getResolvedIssuesCount()?c}</span>
       <#else>
@@ -136,7 +139,7 @@
       </#if>
         <br/>Resolved issues
       </td>
-      <td align="center" width="33%">
+      <td align="center" width="${size}%">
       <#if report.getSummary().getTotal().getNewIssuesCount() gt 0>
         <span class="big worst">${report.getSummary().getTotal().getNewIssuesCount()?c}</span>
       <#else>
@@ -148,17 +151,22 @@
     </tbody>
   </table>
   <table width="100%" class="data">
+    <#if complete>
+      <#assign defaultVisibility = ''>
+    <#else>
+      <#assign defaultVisibility = 'display: none;'>
+    </#if>
     <thead>
     <tr class="total">
       <th colspan="2" align="left">
           <a href="#" onclick="$('.rule-details').toggle(); return false;"  style="color: black">Issues per Rule</a>
       </th>
-      <th class="rule-details" align="right" width="1%" nowrap>Issues</th>
-      <th class="rule-details" align="right" width="1%" nowrap>Resolved issues</th>
-      <th class="rule-details" align="right" width="1%" nowrap>New issues</th>
+      <th class="rule-details" style="${defaultVisibility}" align="right" width="1%" nowrap>Issues</th>
+      <th class="rule-details" style="${defaultVisibility}" align="right" width="1%" nowrap>Resolved issues</th>
+      <th class="rule-details" style="${defaultVisibility}" align="right" width="1%" nowrap>New issues</th>
     </tr>
     </thead>
-    <tbody class="rule-details">
+    <tbody style="${defaultVisibility}" class="rule-details">
       <#list report.getSummary().getRuleReports() as ruleReport>
         <#if complete || (ruleReport.getTotal().getNewIssuesCount() > 0)>
           <#assign trCss = (ruleReport_index % 2 == 0)?string("even","odd")>
@@ -200,7 +208,7 @@
 
   <br/>
 
-  <div class="filter">
+  <div class="banner">
   <#if complete>
     <input type="checkbox" id="new_filter" onclick="refreshFilters()" checked="checked" /> <label for="new_filter">Only NEW
     issues</label>
@@ -257,12 +265,15 @@
       <th align="left">
         <div class="file_title">
           <img src="issuesreport_files/${resourceReport.getType()}.png" title="Resource icon"/>
-          <a href="#" onclick="$('.resource-details-${resourceReport_index?c}').toggle(); return false;"  style="color: black">${resourceReport.getName()}</a>
+          <a href="#" onclick="$('.resource-details-${resourceReport_index?c}').toggle(); return false;" style="color: black">${resourceReport.getName()}</a>
         </div>
       </th>
+      <#if complete>
       <th align="right" width="1%" nowrap class="resource-details-${resourceReport_index?c}">
         <span id="current-total">${resourceReport.getTotal().getCountInCurrentAnalysis()?c}</span><br/>Issues
       </th>
+      </#if>
+      <#if complete>
       <th align="right" width="1%" nowrap class="resource-details-${resourceReport_index?c}">
         <#if resourceReport.getTotal().getResolvedIssuesCount() gt 0>
           <span class="better" id="resolved-total">-${resourceReport.getTotal().getResolvedIssuesCount()?c}</span>
@@ -271,6 +282,7 @@
         </#if>
         <br/>Resolved issues
       </th>
+      </#if>
       <th align="right" width="1%" nowrap class="resource-details-${resourceReport_index?c}">
         <#if resourceReport.getTotal().getNewIssuesCount() gt 0>
           <span class="worst" id="new-total">+${resourceReport.getTotal().getNewIssuesCount()?c}</span>
@@ -282,10 +294,15 @@
     </tr>
     </thead>
     <tbody class="resource-details-${resourceReport_index?c}">
+    <#if complete>
+      <#assign colspan = '4'>
+    <#else>
+      <#assign colspan = '2'>
+    </#if>
     <#assign issues=resourceReport.getIssuesAtLine(0)>
       <#if issues?has_content>
       <tr class="globalIssues">
-        <td>
+        <td colspan="${colspan}">
           <#list issues as issue>
             <div class="issue" id="${resourceReport_index?c}V${issueId?c}">
               <div class="vtitle">
@@ -315,7 +332,7 @@
       </tr>
       </#if>
       <tr>
-        <td colspan="4">
+        <td colspan="${colspan}">
           <table class="sources" border="0" cellpadding="0" cellspacing="0">
             <#list sourceProvider.getEscapedSource(resourceReport.getResourceNode()) as line>
               <#assign lineIndex=line_index+1>
@@ -373,8 +390,6 @@
   </table>
     </#if>
   </#list>
-  </div>
-
   </div>
 </div>
 <script type="text/javascript">
