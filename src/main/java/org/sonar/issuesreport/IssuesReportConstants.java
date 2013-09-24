@@ -21,6 +21,7 @@ package org.sonar.issuesreport;
 
 public interface IssuesReportConstants {
   String HTML_REPORT_ENABLED_KEY = "sonar.issuesReport.html.enable";
+  String HTML_REPORT_COMPLETE_KEY = "sonar.issuesReport.html.complete";
   String HTML_REPORT_LOCATION_KEY = "sonar.issuesReport.html.location";
   String HTML_REPORT_LOCATION_DEFAULT = "issues-report.html";
 

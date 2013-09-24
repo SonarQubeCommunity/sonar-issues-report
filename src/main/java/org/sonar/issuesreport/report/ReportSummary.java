@@ -29,7 +29,6 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.atomic.AtomicInteger;
 
 public class ReportSummary {
 
@@ -56,7 +55,7 @@ public class ReportSummary {
   private final IssueVariation total = new IssueVariation();
 
   private final Map<ReportRuleKey, RuleReport> ruleReportByRuleKey = Maps.newHashMap();
-  private final Map<String, AtomicInteger> countByRuleKey = Maps.newHashMap();
+  private final Map<String, IssueVariation> totalByRuleKey = Maps.newHashMap();
   private final Map<String, IssueVariation> totalBySeverity = Maps.newHashMap();
 
   public ReportSummary() {
@@ -71,11 +70,13 @@ public class ReportSummary {
     initMaps(reportRuleKey);
     ruleReportByRuleKey.get(reportRuleKey).getTotal().incrementCountInCurrentAnalysis();
     total.incrementCountInCurrentAnalysis();
-    countByRuleKey.get(rule.ruleKey().toString()).incrementAndGet();
+    totalByRuleKey.get(rule.ruleKey().toString()).incrementCountInCurrentAnalysis();
     totalBySeverity.get(severity.toString()).incrementCountInCurrentAnalysis();
     if (issue.isNew()) {
+      initMaps(reportRuleKey);
       total.incrementNewIssuesCount();
       ruleReportByRuleKey.get(reportRuleKey).getTotal().incrementNewIssuesCount();
+      totalByRuleKey.get(rule.ruleKey().toString()).incrementNewIssuesCount();
       totalBySeverity.get(severity.toString()).incrementNewIssuesCount();
     }
   }
@@ -84,8 +85,8 @@ public class ReportSummary {
     return totalBySeverity;
   }
 
-  public Map<String, AtomicInteger> getCountByRuleKey() {
-    return countByRuleKey;
+  public Map<String, IssueVariation> getTotalByRuleKey() {
+    return totalByRuleKey;
   }
 
   public void addResolvedIssue(Issue issue, Rule rule, RulePriority severity) {
@@ -93,6 +94,7 @@ public class ReportSummary {
     initMaps(reportRuleKey);
     total.incrementResolvedIssuesCount();
     ruleReportByRuleKey.get(reportRuleKey).getTotal().incrementResolvedIssuesCount();
+    totalByRuleKey.get(rule.ruleKey().toString()).incrementResolvedIssuesCount();
     totalBySeverity.get(severity.toString()).incrementResolvedIssuesCount();
   }
 
@@ -100,8 +102,8 @@ public class ReportSummary {
     if (!ruleReportByRuleKey.containsKey(reportRuleKey)) {
       ruleReportByRuleKey.put(reportRuleKey, new RuleReport(reportRuleKey));
     }
-    if (!countByRuleKey.containsKey(reportRuleKey.getRule().ruleKey().toString())) {
-      countByRuleKey.put(reportRuleKey.getRule().ruleKey().toString(), new AtomicInteger());
+    if (!totalByRuleKey.containsKey(reportRuleKey.getRule().ruleKey().toString())) {
+      totalByRuleKey.put(reportRuleKey.getRule().ruleKey().toString(), new IssueVariation());
     }
     if (!totalBySeverity.containsKey(reportRuleKey.getSeverity().toString())) {
       totalBySeverity.put(reportRuleKey.getSeverity().toString(), new IssueVariation());

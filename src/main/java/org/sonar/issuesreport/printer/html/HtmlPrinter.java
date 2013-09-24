@@ -65,6 +65,10 @@ public class HtmlPrinter implements ReportPrinter {
     return settings.getBoolean(IssuesReportConstants.HTML_REPORT_ENABLED_KEY);
   }
 
+  public boolean isComplete() {
+    return settings.getBoolean(IssuesReportConstants.HTML_REPORT_COMPLETE_KEY);
+  }
+
   @Override
   public void print(IssuesReport report) {
     String reportFileStr = settings.getString(IssuesReportConstants.HTML_REPORT_LOCATION_KEY);
@@ -95,6 +99,7 @@ public class HtmlPrinter implements ReportPrinter {
       root.put("report", report);
       root.put("ruleNameProvider", ruleNameProvider);
       root.put("sourceProvider", sourceProvider);
+      root.put("complete", isComplete());
 
       Template template = cfg.getTemplate("issuesreport.ftl");
       fos = new FileOutputStream(toFile);

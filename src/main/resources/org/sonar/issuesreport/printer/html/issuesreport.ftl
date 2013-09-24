@@ -12,7 +12,9 @@
       [
         <#assign issues=resourceReport.getIssues()>
         <#list issues as issue>
+          <#if complete || issue.isNew()>
           {'i': ${issue_index?c}, 'r': 'R${issue.ruleKey()}', 'l': ${(issue.line()!0)?c}, 'new': ${issue.isNew()?string}, 's': '${issue.severity()}'}<#if issue_has_next>,</#if>
+          </#if>
         </#list>
       ]
       <#if resourceReport_has_next>,</#if>
@@ -72,7 +74,11 @@
 
 
     function refreshFilters() {
+      <#if complete>
       var onlyNewIssues = $('#new_filter').is(':checked');
+      <#else>
+      var onlyNewIssues = true;
+      </#if>
       var ruleFilter = $('#rule_filter').val();
 
       hideAll();
@@ -109,10 +115,12 @@
 
 <div id="content">
 
+  <#if complete>
   <div class="filter">
     <input type="checkbox" id="new_filter" onclick="refreshFilters()" checked="checked" /> <label for="new_filter">Only NEW
     issues</label>
   </div>
+  </#if>
 
   <#if report.getSummary().getTotal().getNewIssuesCount() = 0>
   <span class="new">No new issue</span>
@@ -156,12 +164,13 @@
     </thead>
     <tbody>
       <#list report.getSummary().getRuleReports() as ruleReport>
-        <#assign trCss = (ruleReport_index % 2 == 0)?string("even","odd")>
-        <#if ruleReport.getTotal().getNewIssuesCount() = 0>
-        <#assign trCss = trCss + ' all'>
-        <#else>
-        <#assign trCss = trCss + ' new all'>
-        </#if>
+        <#if complete || (ruleReport.getTotal().getNewIssuesCount() > 0)>
+          <#assign trCss = (ruleReport_index % 2 == 0)?string("even","odd")>
+          <#if ruleReport.getTotal().getNewIssuesCount() = 0>
+          <#assign trCss = trCss + ' all'>
+          <#else>
+          <#assign trCss = trCss + ' new all'>
+          </#if>
       <tr class="${trCss}">
         <td width="20">
           <img alt="${ruleReport.getSeverity()}" title="${ruleReport.getSeverity()}" src="issuesreport_files/${ruleReport.getSeverity()}.png">
@@ -187,6 +196,7 @@
           </#if>
         </td>
       </tr>
+        </#if>
       </#list>
     </tbody>
   </table>
@@ -194,11 +204,12 @@
 
   <div id="summary-per-file">
   <#list report.getResourceReports() as resourceReport>
-    <#if resourceReport.getTotal().getNewIssuesCount() = 0>
-    <#assign tableCss = 'all'>
-    <#else>
-    <#assign tableCss = 'new all'>
-    </#if>
+    <#if complete || (resourceReport.getTotal().getNewIssuesCount() > 0)>
+      <#if resourceReport.getTotal().getNewIssuesCount() = 0>
+      <#assign tableCss = 'all'>
+      <#else>
+      <#assign tableCss = 'new all'>
+      </#if>
   <table width="100%" class="data ${tableCss}">
     <thead>
     <tr>
@@ -231,6 +242,7 @@
     </tr>
     </thead>
   </table>
+    </#if>
   </#list>
   </div>
   <hr/>
@@ -241,19 +253,31 @@
       <optgroup label="Severity">
       <#assign severities = report.getSummary().getTotalBySeverity()>
       <#list severities?keys as severity>
-        <option value="${severity}">
+        <option value="${severity}" class="all">
           ${severity?lower_case?cap_first}
           (${severities[severity].getCountInCurrentAnalysis()?c})
         </option>
+        <#if complete || (severities[severity].getNewIssuesCount() > 0)>
+        <option value="${severity}" class="new">
+          ${severity?lower_case?cap_first}
+          (${severities[severity].getNewIssuesCount()?c})
+        </option>
+        </#if>
       </#list>
       </optgroup>
       <optgroup label="Rule">
-      <#assign rules = report.getSummary().getCountByRuleKey()>
+      <#assign rules = report.getSummary().getTotalByRuleKey()>
       <#list rules?keys as ruleKey>
-        <option value="R${ruleKey}">
+        <option value="R${ruleKey}" class="all">
           ${ruleNameProvider.name(ruleKey)}
-          (${rules[ruleKey]?c})
+          (${rules[ruleKey].getCountInCurrentAnalysis()?c})
         </option>
+        <#if complete || (rules[ruleKey].getNewIssuesCount() > 0)>
+        <option value="R${ruleKey}" class="new">
+          ${ruleNameProvider.name(ruleKey)}
+          (${rules[ruleKey].getNewIssuesCount()?c})
+        </option>
+        </#if>
       </#list>
       </optgroup>
     </select>
@@ -261,12 +285,13 @@
 
   <div>
   <#list report.getResourceReports() as resourceReport>
-    <#assign issueId=0>
-    <#if resourceReport.getTotal().getNewIssuesCount() = 0>
-    <#assign divCss = 'all'>
-    <#else>
-    <#assign divCss = 'new all'>
-    </#if>
+    <#if complete || (resourceReport.getTotal().getNewIssuesCount() > 0)>
+      <#assign issueId=0>
+      <#if resourceReport.getTotal().getNewIssuesCount() = 0>
+      <#assign divCss = 'all'>
+      <#else>
+      <#assign divCss = 'new all'>
+      </#if>
     <a name="${resourceReport_index?c}"></a>
     <div id="file${resourceReport_index?c}" class="${divCss}">
       <div class="file_title">
@@ -360,6 +385,7 @@
         </#list>
       </table>
     </div>
+    </#if>
   </#list>
   </div>
 
