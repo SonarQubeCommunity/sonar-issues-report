@@ -52,4 +52,28 @@ public class SourceProviderTest {
     assertThat(sourceProvider.getEscapedSource(resource)).containsExactly("some", "&amp;nbsp; &lt;p&gt; html");
   }
 
+  @Test
+  public void shouldReturnEmptySourceForFolder() throws Exception {
+    SourceProvider sourceProvider = new SourceProvider();
+    ResourceNode resource = mock(ResourceNode.class);
+
+    File fakeFolder = temp.newFolder();
+
+    when(resource.getPath()).thenReturn(fakeFolder);
+    when(resource.getEncoding()).thenReturn(Charsets.UTF_8);
+
+    assertThat(sourceProvider.getEscapedSource(resource)).isEmpty();
+  }
+
+  @Test
+  public void shouldReturnEmptySourceForModules() throws Exception {
+    SourceProvider sourceProvider = new SourceProvider();
+    ResourceNode resource = mock(ResourceNode.class);
+
+    when(resource.getPath()).thenReturn(null);
+    when(resource.getEncoding()).thenReturn(Charsets.UTF_8);
+
+    assertThat(sourceProvider.getEscapedSource(resource)).isEmpty();
+  }
+
 }

@@ -32,6 +32,8 @@ import org.sonar.api.scan.filesystem.FileQuery;
 import org.sonar.api.scan.filesystem.ModuleFileSystem;
 import org.sonar.api.scan.filesystem.PathResolver;
 
+import javax.annotation.CheckForNull;
+
 import java.io.File;
 import java.util.HashMap;
 import java.util.List;
@@ -110,6 +112,7 @@ public class ResourceToFileMapper implements Sensor {
     return key;
   }
 
+  @CheckForNull
   public File getResourceFile(String resourceKey) {
     return fileByResourceKey.get(resourceKey);
   }

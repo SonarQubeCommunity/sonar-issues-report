@@ -23,6 +23,9 @@ import org.apache.commons.lang.builder.EqualsBuilder;
 import org.sonar.api.resources.Resource;
 import org.sonar.api.resources.Scopes;
 
+import javax.annotation.CheckForNull;
+import javax.annotation.Nullable;
+
 import java.io.File;
 import java.nio.charset.Charset;
 import java.util.ArrayList;
@@ -43,7 +46,7 @@ public class ResourceNode {
   private final Charset encoding;
   private final String scope;
 
-  public ResourceNode(Resource sonarResource, File path, Charset encoding) {
+  public ResourceNode(Resource sonarResource, @Nullable File path, Charset encoding) {
     this.path = path;
     this.encoding = encoding;
     this.key = sonarResource.getEffectiveKey();
@@ -80,10 +83,12 @@ public class ResourceNode {
     return getModuleName() + " - " + longName;
   }
 
+  @CheckForNull
   public File getPath() {
     return path;
   }
 
+  @CheckForNull
   public ResourceNode getParent() {
     return parent;
   }

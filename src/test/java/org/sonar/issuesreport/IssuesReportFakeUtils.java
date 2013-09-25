@@ -75,4 +75,12 @@ public class IssuesReportFakeUtils {
     return file;
   }
 
+  public static ResourceNode fakePackage(String effectiveKey) {
+    ResourceNode pkg = mock(ResourceNode.class);
+    when(pkg.getName()).thenReturn("foo.bar");
+    when(pkg.getKey()).thenReturn(effectiveKey);
+    when(pkg.getScope()).thenReturn("PAC");
+    return pkg;
+  }
+
 }

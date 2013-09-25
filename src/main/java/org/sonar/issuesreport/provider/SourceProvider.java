@@ -39,7 +39,7 @@ public class SourceProvider implements TaskExtension {
   }
 
   public List<String> getEscapedSource(ResourceNode resource) {
-    if (!resource.getPath().isFile()) {
+    if (resource.getPath() == null || resource.getPath().isDirectory()) {
       // Folder
       return Collections.emptyList();
     }
