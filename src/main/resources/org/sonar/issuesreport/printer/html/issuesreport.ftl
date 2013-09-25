@@ -41,7 +41,7 @@
         var lineId = lineIds[lineIndex];
         if (lineId > 0) {
           if (lineId > lastSeparatorId) {
-            var separator = $(fileIndex + 'S' + lastSeparatorId);
+            var separator = $('#' + fileIndex + 'S' + lastSeparatorId);
             if (separator != null) {
               separator.addClass('visible');
               separators.push(separator);
@@ -70,6 +70,12 @@
          $('#' + issue['k']).show();
          $('#' + fileIndex + 'L' + issue['l'] + ' td.line').addClass('ko');
        });
+       var showResource = issues.length > 0;
+       if (showResource) {
+         $('#resource-' + fileIndex).show();
+       } else {
+         $('#resource-' + fileIndex).hide();
+       }
      }
 
 
@@ -259,7 +265,7 @@
       <#else>
       <#assign tableCss = 'new all'>
       </#if>
-  <table width="100%" class="data ${tableCss}">
+  <table width="100%" class="data ${tableCss}" id="resource-${resourceReport_index?c}">
     <thead>
     <tr class="total">
       <th align="left" colspan="2">

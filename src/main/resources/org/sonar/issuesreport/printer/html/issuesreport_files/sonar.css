@@ -79,7 +79,7 @@ table.data td.small, table.data th.small {
 }
 
 table.data th img, table.data td img {
-  vertical-align: top;
+  vertical-align: text-bottom;
 }
 
 .data thead tr.total {
