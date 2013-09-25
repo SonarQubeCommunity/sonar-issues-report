@@ -25,19 +25,40 @@ import java.util.Comparator;
 public class RuleReportComparator implements Comparator<RuleReport>, Serializable {
   @Override
   public int compare(RuleReport o1, RuleReport o2) {
-    if (o1.getTotal().getNewIssuesCount() == 0 && o2.getTotal().getNewIssuesCount() == 0) {
-      // Compare with severity then name
-      return o1.getReportRuleKey().compareTo(o2.getReportRuleKey());
-    } else if (o1.getTotal().getNewIssuesCount() > 0 && o2.getTotal().getNewIssuesCount() > 0) {
-      // Compare with severity then number of new issues then name
-      if (o1.getSeverity().equals(o2.getSeverity()) && o2.getTotal().getNewIssuesCount() != o1.getTotal().getNewIssuesCount()) {
-        return o2.getTotal().getNewIssuesCount() - o1.getTotal().getNewIssuesCount();
+    if (bothHaveNoNewIssue(o1, o2)) {
+      return compareByRuleSeverityAndName(o1, o2);
+    } else if (bothHaveNewIssues(o1, o2)) {
+      if (sameSeverity(o1, o2) && !sameNewIssueCount(o1, o2)) {
+        return compareNewIssueCount(o1, o2);
       } else {
-        return o1.getReportRuleKey().compareTo(o2.getReportRuleKey());
+        return compareByRuleSeverityAndName(o1, o2);
       }
     } else {
-      // Compare with number of new issues
-      return o2.getTotal().getNewIssuesCount() - o1.getTotal().getNewIssuesCount();
+      return compareNewIssueCount(o1, o2);
     }
+  }
+
+  private int compareByRuleSeverityAndName(RuleReport o1, RuleReport o2) {
+    return o1.getReportRuleKey().compareTo(o2.getReportRuleKey());
+  }
+
+  private boolean sameNewIssueCount(RuleReport o1, RuleReport o2) {
+    return o2.getTotal().getNewIssuesCount() == o1.getTotal().getNewIssuesCount();
+  }
+
+  private boolean sameSeverity(RuleReport o1, RuleReport o2) {
+    return o1.getSeverity().equals(o2.getSeverity());
+  }
+
+  private int compareNewIssueCount(RuleReport o1, RuleReport o2) {
+    return o2.getTotal().getNewIssuesCount() - o1.getTotal().getNewIssuesCount();
+  }
+
+  private boolean bothHaveNewIssues(RuleReport o1, RuleReport o2) {
+    return o1.getTotal().getNewIssuesCount() > 0 && o2.getTotal().getNewIssuesCount() > 0;
+  }
+
+  private boolean bothHaveNoNewIssue(RuleReport o1, RuleReport o2) {
+    return o1.getTotal().getNewIssuesCount() == 0 && o2.getTotal().getNewIssuesCount() == 0;
   }
 }

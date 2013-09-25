@@ -19,8 +19,11 @@
  */
 package org.sonar.issuesreport.tree;
 
+import com.google.common.base.Charsets;
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.TemporaryFolder;
 import org.sonar.api.batch.DecoratorContext;
 import org.sonar.api.resources.Directory;
 import org.sonar.api.resources.File;
@@ -40,6 +43,9 @@ import static org.mockito.Mockito.when;
 
 public class ResourceTreeTest {
 
+  @Rule
+  public TemporaryFolder temp = new TemporaryFolder();
+
   private ModuleFileSystem fs;
   private ResourceToFileMapper fileMapper;
   private ResourceTree resourceTree;
@@ -57,9 +63,14 @@ public class ResourceTreeTest {
   }
 
   @Test
-  public void should_create_resource_tree() {
+  public void should_create_resource_tree() throws Exception {
+
+    when(fs.sourceCharset()).thenReturn(Charsets.UTF_8);
+    java.io.File ioFile = temp.newFile();
+    when(fileMapper.getResourceFile("myProject:com.foo.Bar")).thenReturn(ioFile);
 
     Resource project = new Project("myProject").setName("My Project").setEffectiveKey("myProject");
+    Resource module = new Project("myModule").setName("My Module").setEffectiveKey("myModule");
     Resource dir = new Directory("com.foo").setEffectiveKey("myProject:com.foo");
     Resource file = new File("com.foo.Bar").setEffectiveKey("myProject:com.foo.Bar");
     Resource method = Method.createMethod("com.foo.Bar:main", Java.INSTANCE).setEffectiveKey("myProject:com.foo.Bar:main");
@@ -79,9 +90,14 @@ public class ResourceTreeTest {
     when(dirContext.getChildren()).thenReturn(Arrays.asList(fileContext));
     resourceTree.decorate(dir, dirContext);
 
+    DecoratorContext moduleContext = mock(DecoratorContext.class);
+    when(moduleContext.getResource()).thenReturn(module);
+    when(moduleContext.getChildren()).thenReturn(Arrays.asList(dirContext));
+    resourceTree.decorate(module, moduleContext);
+
     DecoratorContext projectContext = mock(DecoratorContext.class);
     when(projectContext.getResource()).thenReturn(project);
-    when(projectContext.getChildren()).thenReturn(Arrays.asList(dirContext));
+    when(projectContext.getChildren()).thenReturn(Arrays.asList(moduleContext));
     resourceTree.decorate(project, projectContext);
 
     assertThat(resourceTree.getResource("myProject:com.foo.Bar:main")).isNull();
@@ -89,8 +105,10 @@ public class ResourceTreeTest {
     ResourceNode resource = resourceTree.getResource("myProject:com.foo.Bar");
     assertThat(resource).isNotNull();
     assertThat(resource.getKey()).isEqualTo("myProject:com.foo.Bar");
-    assertThat(resource.getName()).isEqualTo("My Project - com.foo.Bar");
+    assertThat(resource.getName()).isEqualTo("My Project - My Module - com.foo.Bar");
     assertThat(resource.getScope()).isEqualTo(Scopes.FILE);
+    assertThat(resource.getEncoding()).isEqualTo(Charsets.UTF_8);
+    assertThat(resource.getPath()).isEqualTo(ioFile);
 
     assertThat(resourceTree.getResource("myProject:com.foo")).isNotNull();
     assertThat(resourceTree.getResource("myProject")).isNotNull();

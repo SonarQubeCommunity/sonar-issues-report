@@ -139,10 +139,8 @@ public final class ResourceReport {
   private boolean hasIssues(Integer lineId, boolean all) {
     if (all) {
       return CollectionUtils.isNotEmpty(issuesPerLine.get(lineId));
-    } else if (!all) {
-      return CollectionUtils.isNotEmpty(newIssuesPerLine.get(lineId));
     }
-    return false;
+    return CollectionUtils.isNotEmpty(newIssuesPerLine.get(lineId));
   }
 
   public List<RuleReport> getRuleReports() {

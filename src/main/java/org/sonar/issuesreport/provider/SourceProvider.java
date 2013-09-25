@@ -26,6 +26,7 @@ import org.slf4j.LoggerFactory;
 import org.sonar.api.task.TaskExtension;
 import org.sonar.issuesreport.tree.ResourceNode;
 
+import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -39,12 +40,13 @@ public class SourceProvider implements TaskExtension {
   }
 
   public List<String> getEscapedSource(ResourceNode resource) {
-    if (resource.getPath() == null || resource.getPath().isDirectory()) {
+    File path = resource.getPath();
+    if (path == null || path.isDirectory()) {
       // Folder
       return Collections.emptyList();
     }
     try {
-      List<String> lines = FileUtils.readLines(resource.getPath(), resource.getEncoding().toString());
+      List<String> lines = FileUtils.readLines(path, resource.getEncoding().toString());
       List<String> escapedLines = new ArrayList<String>(lines.size());
       for (String line : lines) {
         escapedLines.add(StringEscapeUtils.escapeHtml(line));

@@ -142,6 +142,8 @@ public class IssuesReportBuilderTest {
     assertThat(resourceReport.getTotal().getNewIssuesCount()).isEqualTo(1);
     assertThat(resourceReport.getTotal().getResolvedIssuesCount()).isEqualTo(0);
 
+    assertThat(resourceReport.isDisplayableLine(null, false)).isEqualTo(false);
+    assertThat(resourceReport.isDisplayableLine(0, false)).isEqualTo(false);
     assertThat(resourceReport.isDisplayableLine(1, false)).isEqualTo(false);
     assertThat(resourceReport.isDisplayableLine(2, false)).isEqualTo(true);
     assertThat(resourceReport.isDisplayableLine(3, false)).isEqualTo(true);
