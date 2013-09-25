@@ -156,23 +156,19 @@
     </tr>
     </tbody>
   </table>
+  <#if complete>
   <table width="100%" class="data">
-    <#if complete>
-      <#assign defaultVisibility = ''>
-    <#else>
-      <#assign defaultVisibility = 'display: none;'>
-    </#if>
     <thead>
     <tr class="total">
       <th colspan="2" align="left">
-          <a href="#" onclick="$('.rule-details').toggle(); return false;"  style="color: black">Issues per Rule</a>
+          Issues per Rule
       </th>
-      <th class="rule-details" style="${defaultVisibility}" align="right" width="1%" nowrap>Issues</th>
-      <th class="rule-details" style="${defaultVisibility}" align="right" width="1%" nowrap>Resolved issues</th>
-      <th class="rule-details" style="${defaultVisibility}" align="right" width="1%" nowrap>New issues</th>
+      <th align="right" width="1%" nowrap>Issues</th>
+      <th align="right" width="1%" nowrap>Resolved issues</th>
+      <th align="right" width="1%" nowrap>New issues</th>
     </tr>
     </thead>
-    <tbody style="${defaultVisibility}" class="rule-details">
+    <tbody>
       <#list report.getSummary().getRuleReports() as ruleReport>
         <#if complete || (ruleReport.getTotal().getNewIssuesCount() > 0)>
           <#assign trCss = (ruleReport_index % 2 == 0)?string("even","odd")>
@@ -210,6 +206,7 @@
       </#list>
     </tbody>
   </table>
+  </#if>
   </div>
 
   <br/>
