@@ -19,24 +19,25 @@
  */
 package org.sonar.issuesreport.report;
 
+import java.io.Serializable;
 import java.util.Comparator;
 
-public class RuleReportComparator implements Comparator<RuleReport> {
+public class RuleReportComparator implements Comparator<RuleReport>, Serializable {
   @Override
   public int compare(RuleReport o1, RuleReport o2) {
     if (o1.getTotal().getNewIssuesCount() == 0 && o2.getTotal().getNewIssuesCount() == 0) {
       // Compare with severity then name
       return o1.getReportRuleKey().compareTo(o2.getReportRuleKey());
     } else if (o1.getTotal().getNewIssuesCount() > 0 && o2.getTotal().getNewIssuesCount() > 0) {
-      // Compare with severity then number of new issues
-      if (o1.getSeverity().equals(o2.getSeverity())) {
-        return o1.getTotal().getNewIssuesCount() - o2.getTotal().getNewIssuesCount();
+      // Compare with severity then number of new issues then name
+      if (o1.getSeverity().equals(o2.getSeverity()) && o2.getTotal().getNewIssuesCount() != o1.getTotal().getNewIssuesCount()) {
+        return o2.getTotal().getNewIssuesCount() - o1.getTotal().getNewIssuesCount();
       } else {
         return o1.getReportRuleKey().compareTo(o2.getReportRuleKey());
       }
     } else {
       // Compare with number of new issues
-      return o1.getTotal().getNewIssuesCount() - o2.getTotal().getNewIssuesCount();
+      return o2.getTotal().getNewIssuesCount() - o1.getTotal().getNewIssuesCount();
     }
   }
 }

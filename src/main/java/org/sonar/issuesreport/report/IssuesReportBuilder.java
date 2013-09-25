@@ -60,14 +60,9 @@ public class IssuesReportBuilder implements BatchExtension {
   private void processIssues(IssuesReport issuesReport, Iterable<Issue> issues, boolean resolved) {
     for (Issue issue : issues) {
       Rule rule = findRule(issue);
-      if (rule == null) {
-        LOG.warn("Unknow rule for issue {}", issue);
-        continue;
-      }
       RulePriority severity = RulePriority.valueOf(issue.severity());
       ResourceNode resource = resourceTree.getResource(issue.componentKey());
-      if (resource == null) {
-        LOG.warn("Unknow resource with key {}", issue.componentKey());
+      if (!validate(issue, rule, resource)) {
         continue;
       }
       if (resolved) {
@@ -78,10 +73,21 @@ public class IssuesReportBuilder implements BatchExtension {
     }
   }
 
+  private boolean validate(Issue issue, Rule rule, ResourceNode resource) {
+    if (rule == null) {
+      LOG.warn("Unknow rule for issue {}", issue);
+      return false;
+    }
+    if (resource == null) {
+      LOG.warn("Unknow resource with key {}", issue.componentKey());
+      return false;
+    }
+    return true;
+  }
+
   private Rule findRule(Issue issue) {
     RuleKey ruleKey = issue.ruleKey();
-    Rule rule = ruleFinder.findByKey(ruleKey);
-    return rule;
+    return ruleFinder.findByKey(ruleKey);
   }
 
 }

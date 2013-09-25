@@ -20,6 +20,7 @@
 package org.sonar.issuesreport.report;
 
 import org.apache.commons.lang.ObjectUtils;
+import org.apache.commons.lang.builder.ToStringBuilder;
 import org.sonar.api.rules.Rule;
 import org.sonar.api.rules.RulePriority;
 
@@ -70,5 +71,13 @@ public class ReportRuleKey implements Comparable<ReportRuleKey> {
       return getRule().ruleKey().toString().compareTo(o.getRule().ruleKey().toString());
     }
     return o.getSeverity().compareTo(severity);
+  }
+
+  @Override
+  public String toString() {
+    return new ToStringBuilder(this).
+      append("rule", rule).
+      append("severity", severity).
+      toString();
   }
 }

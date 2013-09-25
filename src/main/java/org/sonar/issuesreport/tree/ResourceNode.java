@@ -70,11 +70,9 @@ public class ResourceNode {
   private String getModuleName(ResourceNode resource) {
     if (resource.getParent() == null) {
       return resource.name;
-    }
-    else if (Scopes.PROJECT.equals(resource.getScope())) {
+    } else if (Scopes.PROJECT.equals(resource.getScope())) {
       return getModuleName(resource.getParent()) + " - " + resource.name;
-    }
-    else {
+    } else {
       return getModuleName(resource.getParent());
     }
   }

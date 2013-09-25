@@ -17,40 +17,8 @@
  * License along with this program; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02
  */
-package org.sonar.issuesreport.report;
+@ParametersAreNonnullByDefault
+package org.sonar.issuesreport.tree;
 
-import org.apache.commons.lang.builder.ToStringBuilder;
-import org.sonar.api.rules.Rule;
+import javax.annotation.ParametersAreNonnullByDefault;
 
-public final class RuleReport {
-  private final ReportRuleKey reportRuleKey;
-  private final IssueVariation total = new IssueVariation();
-
-  public RuleReport(ReportRuleKey reportRuleKey) {
-    this.reportRuleKey = reportRuleKey;
-  }
-
-  public IssueVariation getTotal() {
-    return total;
-  }
-
-  public ReportRuleKey getReportRuleKey() {
-    return reportRuleKey;
-  }
-
-  public String getSeverity() {
-    return reportRuleKey.getSeverity().toString();
-  }
-
-  public Rule getRule() {
-    return reportRuleKey.getRule();
-  }
-
-  @Override
-  public String toString() {
-    return new ToStringBuilder(this).
-      append("reportRuleKey", reportRuleKey).
-      append("total", total).
-      toString();
-  }
-}

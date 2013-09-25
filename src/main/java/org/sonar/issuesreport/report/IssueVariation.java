@@ -19,6 +19,8 @@
  */
 package org.sonar.issuesreport.report;
 
+import org.apache.commons.lang.builder.ToStringBuilder;
+
 public class IssueVariation {
 
   private int countInCurrentAnalysis;
@@ -47,6 +49,15 @@ public class IssueVariation {
 
   public void incrementResolvedIssuesCount() {
     this.resolvedIssuesCount++;
+  }
+
+  @Override
+  public String toString() {
+    return new ToStringBuilder(this).
+      append("countInCurrentAnalysis", countInCurrentAnalysis).
+      append("newIssuesCount", newIssuesCount).
+      append("resolvedIssuesCount", resolvedIssuesCount).
+      toString();
   }
 
 }
