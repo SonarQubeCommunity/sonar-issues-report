@@ -27,6 +27,7 @@ import org.sonar.issuesreport.report.IssuesReport;
 import org.sonar.issuesreport.tree.ResourceNode;
 
 import java.util.Date;
+import java.util.UUID;
 
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
@@ -53,6 +54,7 @@ public class IssuesReportFakeUtils {
 
   public static Issue fakeIssue(boolean isNew, RuleKey ruleKey, String componentKey, Integer line) {
     Issue issue = mock(Issue.class);
+    when(issue.key()).thenReturn(UUID.randomUUID().toString());
     when(issue.isNew()).thenReturn(isNew);
     when(issue.line()).thenReturn(line);
     when(issue.ruleKey()).thenReturn(ruleKey);

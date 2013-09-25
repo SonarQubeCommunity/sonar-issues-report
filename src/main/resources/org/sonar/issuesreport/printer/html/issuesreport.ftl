@@ -13,7 +13,7 @@
         <#assign issues=resourceReport.getIssues()>
         <#list issues as issue>
           <#if complete || issue.isNew()>
-          {'i': ${issue_index?c}, 'r': 'R${issue.ruleKey()}', 'l': ${(issue.line()!0)?c}, 'new': ${issue.isNew()?string}, 's': '${issue.severity()}'}<#if issue_has_next>,</#if>
+          {'k': '${issue.key()}', 'r': 'R${issue.ruleKey()}', 'l': ${(issue.line()!0)?c}, 'new': ${issue.isNew()?string}, 's': '${issue.severity()}'}<#if issue_has_next>,</#if>
           </#if>
         </#list>
       ]
@@ -67,7 +67,7 @@
 
      function showIssues(fileIndex, issues) {
        $.each(issues, function(index, issue) {
-         $('#' + fileIndex + 'V' + issue['i']).show();
+         $('#' + issue['k']).show();
          $('#' + fileIndex + 'L' + issue['l'] + ' td.line').addClass('ko');
        });
      }
@@ -343,7 +343,7 @@
       <tr class="globalIssues">
         <td colspan="${colspan}">
           <#list issues as issue>
-            <div class="issue" id="${resourceReport_index?c}V${issueId?c}">
+            <div class="issue" id="${issue.key()}">
               <div class="vtitle">
 
                 <img alt="${issue.severity()}" title="${issue.severity()}" src="issuesreport_files/${issue.severity()}.png">&nbsp;
@@ -391,7 +391,7 @@
                     <td class="lid"></td>
                     <td class="issues">
                       <#list issues as issue>
-                        <div class="issue" id="${resourceReport_index?c}V${issueId?c}">
+                        <div class="issue" id="${issue.key()}">
                           <div class="vtitle">
                             <img alt="${issue.severity()}" title="${issue.severity()}" src="issuesreport_files/${issue.severity()}.png">&nbsp;
                             <img src="issuesreport_files/sep12.png">&nbsp;<span
