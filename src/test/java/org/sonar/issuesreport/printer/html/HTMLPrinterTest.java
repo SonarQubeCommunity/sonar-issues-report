@@ -29,7 +29,6 @@ import org.sonar.api.config.Settings;
 import org.sonar.api.resources.Project;
 import org.sonar.api.rule.RuleKey;
 import org.sonar.api.scan.filesystem.ModuleFileSystem;
-import org.sonar.issuesreport.IssuesReportConstants;
 import org.sonar.issuesreport.IssuesReportFakeUtils;
 import org.sonar.issuesreport.IssuesReportPlugin;
 import org.sonar.issuesreport.provider.RuleNameProvider;
@@ -76,7 +75,7 @@ public class HTMLPrinterTest {
 
   @Test
   public void shouldEnableHTMLReport() {
-    settings.setProperty(IssuesReportConstants.HTML_REPORT_ENABLED_KEY, "true");
+    settings.setProperty(IssuesReportPlugin.HTML_REPORT_ENABLED_KEY, "true");
     assertThat(htmlPrinter.isEnabled()).isTrue();
   }
 
@@ -106,9 +105,22 @@ public class HTMLPrinterTest {
   }
 
   @Test
+  public void shouldPrintWarningIfTooManyIssues() {
+    when(fs.workingDir()).thenReturn(new File("."));
+    HtmlPrinter spy = spy(htmlPrinter);
+    doNothing().when(spy).writeToFile(any(IssuesReport.class), any(File.class));
+
+    IssuesReport report = mock(IssuesReport.class);
+    when(report.hasTooManyOldIssues()).thenReturn(true);
+    spy.print(report);
+
+    // TODO Assert output
+  }
+
+  @Test
   public void shouldConfigureReportLocation() throws IOException {
     File reportFile = new File("target/path/to/report.html");
-    settings.setProperty(IssuesReportConstants.HTML_REPORT_LOCATION_KEY, reportFile.getAbsolutePath());
+    settings.setProperty(IssuesReportPlugin.HTML_REPORT_LOCATION_KEY, reportFile.getAbsolutePath());
 
     HtmlPrinter spy = spy(htmlPrinter);
     doNothing().when(spy).writeToFile(any(IssuesReport.class), any(File.class));
@@ -122,7 +134,7 @@ public class HTMLPrinterTest {
   public void shouldGenerateReportWithNewViolation() throws IOException {
     File reportDir = temp.newFolder();
     File reportFile = new File(reportDir, "report.html");
-    settings.setProperty(IssuesReportConstants.HTML_REPORT_LOCATION_KEY, reportFile.getAbsolutePath());
+    settings.setProperty(IssuesReportPlugin.HTML_REPORT_LOCATION_KEY, reportFile.getAbsolutePath());
 
     when(fs.sourceCharset()).thenReturn(Charsets.UTF_8);
 
@@ -147,7 +159,7 @@ public class HTMLPrinterTest {
   public void shouldGenerateReportWithSeveralResources() throws IOException {
     File reportDir = temp.newFolder();
     File reportFile = new File(reportDir, "report.html");
-    settings.setProperty(IssuesReportConstants.HTML_REPORT_LOCATION_KEY, reportFile.getAbsolutePath());
+    settings.setProperty(IssuesReportPlugin.HTML_REPORT_LOCATION_KEY, reportFile.getAbsolutePath());
 
     when(fs.sourceCharset()).thenReturn(Charsets.UTF_8);
 
@@ -173,7 +185,7 @@ public class HTMLPrinterTest {
   public void shouldGenerateReportWithPackageLevelViolation() throws IOException {
     File reportDir = temp.newFolder();
     File reportFile = new File(reportDir, "report.html");
-    settings.setProperty(IssuesReportConstants.HTML_REPORT_LOCATION_KEY, reportFile.getAbsolutePath());
+    settings.setProperty(IssuesReportPlugin.HTML_REPORT_LOCATION_KEY, reportFile.getAbsolutePath());
 
     when(fs.sourceCharset()).thenReturn(Charsets.UTF_8);
 

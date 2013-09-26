@@ -24,7 +24,6 @@ import org.junit.Test;
 import org.sonar.api.config.PropertyDefinitions;
 import org.sonar.api.config.Settings;
 import org.sonar.api.resources.Project;
-import org.sonar.issuesreport.IssuesReportConstants;
 import org.sonar.issuesreport.IssuesReportFakeUtils;
 import org.sonar.issuesreport.IssuesReportPlugin;
 import org.sonar.issuesreport.printer.console.ConsolePrinter.ConsoleLogger;
@@ -58,7 +57,7 @@ public class ConsolePrinterTest {
 
   @Test
   public void shouldEnableConsoleReport() {
-    settings.setProperty(IssuesReportConstants.CONSOLE_REPORT_ENABLED_KEY, "true");
+    settings.setProperty(IssuesReportPlugin.CONSOLE_REPORT_ENABLED_KEY, "true");
     assertThat(consolePrinter.isEnabled()).isTrue();
   }
 

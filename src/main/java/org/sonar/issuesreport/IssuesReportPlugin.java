@@ -35,17 +35,24 @@ import org.sonar.issuesreport.tree.ResourceTree;
 import java.util.List;
 
 @Properties({
-  @Property(key = IssuesReportConstants.HTML_REPORT_ENABLED_KEY, name = "Enable HTML report", description = "Set this to true to generate an HTML report",
+  @Property(key = IssuesReportPlugin.HTML_REPORT_ENABLED_KEY, name = "Enable HTML report", description = "Set this to true to generate an HTML report",
     type = PropertyType.BOOLEAN, defaultValue = "false"),
-  @Property(key = IssuesReportConstants.HTML_REPORT_LOCATION_KEY, name = "HTML Report location",
+  @Property(key = IssuesReportPlugin.HTML_REPORT_LOCATION_KEY, name = "HTML Report location",
     description = "Location of the generated report. Can be absolute or relative to working directory",
-    type = PropertyType.STRING, defaultValue = IssuesReportConstants.HTML_REPORT_LOCATION_DEFAULT, global = false, project = false),
-  @Property(key = IssuesReportConstants.HTML_REPORT_SHORT_KEY, name = "Generate short HTML Report",
-    description = "Generate a short HTML report be generated, including only new issues",
+    type = PropertyType.STRING, defaultValue = IssuesReportPlugin.HTML_REPORT_LOCATION_DEFAULT, global = false, project = false),
+  @Property(key = IssuesReportPlugin.HTML_REPORT_LIGHT_KEY, name = "Generate light HTML Report",
+    description = "Generate a light HTML report, including only new issues",
     type = PropertyType.BOOLEAN, defaultValue = "false", global = false, project = false),
-  @Property(key = IssuesReportConstants.CONSOLE_REPORT_ENABLED_KEY, name = "Enable console report", description = "Set this to true to generate a report in console output",
+  @Property(key = IssuesReportPlugin.CONSOLE_REPORT_ENABLED_KEY, name = "Enable console report", description = "Set this to true to generate a report in console output",
     type = PropertyType.BOOLEAN, defaultValue = "false")})
 public final class IssuesReportPlugin extends SonarPlugin {
+
+  public static final String HTML_REPORT_ENABLED_KEY = "sonar.issuesReport.html.enable";
+  public static final String HTML_REPORT_LIGHT_KEY = "sonar.issuesReport.html.light";
+  public static final String HTML_REPORT_LOCATION_KEY = "sonar.issuesReport.html.location";
+  public static final String HTML_REPORT_LOCATION_DEFAULT = "issues-report.html";
+
+  public static final String CONSOLE_REPORT_ENABLED_KEY = "sonar.issuesReport.console.enable";
 
   public List getExtensions() {
     return ImmutableList.of(

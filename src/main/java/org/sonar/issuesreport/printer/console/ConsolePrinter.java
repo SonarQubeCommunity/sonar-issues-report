@@ -25,7 +25,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.sonar.api.config.Settings;
 import org.sonar.api.rules.RulePriority;
-import org.sonar.issuesreport.IssuesReportConstants;
+import org.sonar.issuesreport.IssuesReportPlugin;
 import org.sonar.issuesreport.printer.ReportPrinter;
 import org.sonar.issuesreport.report.IssueVariation;
 import org.sonar.issuesreport.report.IssuesReport;
@@ -56,7 +56,7 @@ public class ConsolePrinter implements ReportPrinter {
 
   @Override
   public boolean isEnabled() {
-    return settings.getBoolean(IssuesReportConstants.CONSOLE_REPORT_ENABLED_KEY);
+    return settings.getBoolean(IssuesReportPlugin.CONSOLE_REPORT_ENABLED_KEY);
   }
 
   @Override

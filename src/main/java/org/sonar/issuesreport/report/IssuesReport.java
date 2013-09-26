@@ -32,6 +32,7 @@ import java.util.Map;
 
 public class IssuesReport {
 
+  public static final int TOO_MANY_ISSUES_THRESHOLD = 1000;
   private String title;
   private Date date;
   private final ReportSummary summary = new ReportSummary();
@@ -58,6 +59,10 @@ public class IssuesReport {
 
   public void setDate(Date date) {
     this.date = date;
+  }
+
+  public boolean hasTooManyOldIssues() {
+    return summary.getTotal().getCountInCurrentAnalysis() - summary.getTotal().getNewIssuesCount() > TOO_MANY_ISSUES_THRESHOLD;
   }
 
   public Map<ResourceNode, ResourceReport> getResourceReportsByResource() {

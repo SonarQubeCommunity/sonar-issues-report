@@ -122,7 +122,7 @@
 <div id="content">
 
   <#if !complete>
-  <div class="banner">Short report: only new issues are displayed</div>
+  <div class="banner">Light report: only new issues are displayed</div>
   </#if>
 
   <div id="summary">
@@ -134,25 +134,28 @@
     <#else>
       <#assign size = '50'>
     </#if>
-    <#if complete>
-      <td align="center" width="${size}%"><span class="big">${report.getSummary().getTotal().getCountInCurrentAnalysis()?c}</span> <br/>Issues</td>
-    </#if>
       <td align="center" width="${size}%">
-      <#if report.getSummary().getTotal().getResolvedIssuesCount() gt 0>
-        <span class="big better">${report.getSummary().getTotal().getResolvedIssuesCount()?c}</span>
-      <#else>
-        <span class="big">0</span>
-      </#if>
-        <br/>Resolved issues
-      </td>
-      <td align="center" width="${size}%">
+        <h3>New issues</h3>
       <#if report.getSummary().getTotal().getNewIssuesCount() gt 0>
         <span class="big worst">${report.getSummary().getTotal().getNewIssuesCount()?c}</span>
       <#else>
         <span class="big">0</span>
       </#if>
-        <br/>New issues
       </td>
+      <td align="center" width="${size}%">
+        <h3>Resolved issues</h3>
+      <#if report.getSummary().getTotal().getResolvedIssuesCount() gt 0>
+        <span class="big better">${report.getSummary().getTotal().getResolvedIssuesCount()?c}</span>
+      <#else>
+        <span class="big">0</span>
+      </#if>
+      </td>
+    <#if complete>
+      <td align="center" width="${size}%" class="all">
+        <h3>Issues</h3>
+        <span class="big">${report.getSummary().getTotal().getCountInCurrentAnalysis()?c}</span>
+      </td>
+    </#if>
     </tr>
     </tbody>
   </table>
@@ -163,9 +166,9 @@
       <th colspan="2" align="left">
           Issues per Rule
       </th>
-      <th align="right" width="1%" nowrap>Issues</th>
-      <th align="right" width="1%" nowrap>Resolved issues</th>
       <th align="right" width="1%" nowrap>New issues</th>
+      <th align="right" width="1%" nowrap>Resolved issues</th>
+      <th align="right" width="1%" nowrap class="all">Issues</th>
     </tr>
     </thead>
     <tbody>
@@ -184,7 +187,11 @@
           ${ruleNameProvider.name(ruleReport.getRule())}
         </td>
         <td align="right">
-          ${ruleReport.getTotal().getCountInCurrentAnalysis()?c}
+          <#if ruleReport.getTotal().getNewIssuesCount() gt 0>
+            <span class="worst">+${ruleReport.getTotal().getNewIssuesCount()?c}</span>
+          <#else>
+            <span>0</span>
+          </#if>
         </td>
         <td align="right">
           <#if ruleReport.getTotal().getResolvedIssuesCount() gt 0>
@@ -193,12 +200,8 @@
             <span>0</span>
           </#if>
         </td>
-        <td align="right">
-          <#if ruleReport.getTotal().getNewIssuesCount() gt 0>
-            <span class="worst">+${ruleReport.getTotal().getNewIssuesCount()?c}</span>
-          <#else>
-            <span>0</span>
-          </#if>
+        <td align="right" class="all">
+          ${ruleReport.getTotal().getCountInCurrentAnalysis()?c}
         </td>
       </tr>
         </#if>
@@ -222,7 +225,7 @@
       <optgroup label="Severity">
       <#assign severities = report.getSummary().getTotalBySeverity()>
       <#list severities?keys as severity>
-        <#if complete>
+        <#if complete && (severities[severity].getCountInCurrentAnalysis() > 0)>
         <option value="${severity}" class="all">
           ${severity?lower_case?cap_first}
           (${severities[severity].getCountInCurrentAnalysis()?c})
@@ -239,7 +242,7 @@
       <optgroup label="Rule">
       <#assign rules = report.getSummary().getTotalByRuleKey()>
       <#list rules?keys as ruleKey>
-        <#if complete>
+        <#if complete && (rules[ruleKey].getCountInCurrentAnalysis() > 0)>
         <option value="R${ruleKey}" class="all">
           ${ruleNameProvider.name(ruleKey)}
           (${rules[ruleKey].getCountInCurrentAnalysis()?c})
@@ -274,21 +277,6 @@
           <a href="#" onclick="$('.resource-details-${resourceReport_index?c}').toggle(); return false;" style="color: black">${resourceReport.getName()}</a>
         </div>
       </th>
-      <#if complete>
-      <th align="right" width="1%" nowrap class="resource-details-${resourceReport_index?c}">
-        <span id="current-total">${resourceReport.getTotal().getCountInCurrentAnalysis()?c}</span><br/>Issues
-      </th>
-      </#if>
-      <#if complete>
-      <th align="right" width="1%" nowrap class="resource-details-${resourceReport_index?c}">
-        <#if resourceReport.getTotal().getResolvedIssuesCount() gt 0>
-          <span class="better" id="resolved-total">-${resourceReport.getTotal().getResolvedIssuesCount()?c}</span>
-        <#else>
-          <span id="resolved-total">0</span>
-        </#if>
-        <br/>Resolved issues
-      </th>
-      </#if>
       <th align="right" width="1%" nowrap class="resource-details-${resourceReport_index?c}">
         <#if resourceReport.getTotal().getNewIssuesCount() gt 0>
           <span class="worst" id="new-total">+${resourceReport.getTotal().getNewIssuesCount()?c}</span>
@@ -297,11 +285,24 @@
         </#if>
         <br/>New issues
       </th>
+      <#if complete>
+      <th align="right" width="1%" nowrap class="resource-details-${resourceReport_index?c}">
+        <#if resourceReport.getTotal().getResolvedIssuesCount() gt 0>
+          <span class="better" id="resolved-total">${resourceReport.getTotal().getResolvedIssuesCount()?c}</span>
+        <#else>
+          <span id="resolved-total">0</span>
+        </#if>
+        <br/>Resolved issues
+      </th>
+      <th align="right" width="1%" nowrap class="resource-details-${resourceReport_index?c} all">
+        <span id="current-total">${resourceReport.getTotal().getCountInCurrentAnalysis()?c}</span><br/>Issues
+      </th>
+      </#if>
     </tr>
     </thead>
     <tbody class="resource-details-${resourceReport_index?c}">
+    <#if complete>
     <#list resourceReport.getRuleReports() as ruleReport>
-      <#if complete || (ruleReport.getTotal().getNewIssuesCount() > 0)>
         <#if ruleReport.getTotal().getNewIssuesCount() = 0>
         <#assign trCss = 'all'>
         <#else>
@@ -314,11 +315,13 @@
         <td align="left">
           ${ruleNameProvider.name(ruleReport.getRule())}
         </td>
-        <#if complete>
         <td align="right">
-          ${ruleReport.getTotal().getCountInCurrentAnalysis()?c}
+          <#if ruleReport.getTotal().getNewIssuesCount() gt 0>
+            <span class="worst">+${ruleReport.getTotal().getNewIssuesCount()?c}</span>
+          <#else>
+            <span>0</span>
+          </#if>
         </td>
-        </#if>
         <#if complete>
         <td align="right">
           <#if ruleReport.getTotal().getResolvedIssuesCount() gt 0>
@@ -327,17 +330,13 @@
             <span>0</span>
           </#if>
         </td>
-        </#if>
-        <td align="right">
-          <#if ruleReport.getTotal().getNewIssuesCount() gt 0>
-            <span class="worst">+${ruleReport.getTotal().getNewIssuesCount()?c}</span>
-          <#else>
-            <span>0</span>
-          </#if>
+        <td align="right" class="all">
+          ${ruleReport.getTotal().getCountInCurrentAnalysis()?c}
         </td>
+        </#if>
       </tr>
-      </#if>
     </#list>
+    </#if>
     <#if complete>
       <#assign colspan = '5'>
     <#else>

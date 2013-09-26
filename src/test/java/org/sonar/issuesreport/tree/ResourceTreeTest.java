@@ -105,7 +105,7 @@ public class ResourceTreeTest {
     ResourceNode resource = resourceTree.getResource("myProject:com.foo.Bar");
     assertThat(resource).isNotNull();
     assertThat(resource.getKey()).isEqualTo("myProject:com.foo.Bar");
-    assertThat(resource.getName()).isEqualTo("My Project - My Module - com.foo.Bar");
+    assertThat(resource.getName()).isEqualTo("My Module - com.foo.Bar");
     assertThat(resource.getScope()).isEqualTo(Scopes.FILE);
     assertThat(resource.getEncoding()).isEqualTo(Charsets.UTF_8);
     assertThat(resource.getPath()).isEqualTo(ioFile);

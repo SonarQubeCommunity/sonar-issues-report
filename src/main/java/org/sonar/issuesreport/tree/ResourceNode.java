@@ -63,22 +63,26 @@ public class ResourceNode {
     return scope;
   }
 
-  public String getModuleName() {
-    return getModuleName(this);
-  }
-
-  private String getModuleName(ResourceNode resource) {
-    if (resource.getParent() == null) {
-      return resource.name;
-    } else if (Scopes.PROJECT.equals(resource.getScope())) {
-      return getModuleName(resource.getParent()) + " - " + resource.name;
-    } else {
-      return getModuleName(resource.getParent());
-    }
+  public boolean isRootModule() {
+    return getParent() == null;
   }
 
   public String getName() {
-    return getModuleName() + " - " + longName;
+    if (isRootModule()) {
+      // Root module
+      return longName;
+    }
+    return getModulePrefix(this) + longName;
+  }
+
+  private String getModulePrefix(ResourceNode resource) {
+    if (resource.isRootModule()) {
+      return "";
+    } else if (Scopes.PROJECT.equals(resource.getScope())) {
+      return getModulePrefix(resource.getParent()) + resource.name + " - ";
+    } else {
+      return getModulePrefix(resource.getParent());
+    }
   }
 
   @CheckForNull

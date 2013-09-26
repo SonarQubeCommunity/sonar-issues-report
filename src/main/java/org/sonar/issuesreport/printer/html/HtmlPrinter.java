@@ -27,7 +27,7 @@ import org.apache.commons.io.IOUtils;
 import org.slf4j.LoggerFactory;
 import org.sonar.api.config.Settings;
 import org.sonar.api.scan.filesystem.ModuleFileSystem;
-import org.sonar.issuesreport.IssuesReportConstants;
+import org.sonar.issuesreport.IssuesReportPlugin;
 import org.sonar.issuesreport.printer.ReportPrinter;
 import org.sonar.issuesreport.provider.RuleNameProvider;
 import org.sonar.issuesreport.provider.SourceProvider;
@@ -41,6 +41,7 @@ import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.io.Writer;
 import java.net.URISyntaxException;
+import java.text.MessageFormat;
 import java.util.Map;
 
 public class HtmlPrinter implements ReportPrinter {
@@ -62,16 +63,16 @@ public class HtmlPrinter implements ReportPrinter {
 
   @Override
   public boolean isEnabled() {
-    return settings.getBoolean(IssuesReportConstants.HTML_REPORT_ENABLED_KEY);
+    return settings.getBoolean(IssuesReportPlugin.HTML_REPORT_ENABLED_KEY);
   }
 
   public boolean isComplete() {
-    return !settings.getBoolean(IssuesReportConstants.HTML_REPORT_SHORT_KEY);
+    return !settings.getBoolean(IssuesReportPlugin.HTML_REPORT_LIGHT_KEY);
   }
 
   @Override
   public void print(IssuesReport report) {
-    String reportFileStr = settings.getString(IssuesReportConstants.HTML_REPORT_LOCATION_KEY);
+    String reportFileStr = settings.getString(IssuesReportPlugin.HTML_REPORT_LOCATION_KEY);
     File reportFile = new File(reportFileStr);
     if (!reportFile.isAbsolute()) {
       reportFile = new File(fs.workingDir(), reportFileStr);
@@ -84,6 +85,13 @@ public class HtmlPrinter implements ReportPrinter {
     }
     LOG.debug("Generating HTML Report to: " + reportFile.getAbsolutePath());
     writeToFile(report, reportFile);
+    if (report.hasTooManyOldIssues()) {
+      LOG
+        .warn(MessageFormat
+          .format(
+            "There are more than {0} issues in the HTML report. For better performance, you can generate a light report using -D{1}=true. The light report contains only new issues.",
+            IssuesReport.TOO_MANY_ISSUES_THRESHOLD, IssuesReportPlugin.HTML_REPORT_LIGHT_KEY));
+    }
     LOG.info("HTML Issues Report generated: " + reportFile.getAbsolutePath());
   }
 
@@ -130,13 +138,9 @@ public class HtmlPrinter implements ReportPrinter {
     copyDependency(target, "MINOR.png");
     copyDependency(target, "INFO.png");
     copyDependency(target, "favicon.ico");
-    copyDependency(target, "BRC.png");
-    copyDependency(target, "CLA.png");
+    copyDependency(target, "PRJ.png");
     copyDependency(target, "DIR.png");
     copyDependency(target, "FIL.png");
-    copyDependency(target, "PAC.png");
-    copyDependency(target, "TRK.png");
-    copyDependency(target, "UTS.png");
     copyDependency(target, "jquery.min.js");
     copyDependency(target, "sep12.png");
     copyDependency(target, "sonar.css");
