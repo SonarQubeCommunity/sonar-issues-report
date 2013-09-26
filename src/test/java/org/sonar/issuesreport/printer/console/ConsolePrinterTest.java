@@ -35,6 +35,7 @@ import java.io.IOException;
 import java.util.Date;
 
 import static org.fest.assertions.Assertions.assertThat;
+import static org.mockito.Matchers.contains;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -83,7 +84,7 @@ public class ConsolePrinterTest {
 
     printer.print(report);
 
-    verify(logger).log("1 new issue");
-    verify(logger).log("+1 blocking issue");
+    verify(logger).log(contains("+1 issue"));
+    verify(logger).log(contains("+1 blocking"));
   }
 }
