@@ -171,13 +171,12 @@
     <tbody>
       <#list report.getSummary().getRuleReports() as ruleReport>
         <#if complete || (ruleReport.getTotal().getNewIssuesCount() > 0)>
-          <#assign trCss = (ruleReport_index % 2 == 0)?string("even","odd")>
           <#if ruleReport.getTotal().getNewIssuesCount() = 0>
-          <#assign trCss = trCss + ' all'>
+          <#assign trCss = 'all'>
           <#else>
-          <#assign trCss = trCss + ' new all'>
+          <#assign trCss = 'new all'>
           </#if>
-      <tr class="${trCss}">
+      <tr class="hoverable ${trCss}">
         <td width="20">
           <img alt="${ruleReport.getSeverity()}" title="${ruleReport.getSeverity()}" src="issuesreport_files/${ruleReport.getSeverity()}.png">
         </td>
@@ -303,13 +302,12 @@
     <tbody class="resource-details-${resourceReport_index?c}">
     <#list resourceReport.getRuleReports() as ruleReport>
       <#if complete || (ruleReport.getTotal().getNewIssuesCount() > 0)>
-        <#assign trCss = (ruleReport_index % 2 == 0)?string("even","odd")>
         <#if ruleReport.getTotal().getNewIssuesCount() = 0>
-        <#assign trCss = trCss + ' all'>
+        <#assign trCss = 'all'>
         <#else>
-        <#assign trCss = trCss + ' new all'>
+        <#assign trCss = 'new all'>
         </#if>
-      <tr class="${trCss}">
+      <tr class="hoverable ${trCss}">
         <td width="20">
           <img alt="${ruleReport.getSeverity()}" title="${ruleReport.getSeverity()}" src="issuesreport_files/${ruleReport.getSeverity()}.png">
         </td>

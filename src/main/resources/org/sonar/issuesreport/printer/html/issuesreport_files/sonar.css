@@ -130,17 +130,8 @@ table.data>tbody>tr>td {
   font-weight: bold;
 }
 
-.odd {
-  background-color: #fff;
-}
-
-.odd.selected, .even.selected, .odd.selected a, .even.selected a, .even.selected span, .odd.selected span {
-  background-color: #4b9fd5;
-  color: #fff;
-}
-
-.even {
-  background-color: #F4F4F4;
+.hoverable:hover {
+  background-color: #f7f7f7;
 }
 
 div, ul, li, h2, pre, form, input, td {
