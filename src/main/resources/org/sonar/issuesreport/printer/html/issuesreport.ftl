@@ -79,12 +79,16 @@
      }
 
 
-    function refreshFilters() {
+    function refreshFilters(updateSelect) {
       <#if complete>
       var onlyNewIssues = $('#new_filter').is(':checked');
       <#else>
       var onlyNewIssues = true;
       </#if>
+
+      if (updateSelect) {
+        populateSelectFilter(onlyNewIssues);
+      }
       var ruleFilter = $('#rule_filter').val();
 
       hideAll();
@@ -109,6 +113,53 @@
         showLines(resourceIndex, linesToDisplay);
         showIssues(resourceIndex, filteredIssues);
       }
+    }
+
+
+    var severityFilter = [
+    <#assign severities = report.getSummary().getTotalBySeverity()>
+       <#list severities?keys as severity>
+       { "key": "${severity}",
+         "label": "${severity?lower_case?cap_first}",
+         "total": ${severities[severity].getCountInCurrentAnalysis()?c},
+         "newtotal": ${severities[severity].getNewIssuesCount()?c}
+       }<#if severity_has_next>,</#if>
+       </#list>
+    ];
+
+    var ruleFilter = [
+    <#assign rules = report.getSummary().getTotalByRuleKey()>
+       <#list rules?keys as ruleKey>
+       { "key": "${ruleKey}",
+         "label": "${ruleNameProvider.name(ruleKey)}",
+         "total": ${rules[ruleKey].getCountInCurrentAnalysis()?c},
+         "newtotal": ${rules[ruleKey].getNewIssuesCount()?c}
+       }<#if ruleKey_has_next>,</#if>
+       </#list>
+    ].sort(function(a, b) {
+        var x = a.label; var y = b.label;
+        return ((x < y) ? -1 : ((x > y) ? 1 : 0));
+    });
+
+    function populateSelectFilter(onlyNewIssues) {
+       var ruleFilterSelect = $('#rule_filter');
+       ruleFilterSelect.empty().append(function() {
+         var output = '';
+         output += '<option value="" selected>Filter by:</option>';
+         output += '<optgroup label="Severity">';
+         $.each(severityFilter, function(key, value) {
+           if ((!onlyNewIssues && value.total > 0) || value.newtotal > 0) {
+             output += '<option value="' + value.key + '">' + value.label + ' (' + (onlyNewIssues ? value.newtotal : value.total) + ')</option>';
+           }
+         });
+         output += '<optgroup label="Rule">';
+         $.each(ruleFilter, function(key, value) {
+           if ((!onlyNewIssues && value.total > 0) || value.newtotal > 0) {
+             output += '<option value="R' + value.key + '">' + value.label + ' (' + (onlyNewIssues ? value.newtotal : value.total) + ')</option>';
+           }
+         });
+         return output;
+       });
     }
   </script>
 </head>
@@ -215,47 +266,12 @@
 
   <div class="banner">
   <#if complete>
-    <input type="checkbox" id="new_filter" onclick="refreshFilters()" checked="checked" /> <label for="new_filter">Only NEW
+    <input type="checkbox" id="new_filter" onclick="refreshFilters(true)" checked="checked" /> <label for="new_filter">Only NEW
     issues</label>
     &nbsp;&nbsp;&nbsp;&nbsp;
   </#if>
 
-    <select id="rule_filter" onchange="refreshFilters()">
-      <option value="" selected>Filter by:</option>
-      <optgroup label="Severity">
-      <#assign severities = report.getSummary().getTotalBySeverity()>
-      <#list severities?keys as severity>
-        <#if complete && (severities[severity].getCountInCurrentAnalysis() > 0)>
-        <option value="${severity}" class="all">
-          ${severity?lower_case?cap_first}
-          (${severities[severity].getCountInCurrentAnalysis()?c})
-        </option>
-        </#if>
-        <#if (severities[severity].getNewIssuesCount() > 0)>
-        <option value="${severity}" class="new">
-          ${severity?lower_case?cap_first}
-          (${severities[severity].getNewIssuesCount()?c})
-        </option>
-        </#if>
-      </#list>
-      </optgroup>
-      <optgroup label="Rule">
-      <#assign rules = report.getSummary().getTotalByRuleKey()>
-      <#list rules?keys as ruleKey>
-        <#if complete && (rules[ruleKey].getCountInCurrentAnalysis() > 0)>
-        <option value="R${ruleKey}" class="all">
-          ${ruleNameProvider.name(ruleKey)}
-          (${rules[ruleKey].getCountInCurrentAnalysis()?c})
-        </option>
-        </#if>
-        <#if (rules[ruleKey].getNewIssuesCount() > 0)>
-        <option value="R${ruleKey}" class="new">
-          ${ruleNameProvider.name(ruleKey)}
-          (${rules[ruleKey].getNewIssuesCount()?c})
-        </option>
-        </#if>
-      </#list>
-      </optgroup>
+    <select id="rule_filter" onchange="refreshFilters(false)">
     </select>
   </div>
 
@@ -437,7 +453,7 @@
 </div>
 <script type="text/javascript">
   $(function() {
-    refreshFilters();
+    refreshFilters(true);
   });
 </script>
 </body>
