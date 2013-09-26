@@ -223,11 +223,13 @@
       <optgroup label="Severity">
       <#assign severities = report.getSummary().getTotalBySeverity()>
       <#list severities?keys as severity>
+        <#if complete>
         <option value="${severity}" class="all">
           ${severity?lower_case?cap_first}
           (${severities[severity].getCountInCurrentAnalysis()?c})
         </option>
-        <#if complete || (severities[severity].getNewIssuesCount() > 0)>
+        </#if>
+        <#if (severities[severity].getNewIssuesCount() > 0)>
         <option value="${severity}" class="new">
           ${severity?lower_case?cap_first}
           (${severities[severity].getNewIssuesCount()?c})
@@ -238,11 +240,13 @@
       <optgroup label="Rule">
       <#assign rules = report.getSummary().getTotalByRuleKey()>
       <#list rules?keys as ruleKey>
+        <#if complete>
         <option value="R${ruleKey}" class="all">
           ${ruleNameProvider.name(ruleKey)}
           (${rules[ruleKey].getCountInCurrentAnalysis()?c})
         </option>
-        <#if complete || (rules[ruleKey].getNewIssuesCount() > 0)>
+        </#if>
+        <#if (rules[ruleKey].getNewIssuesCount() > 0)>
         <option value="R${ruleKey}" class="new">
           ${ruleNameProvider.name(ruleKey)}
           (${rules[ruleKey].getNewIssuesCount()?c})
@@ -265,7 +269,7 @@
   <table width="100%" class="data ${tableCss}" id="resource-${resourceReport_index?c}">
     <thead>
     <tr class="total">
-      <th align="left" colspan="2">
+      <th align="left" colspan="2" nowrap>
         <div class="file_title">
           <img src="issuesreport_files/${resourceReport.getType()}.png" title="Resource icon"/>
           <a href="#" onclick="$('.resource-details-${resourceReport_index?c}').toggle(); return false;" style="color: black">${resourceReport.getName()}</a>
