@@ -42,6 +42,7 @@ import java.util.Date;
 
 import static org.fest.assertions.Assertions.assertThat;
 import static org.mockito.Matchers.any;
+import static org.mockito.Matchers.anyBoolean;
 import static org.mockito.Matchers.eq;
 import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.mock;
@@ -89,52 +90,42 @@ public class HTMLPrinterTest {
     report.setDate(new Date());
     File reportDir = temp.newFolder();
     File reportFile = new File(reportDir, "report.html");
-    htmlPrinter.writeToFile(report, reportFile);
+    htmlPrinter.writeToFile(report, reportFile, true);
     assertThat(reportFile).exists();
   }
 
   @Test
   public void shouldPrintIntoDefaultReportFile() {
-    when(fs.workingDir()).thenReturn(new File("."));
+    when(fs.workingDir()).thenReturn(new File("target"));
     HtmlPrinter spy = spy(htmlPrinter);
-    doNothing().when(spy).writeToFile(any(IssuesReport.class), any(File.class));
+    doNothing().when(spy).writeToFile(any(IssuesReport.class), any(File.class), anyBoolean());
 
     spy.print(mock(IssuesReport.class));
 
-    verify(spy).writeToFile(any(IssuesReport.class), eq(new File(".", "issues-report.html")));
-  }
-
-  @Test
-  public void shouldPrintWarningIfTooManyIssues() {
-    when(fs.workingDir()).thenReturn(new File("."));
-    HtmlPrinter spy = spy(htmlPrinter);
-    doNothing().when(spy).writeToFile(any(IssuesReport.class), any(File.class));
-
-    IssuesReport report = mock(IssuesReport.class);
-    when(report.hasTooManyOldIssues()).thenReturn(true);
-    spy.print(report);
-
-    // TODO Assert output
+    verify(spy).writeToFile(any(IssuesReport.class), eq(new File("target/issues-report/issues-report.html")), eq(true));
+    verify(spy).writeToFile(any(IssuesReport.class), eq(new File("target/issues-report/issues-report-light.html")), eq(false));
   }
 
   @Test
   public void shouldConfigureReportLocation() throws IOException {
-    File reportFile = new File("target/path/to/report.html");
-    settings.setProperty(IssuesReportPlugin.HTML_REPORT_LOCATION_KEY, reportFile.getAbsolutePath());
+    File reportPath = new File("target/path/to/report");
+    settings.setProperty(IssuesReportPlugin.HTML_REPORT_LOCATION_KEY, reportPath.getAbsolutePath());
 
     HtmlPrinter spy = spy(htmlPrinter);
-    doNothing().when(spy).writeToFile(any(IssuesReport.class), any(File.class));
+    doNothing().when(spy).writeToFile(any(IssuesReport.class), any(File.class), anyBoolean());
 
     spy.print(mock(IssuesReport.class));
 
-    verify(spy).writeToFile(any(IssuesReport.class), eq(reportFile.getAbsoluteFile()));
+    verify(spy).writeToFile(any(IssuesReport.class), eq(new File(reportPath.getAbsoluteFile(), "issues-report.html")), eq(true));
+    verify(spy).writeToFile(any(IssuesReport.class), eq(new File(reportPath.getAbsoluteFile(), "issues-report-light.html")), eq(false));
   }
 
   @Test
   public void shouldGenerateReportWithNewViolation() throws IOException {
     File reportDir = temp.newFolder();
-    File reportFile = new File(reportDir, "report.html");
-    settings.setProperty(IssuesReportPlugin.HTML_REPORT_LOCATION_KEY, reportFile.getAbsolutePath());
+    File reportFile = new File(reportDir, "issues-report.html");
+    File lightReportFile = new File(reportDir, "issues-report-light.html");
+    settings.setProperty(IssuesReportPlugin.HTML_REPORT_LOCATION_KEY, reportDir.getAbsolutePath());
 
     when(fs.sourceCharset()).thenReturn(Charsets.UTF_8);
 
@@ -153,39 +144,15 @@ public class HTMLPrinterTest {
     htmlPrinter.print(report);
 
     assertThat(reportFile).exists();
-  }
-
-  @Test
-  public void shouldGenerateReportWithNewViolationInLightMode() throws IOException {
-    File reportDir = temp.newFolder();
-    File reportFile = new File(reportDir, "report.html");
-    settings.setProperty(IssuesReportPlugin.HTML_REPORT_LOCATION_KEY, reportFile.getAbsolutePath());
-    settings.setProperty(IssuesReportPlugin.HTML_REPORT_LIGHT_KEY, "true");
-
-    when(fs.sourceCharset()).thenReturn(Charsets.UTF_8);
-
-    Project project = mock(Project.class);
-    when(project.getAnalysisDate()).thenReturn(new Date());
-    ResourceNode file = IssuesReportFakeUtils.fakeFile("com.foo.Bar");
-
-    when(ruleNameProvider.name(eq(RuleKey.of("foo", "bar")))).thenReturn("My Rule 1");
-    when(ruleNameProvider.name(eq(RuleKey.of("foo", "bar2")))).thenReturn("My Rule 2");
-    when(ruleNameProvider.name(any(org.sonar.api.rules.Rule.class))).thenReturn("My Rule");
-    when(ruleNameProvider.name("foo:bar")).thenReturn("My Rule 2");
-    when(ruleNameProvider.name("foo:bar2")).thenReturn("My Rule 2");
-
-    IssuesReport report = IssuesReportFakeUtils.sampleReportWith2IssuesPerFile(file);
-
-    htmlPrinter.print(report);
-
-    assertThat(reportFile).exists();
+    assertThat(lightReportFile).exists();
   }
 
   @Test
   public void shouldGenerateReportWithSeveralResources() throws IOException {
     File reportDir = temp.newFolder();
-    File reportFile = new File(reportDir, "report.html");
-    settings.setProperty(IssuesReportPlugin.HTML_REPORT_LOCATION_KEY, reportFile.getAbsolutePath());
+    File reportFile = new File(reportDir, "issues-report.html");
+    File lightReportFile = new File(reportDir, "issues-report-light.html");
+    settings.setProperty(IssuesReportPlugin.HTML_REPORT_LOCATION_KEY, reportDir.getAbsolutePath());
 
     when(fs.sourceCharset()).thenReturn(Charsets.UTF_8);
 
@@ -205,13 +172,15 @@ public class HTMLPrinterTest {
     htmlPrinter.print(report);
 
     assertThat(reportFile).exists();
+    assertThat(lightReportFile).exists();
   }
 
   @Test
   public void shouldGenerateReportWithPackageLevelViolation() throws IOException {
     File reportDir = temp.newFolder();
-    File reportFile = new File(reportDir, "report.html");
-    settings.setProperty(IssuesReportPlugin.HTML_REPORT_LOCATION_KEY, reportFile.getAbsolutePath());
+    File reportFile = new File(reportDir, "issues-report.html");
+    File lightReportFile = new File(reportDir, "issues-report-light.html");
+    settings.setProperty(IssuesReportPlugin.HTML_REPORT_LOCATION_KEY, reportDir.getAbsolutePath());
 
     when(fs.sourceCharset()).thenReturn(Charsets.UTF_8);
 
@@ -230,5 +199,6 @@ public class HTMLPrinterTest {
     htmlPrinter.print(report);
 
     assertThat(reportFile).exists();
+    assertThat(lightReportFile).exists();
   }
 }

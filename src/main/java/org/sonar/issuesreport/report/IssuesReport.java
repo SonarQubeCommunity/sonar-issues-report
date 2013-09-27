@@ -61,10 +61,6 @@ public class IssuesReport {
     this.date = date;
   }
 
-  public boolean hasTooManyOldIssues() {
-    return summary.getTotal().getCountInCurrentAnalysis() - summary.getTotal().getNewIssuesCount() > TOO_MANY_ISSUES_THRESHOLD;
-  }
-
   public Map<ResourceNode, ResourceReport> getResourceReportsByResource() {
     return resourceReportsByResource;
   }

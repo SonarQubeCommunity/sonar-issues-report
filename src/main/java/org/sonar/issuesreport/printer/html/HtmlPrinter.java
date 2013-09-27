@@ -41,7 +41,6 @@ import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.io.Writer;
 import java.net.URISyntaxException;
-import java.text.MessageFormat;
 import java.util.Map;
 
 public class HtmlPrinter implements ReportPrinter {
@@ -66,37 +65,39 @@ public class HtmlPrinter implements ReportPrinter {
     return settings.getBoolean(IssuesReportPlugin.HTML_REPORT_ENABLED_KEY);
   }
 
-  public boolean isComplete() {
-    return !settings.getBoolean(IssuesReportPlugin.HTML_REPORT_LIGHT_KEY);
-  }
-
   @Override
   public void print(IssuesReport report) {
-    String reportFileStr = settings.getString(IssuesReportPlugin.HTML_REPORT_LOCATION_KEY);
-    File reportFile = new File(reportFileStr);
-    if (!reportFile.isAbsolute()) {
-      reportFile = new File(fs.workingDir(), reportFileStr);
-    }
-    File parentDir = reportFile.getParentFile();
-    try {
-      FileUtils.forceMkdir(parentDir);
-    } catch (IOException e) {
-      throw new IllegalStateException("Fail to create the directory " + parentDir, e);
-    }
+    File reportFileDir = getReportFileDir();
+    File reportFile = new File(reportFileDir, "issues-report.html");
+    File lightReportFile = new File(reportFileDir, "issues-report-light.html");
     LOG.debug("Generating HTML Report to: " + reportFile.getAbsolutePath());
-    writeToFile(report, reportFile);
-    if (report.hasTooManyOldIssues()) {
-      LOG
-        .warn(MessageFormat
-          .format(
-            "There are more than {0} issues in the HTML report. For better performance, you can generate a light report using -D{1}=true."
-              + " The light report contains only new issues.",
-            IssuesReport.TOO_MANY_ISSUES_THRESHOLD, IssuesReportPlugin.HTML_REPORT_LIGHT_KEY));
-    }
+    writeToFile(report, reportFile, true);
     LOG.info("HTML Issues Report generated: " + reportFile.getAbsolutePath());
+    LOG.debug("Generating Light HTML Report to: " + lightReportFile.getAbsolutePath());
+    writeToFile(report, lightReportFile, false);
+    LOG.info("Light HTML Issues Report generated: " + lightReportFile.getAbsolutePath());
+    try {
+      copyDependencies(reportFileDir);
+    } catch (Exception e) {
+      throw new IllegalStateException("Fail to copy HTML report resources to: " + reportFileDir, e);
+    }
   }
 
-  public void writeToFile(IssuesReport report, File toFile) {
+  private File getReportFileDir() {
+    String reportFileDirStr = settings.getString(IssuesReportPlugin.HTML_REPORT_LOCATION_KEY);
+    File reportFileDir = new File(reportFileDirStr);
+    if (!reportFileDir.isAbsolute()) {
+      reportFileDir = new File(fs.workingDir(), reportFileDirStr);
+    }
+    try {
+      FileUtils.forceMkdir(reportFileDir);
+    } catch (IOException e) {
+      throw new IllegalStateException("Fail to create the directory " + reportFileDirStr, e);
+    }
+    return reportFileDir;
+  }
+
+  public void writeToFile(IssuesReport report, File toFile, boolean complete) {
     Writer writer = null;
     FileOutputStream fos = null;
     try {
@@ -108,15 +109,13 @@ public class HtmlPrinter implements ReportPrinter {
       root.put("report", report);
       root.put("ruleNameProvider", ruleNameProvider);
       root.put("sourceProvider", sourceProvider);
-      root.put("complete", isComplete());
+      root.put("complete", complete);
 
       Template template = cfg.getTemplate("issuesreport.ftl");
       fos = new FileOutputStream(toFile);
       writer = new OutputStreamWriter(fos, fs.sourceCharset());
       template.process(root, writer);
       writer.flush();
-
-      copyDependencies(toFile.getParentFile());
 
     } catch (Exception e) {
       throw new IllegalStateException("Fail to generate HTML Issues Report to: " + toFile, e);
