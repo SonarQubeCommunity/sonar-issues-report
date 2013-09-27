@@ -156,6 +156,32 @@ public class HTMLPrinterTest {
   }
 
   @Test
+  public void shouldGenerateReportWithNewViolationInLightMode() throws IOException {
+    File reportDir = temp.newFolder();
+    File reportFile = new File(reportDir, "report.html");
+    settings.setProperty(IssuesReportPlugin.HTML_REPORT_LOCATION_KEY, reportFile.getAbsolutePath());
+    settings.setProperty(IssuesReportPlugin.HTML_REPORT_LIGHT_KEY, "true");
+
+    when(fs.sourceCharset()).thenReturn(Charsets.UTF_8);
+
+    Project project = mock(Project.class);
+    when(project.getAnalysisDate()).thenReturn(new Date());
+    ResourceNode file = IssuesReportFakeUtils.fakeFile("com.foo.Bar");
+
+    when(ruleNameProvider.name(eq(RuleKey.of("foo", "bar")))).thenReturn("My Rule 1");
+    when(ruleNameProvider.name(eq(RuleKey.of("foo", "bar2")))).thenReturn("My Rule 2");
+    when(ruleNameProvider.name(any(org.sonar.api.rules.Rule.class))).thenReturn("My Rule");
+    when(ruleNameProvider.name("foo:bar")).thenReturn("My Rule 2");
+    when(ruleNameProvider.name("foo:bar2")).thenReturn("My Rule 2");
+
+    IssuesReport report = IssuesReportFakeUtils.sampleReportWith2IssuesPerFile(file);
+
+    htmlPrinter.print(report);
+
+    assertThat(reportFile).exists();
+  }
+
+  @Test
   public void shouldGenerateReportWithSeveralResources() throws IOException {
     File reportDir = temp.newFolder();
     File reportFile = new File(reportDir, "report.html");

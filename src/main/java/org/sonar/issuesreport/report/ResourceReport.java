@@ -72,10 +72,11 @@ public final class ResourceReport {
   }
 
   public List<Issue> getIssuesAtLine(int lineId, boolean all) {
-    if (all && issuesPerLine.containsKey(lineId)) {
-      return issuesPerLine.get(lineId);
-    }
-    if (!all && newIssuesPerLine.containsKey(lineId)) {
+    if (all) {
+      if (issuesPerLine.containsKey(lineId)) {
+        return issuesPerLine.get(lineId);
+      }
+    } else if (newIssuesPerLine.containsKey(lineId)) {
       return newIssuesPerLine.get(lineId);
     }
     return Collections.emptyList();

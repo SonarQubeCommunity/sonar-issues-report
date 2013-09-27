@@ -89,7 +89,8 @@ public class HtmlPrinter implements ReportPrinter {
       LOG
         .warn(MessageFormat
           .format(
-            "There are more than {0} issues in the HTML report. For better performance, you can generate a light report using -D{1}=true. The light report contains only new issues.",
+            "There are more than {0} issues in the HTML report. For better performance, you can generate a light report using -D{1}=true."
+              + " The light report contains only new issues.",
             IssuesReport.TOO_MANY_ISSUES_THRESHOLD, IssuesReportPlugin.HTML_REPORT_LIGHT_KEY));
     }
     LOG.info("HTML Issues Report generated: " + reportFile.getAbsolutePath());
