@@ -121,6 +121,20 @@ public class HTMLPrinterTest {
   }
 
   @Test
+  public void shouldConfigureReportLocation_deprecated() throws IOException {
+    File reportPath = new File("target/path/to/report.html");
+    settings.setProperty(IssuesReportPlugin.HTML_REPORT_LOCATION_KEY, reportPath.getAbsolutePath());
+
+    HtmlPrinter spy = spy(htmlPrinter);
+    doNothing().when(spy).writeToFile(any(IssuesReport.class), any(File.class), anyBoolean());
+
+    spy.print(mock(IssuesReport.class));
+
+    verify(spy).writeToFile(any(IssuesReport.class), eq(new File(reportPath.getAbsoluteFile().getParent(), "issues-report.html")), eq(true));
+    verify(spy).writeToFile(any(IssuesReport.class), eq(new File(reportPath.getAbsoluteFile().getParent(), "issues-report-light.html")), eq(false));
+  }
+
+  @Test
   public void shouldGenerateReportWithNewViolation() throws IOException {
     File reportDir = temp.newFolder();
     File reportFile = new File(reportDir, "issues-report.html");

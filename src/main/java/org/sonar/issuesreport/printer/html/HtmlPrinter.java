@@ -89,6 +89,10 @@ public class HtmlPrinter implements ReportPrinter {
     if (!reportFileDir.isAbsolute()) {
       reportFileDir = new File(fs.workingDir(), reportFileDirStr);
     }
+    if (reportFileDirStr.endsWith(".html")) {
+      LOG.warn(IssuesReportPlugin.HTML_REPORT_LOCATION_KEY + " should indicate a directory. Using parent folder.");
+      reportFileDir = reportFileDir.getParentFile();
+    }
     try {
       FileUtils.forceMkdir(reportFileDir);
     } catch (IOException e) {
