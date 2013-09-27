@@ -319,12 +319,7 @@
     <tbody class="resource-details-${resourceReport_index?c}">
     <#if complete>
     <#list resourceReport.getRuleReports() as ruleReport>
-        <#if ruleReport.getTotal().getNewIssuesCount() = 0>
-        <#assign trCss = 'all'>
-        <#else>
-        <#assign trCss = 'new all'>
-        </#if>
-      <tr class="hoverable ${trCss}">
+      <tr class="hoverable all">
         <td width="20">
           <img alt="${ruleReport.getSeverity()}" title="${ruleReport.getSeverity()}" src="issuesreport_files/${ruleReport.getSeverity()}.png">
         </td>
