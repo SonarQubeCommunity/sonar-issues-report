@@ -410,7 +410,7 @@
                           <div class="vtitle">
                             <img alt="${issue.severity()}" title="${issue.severity()}" src="issuesreport_files/${issue.severity()}.png">&nbsp;
                             <img src="issuesreport_files/sep12.png">&nbsp;<span
-                              class="rulename">${ruleNameProvider.name(issue.ruleKey())}</span>
+                              class="rulename">${ruleNameProvider.nameForHTML(issue.ruleKey())}</span>
                             &nbsp;
                             <img src="issuesreport_files/sep12.png">&nbsp;
 
