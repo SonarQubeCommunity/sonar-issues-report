@@ -131,7 +131,7 @@
     <#assign rules = report.getSummary().getTotalByRuleKey()>
        <#list rules?keys as ruleKey>
        { "key": "${ruleKey}",
-         "label": "${ruleNameProvider.name(ruleKey)}",
+         "label": "${ruleNameProvider.nameForJS(ruleKey)}",
          "total": ${rules[ruleKey].getCountInCurrentAnalysis()?c},
          "newtotal": ${rules[ruleKey].getNewIssuesCount()?c}
        }<#if ruleKey_has_next>,</#if>
@@ -235,7 +235,7 @@
           <img alt="${ruleReport.getSeverity()}" title="${ruleReport.getSeverity()}" src="issuesreport_files/${ruleReport.getSeverity()}.png">
         </td>
         <td align="left">
-          ${ruleNameProvider.name(ruleReport.getRule())}
+          ${ruleNameProvider.nameForHTML(ruleReport.getRule())}
         </td>
         <td align="right">
           <#if ruleReport.getTotal().getNewIssuesCount() gt 0>
@@ -324,7 +324,7 @@
           <img alt="${ruleReport.getSeverity()}" title="${ruleReport.getSeverity()}" src="issuesreport_files/${ruleReport.getSeverity()}.png">
         </td>
         <td align="left">
-          ${ruleNameProvider.name(ruleReport.getRule())}
+          ${ruleNameProvider.nameForHTML(ruleReport.getRule())}
         </td>
         <td align="right">
           <#if ruleReport.getTotal().getNewIssuesCount() gt 0>
@@ -362,7 +362,7 @@
               <div class="vtitle">
 
                 <img alt="${issue.severity()}" title="${issue.severity()}" src="issuesreport_files/${issue.severity()}.png">&nbsp;
-                <img src="issuesreport_files/sep12.png"> <span class="rulename">${ruleNameProvider.name(issue.ruleKey())}</span>
+                <img src="issuesreport_files/sep12.png"> <span class="rulename">${ruleNameProvider.nameForHTML(issue.ruleKey())}</span>
                 &nbsp;
                 <img src="issuesreport_files/sep12.png">&nbsp;
 

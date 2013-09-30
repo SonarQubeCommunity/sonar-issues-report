@@ -19,6 +19,7 @@
  */
 package org.sonar.issuesreport.provider;
 
+import org.apache.commons.lang.StringEscapeUtils;
 import org.sonar.api.i18n.I18n;
 import org.sonar.api.rule.RuleKey;
 import org.sonar.api.rules.Rule;
@@ -35,18 +36,22 @@ public class RuleNameProvider implements TaskExtension {
     this.i18n = i18n;
   }
 
-  public String name(RuleKey ruleKey) {
+  private String name(RuleKey ruleKey) {
     String name = message(ruleKey.repository(), ruleKey.rule(), Locale.ENGLISH, NAME_SUFFIX);
     return name != null ? name : ruleKey.toString();
   }
 
-  public String name(String ruleKey) {
-    return name(RuleKey.parse(ruleKey));
+  public String nameForHTML(RuleKey ruleKey) {
+    return StringEscapeUtils.escapeHtml(name(ruleKey));
   }
 
-  public String name(Rule rule) {
+  public String nameForJS(String ruleKey) {
+    return StringEscapeUtils.escapeJavaScript(name(RuleKey.parse(ruleKey)));
+  }
+
+  public String nameForHTML(Rule rule) {
     String name = message(rule.getRepositoryKey(), rule.getKey(), Locale.ENGLISH, NAME_SUFFIX);
-    return name != null ? name : rule.getName();
+    return StringEscapeUtils.escapeHtml(name != null ? name : rule.getName());
   }
 
   String message(String repositoryKey, String ruleKey, Locale locale, String suffix) {

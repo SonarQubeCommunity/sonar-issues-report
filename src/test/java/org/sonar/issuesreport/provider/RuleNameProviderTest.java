@@ -19,8 +19,6 @@
  */
 package org.sonar.issuesreport.provider;
 
-import org.sonar.issuesreport.provider.RuleNameProvider;
-
 import org.junit.Test;
 import org.sonar.api.i18n.I18n;
 import org.sonar.api.rule.RuleKey;
@@ -43,10 +41,10 @@ public class RuleNameProviderTest {
     String ruleName = "RULE_NAME";
     Rule rule = Rule.create("checkstyle", "com.puppycrawl.tools.checkstyle.checks.annotation.AnnotationUseStyleCheck", ruleName);
 
-    assertThat(names.name(rule)).isEqualTo(ruleName);
-    assertThat(names.name(RuleKey.of("checkstyle", "com.puppycrawl.tools.checkstyle.checks.annotation.AnnotationUseStyleCheck"))).isEqualTo(
+    assertThat(names.nameForHTML(rule)).isEqualTo(ruleName);
+    assertThat(names.nameForHTML(RuleKey.of("checkstyle", "com.puppycrawl.tools.checkstyle.checks.annotation.AnnotationUseStyleCheck"))).isEqualTo(
       "checkstyle:com.puppycrawl.tools.checkstyle.checks.annotation.AnnotationUseStyleCheck");
-    assertThat(names.name("checkstyle:com.puppycrawl.tools.checkstyle.checks.annotation.AnnotationUseStyleCheck")).isEqualTo(
+    assertThat(names.nameForJS("checkstyle:com.puppycrawl.tools.checkstyle.checks.annotation.AnnotationUseStyleCheck")).isEqualTo(
       "checkstyle:com.puppycrawl.tools.checkstyle.checks.annotation.AnnotationUseStyleCheck");
   }
 
@@ -58,8 +56,23 @@ public class RuleNameProviderTest {
     RuleNameProvider names = new RuleNameProvider(i18n);
 
     Rule rule = Rule.create("checkstyle", "com.puppycrawl.tools.checkstyle.checks.annotation.AnnotationUseStyleCheck");
-    assertThat(names.name(rule)).isEqualTo("Annotation Use Style");
-    assertThat(names.name(RuleKey.of("checkstyle", "com.puppycrawl.tools.checkstyle.checks.annotation.AnnotationUseStyleCheck"))).isEqualTo("Annotation Use Style");
-    assertThat(names.name("checkstyle:com.puppycrawl.tools.checkstyle.checks.annotation.AnnotationUseStyleCheck")).isEqualTo("Annotation Use Style");
+    assertThat(names.nameForHTML(rule)).isEqualTo("Annotation Use Style");
+    assertThat(names.nameForHTML(RuleKey.of("checkstyle", "com.puppycrawl.tools.checkstyle.checks.annotation.AnnotationUseStyleCheck"))).isEqualTo("Annotation Use Style");
+    assertThat(names.nameForJS("checkstyle:com.puppycrawl.tools.checkstyle.checks.annotation.AnnotationUseStyleCheck")).isEqualTo("Annotation Use Style");
   }
+
+  @Test
+  public void should_escape_name() {
+    String propertyKey = "rule.checkstyle.com.puppycrawl.tools.checkstyle.checks.annotation.AnnotationUseStyleCheck.name";
+    I18n i18n = mock(I18n.class);
+    when(i18n.message(Locale.ENGLISH, propertyKey, null)).thenReturn("Annotation 'Use' Style & co");
+    RuleNameProvider names = new RuleNameProvider(i18n);
+
+    Rule rule = Rule.create("checkstyle", "com.puppycrawl.tools.checkstyle.checks.annotation.AnnotationUseStyleCheck");
+    assertThat(names.nameForHTML(rule)).isEqualTo("Annotation 'Use' Style &amp; co");
+    assertThat(names.nameForHTML(RuleKey.of("checkstyle", "com.puppycrawl.tools.checkstyle.checks.annotation.AnnotationUseStyleCheck"))).isEqualTo(
+      "Annotation 'Use' Style &amp; co");
+    assertThat(names.nameForJS("checkstyle:com.puppycrawl.tools.checkstyle.checks.annotation.AnnotationUseStyleCheck")).isEqualTo("Annotation \\'Use\\' Style & co");
+  }
+
 }
