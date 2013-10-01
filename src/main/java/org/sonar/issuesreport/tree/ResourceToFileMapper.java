@@ -117,4 +117,9 @@ public class ResourceToFileMapper implements Sensor {
     return fileByResourceKey.get(resourceKey);
   }
 
+  @Override
+  public String toString() {
+    return this.getClass().getSimpleName();
+  }
+
 }
