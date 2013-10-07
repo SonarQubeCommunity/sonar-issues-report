@@ -326,3 +326,11 @@ tr.blockSep.visible {
   font-size:24px;
   font-weight: bold;
 }
+
+.masked {
+  display: none;
+}
+
+.all-masked {
+  display: none;
+}

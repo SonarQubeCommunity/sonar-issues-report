@@ -93,11 +93,9 @@
 
       hideAll();
       if (onlyNewIssues) {
-        $('.all').hide();
-        $('.new').show();
+        $('.all').addClass('all-masked');
       } else {
-        $('.new').hide();
-        $('.all').show();
+        $('.all').removeClass('all-masked');
       }
       for (var resourceIndex = 0; resourceIndex < nbResources; resourceIndex++) {
         var filteredIssues = $.grep(issuesPerResource[resourceIndex], function(v) {
@@ -211,6 +209,7 @@
     </tbody>
   </table>
   <#if complete>
+  <br/>
   <table width="100%" class="data">
     <thead>
     <tr class="total">
@@ -228,7 +227,7 @@
           <#if ruleReport.getTotal().getNewIssuesCount() = 0>
           <#assign trCss = 'all'>
           <#else>
-          <#assign trCss = 'new all'>
+          <#assign trCss = ''>
           </#if>
       <tr class="hoverable ${trCss}">
         <td width="20">
@@ -239,14 +238,14 @@
         </td>
         <td align="right">
           <#if ruleReport.getTotal().getNewIssuesCount() gt 0>
-            <span class="worst">+${ruleReport.getTotal().getNewIssuesCount()?c}</span>
+            <span class="worst">${ruleReport.getTotal().getNewIssuesCount()?c}</span>
           <#else>
             <span>0</span>
           </#if>
         </td>
         <td align="right">
           <#if ruleReport.getTotal().getResolvedIssuesCount() gt 0>
-            <span class="better">-${ruleReport.getTotal().getResolvedIssuesCount()?c}</span>
+            <span class="better">${ruleReport.getTotal().getResolvedIssuesCount()?c}</span>
           <#else>
             <span>0</span>
           </#if>
@@ -282,7 +281,7 @@
       <#if resourceReport.getTotal().getNewIssuesCount() = 0>
       <#assign tableCss = 'all'>
       <#else>
-      <#assign tableCss = 'new all'>
+      <#assign tableCss = ''>
       </#if>
   <table width="100%" class="data ${tableCss}" id="resource-${resourceReport_index?c}">
     <thead>
@@ -290,12 +289,12 @@
       <th align="left" colspan="2" nowrap>
         <div class="file_title">
           <img src="issuesreport_files/${resourceReport.getType()}.png" title="Resource icon"/>
-          <a href="#" onclick="$('.resource-details-${resourceReport_index?c}').toggle(); return false;" style="color: black">${resourceReport.getName()}</a>
+          <a href="#" onclick="$('.resource-details-${resourceReport_index?c}').toggleClass('masked'); return false;" style="color: black">${resourceReport.getName()}</a>
         </div>
       </th>
       <th align="right" width="1%" nowrap class="resource-details-${resourceReport_index?c}">
         <#if resourceReport.getTotal().getNewIssuesCount() gt 0>
-          <span class="worst" id="new-total">+${resourceReport.getTotal().getNewIssuesCount()?c}</span>
+          <span class="worst" id="new-total">${resourceReport.getTotal().getNewIssuesCount()?c}</span>
         <#else>
           <span id="new-total">0</span>
         </#if>
@@ -328,7 +327,7 @@
         </td>
         <td align="right">
           <#if ruleReport.getTotal().getNewIssuesCount() gt 0>
-            <span class="worst">+${ruleReport.getTotal().getNewIssuesCount()?c}</span>
+            <span class="worst">${ruleReport.getTotal().getNewIssuesCount()?c}</span>
           <#else>
             <span>0</span>
           </#if>
@@ -336,7 +335,7 @@
         <#if complete>
         <td align="right">
           <#if ruleReport.getTotal().getResolvedIssuesCount() gt 0>
-            <span class="better">-${ruleReport.getTotal().getResolvedIssuesCount()?c}</span>
+            <span class="better">${ruleReport.getTotal().getResolvedIssuesCount()?c}</span>
           <#else>
             <span>0</span>
           </#if>

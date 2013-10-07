@@ -79,7 +79,7 @@ public class ResourceNode {
     if (resource.isRootModule()) {
       return "";
     } else if (Scopes.PROJECT.equals(resource.getScope())) {
-      return getModulePrefix(resource.getParent()) + resource.name + " - ";
+      return getModulePrefix(resource.getParent()) + resource.name + " / ";
     } else {
       return getModulePrefix(resource.getParent());
     }
