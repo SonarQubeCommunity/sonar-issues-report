@@ -31,6 +31,7 @@ import org.sonar.api.resources.Scopes;
 import org.sonar.api.scan.filesystem.FileQuery;
 import org.sonar.api.scan.filesystem.ModuleFileSystem;
 import org.sonar.api.scan.filesystem.PathResolver;
+import org.sonar.api.scan.filesystem.PathResolver.RelativePath;
 
 import javax.annotation.CheckForNull;
 
@@ -86,7 +87,10 @@ public class ResourceToFileMapper implements Sensor {
 
       resource = JavaFile.fromIOFile(inputFile, sourceDirs, isTest);
     } else {
-      resource = new org.sonar.api.resources.File(pathResolver.relativePath(sourceDirs, inputFile).path());
+      RelativePath relativePath = pathResolver.relativePath(sourceDirs, inputFile);
+      if (relativePath != null) {
+        resource = new org.sonar.api.resources.File(relativePath.path());
+      }
     }
 
     if (resource == null) {
