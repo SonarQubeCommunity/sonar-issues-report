@@ -62,6 +62,11 @@ public class ResourceToFileMapperTest {
   }
 
   @Test
+  public void improve_coverage() {
+    assertThat(resourceToFileMapper.toString()).isEqualTo("ResourceToFileMapper");
+  }
+
+  @Test
   public void should_locate_java_resources() throws Exception {
 
     File sourceFolder = temp.newFolder();
@@ -103,5 +108,27 @@ public class ResourceToFileMapperTest {
 
     assertThat(resourceToFileMapper.getResourceFile("myproject:com/foo/Foo.c")).isEqualTo(aCSource);
     assertThat(resourceToFileMapper.getResourceFile("myproject:com/foo/FooTest.c")).isEqualTo(aCTest);
+  }
+
+  @Test
+  public void should_not_fail_when_resource_not_found_in_source_dir() throws Exception {
+
+    File sourceFolder = temp.newFolder();
+    File testFolder = temp.newFolder();
+
+    File externalFile = new File(temp.newFolder(), "another/file.c");
+    File aCSource = new File(sourceFolder, "com/foo/Foo.c");
+    FileUtils.write(aCSource, "foo");
+    File aCTest = new File(testFolder, "com/foo/FooTest.c");
+    FileUtils.write(aCTest, "foo test");
+
+    when(fs.files(any(FileQuery.class))).thenReturn(Arrays.asList(aCSource, externalFile)).thenReturn(Arrays.asList(aCTest));
+    when(fs.sourceDirs()).thenReturn(Arrays.asList(sourceFolder));
+    when(fs.testDirs()).thenReturn(Arrays.asList(testFolder));
+
+    Project project = new Project("myproject").setConfiguration(new MapConfiguration(ImmutableMap.of("sonar.language", "c")));
+    resourceToFileMapper.analyse(project, mock(SensorContext.class));
+
+    assertThat(resourceToFileMapper.getResourceFile("myproject:com/foo/Foo.c")).isEqualTo(aCSource);
   }
 }
