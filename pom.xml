@@ -47,7 +47,7 @@
   </issueManagement>
 
   <properties>
-    <sonar.buildVersion>4.0-RC3</sonar.buildVersion>
+    <sonar.buildVersion>4.0</sonar.buildVersion>
     <maven.test.redirectTestOutputToFile>true</maven.test.redirectTestOutputToFile>
   </properties>
 
