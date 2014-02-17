@@ -27,15 +27,12 @@ import org.junit.rules.TemporaryFolder;
 import org.sonar.api.batch.DecoratorContext;
 import org.sonar.api.resources.Directory;
 import org.sonar.api.resources.File;
-import org.sonar.api.resources.Java;
-import org.sonar.api.resources.Method;
 import org.sonar.api.resources.Project;
 import org.sonar.api.resources.Resource;
 import org.sonar.api.resources.Scopes;
 import org.sonar.api.scan.filesystem.ModuleFileSystem;
 
 import java.util.Arrays;
-import java.util.Collections;
 
 import static org.fest.assertions.Assertions.assertThat;
 import static org.mockito.Mockito.mock;
@@ -47,14 +44,12 @@ public class ResourceTreeTest {
   public TemporaryFolder temp = new TemporaryFolder();
 
   private ModuleFileSystem fs;
-  private ResourceToFileMapper fileMapper;
   private ResourceTree resourceTree;
 
   @Before
   public void prepare() {
     fs = mock(ModuleFileSystem.class);
-    fileMapper = mock(ResourceToFileMapper.class);
-    resourceTree = new ResourceTree(fs, fileMapper);
+    resourceTree = new ResourceTree(fs);
   }
 
   @Test
@@ -65,24 +60,17 @@ public class ResourceTreeTest {
   @Test
   public void should_create_resource_tree() throws Exception {
 
+    java.io.File baseDir = temp.newFile();
     when(fs.sourceCharset()).thenReturn(Charsets.UTF_8);
-    java.io.File ioFile = temp.newFile();
-    when(fileMapper.getResourceFile("myProject:com.foo.Bar")).thenReturn(ioFile);
+    when(fs.baseDir()).thenReturn(baseDir);
 
     Resource project = new Project("myProject").setName("My Project").setEffectiveKey("myProject");
     Resource module = new Project("myModule").setName("My Module").setEffectiveKey("myModule");
-    Resource dir = new Directory("com.foo").setEffectiveKey("myProject:com.foo");
-    Resource file = new File("com.foo.Bar").setEffectiveKey("myProject:com.foo.Bar");
-    Resource method = Method.createMethod("com.foo.Bar:main", Java.INSTANCE).setEffectiveKey("myProject:com.foo.Bar:main");
-
-    DecoratorContext methodContext = mock(DecoratorContext.class);
-    when(methodContext.getResource()).thenReturn(method);
-    when(methodContext.getChildren()).thenReturn(Collections.<DecoratorContext> emptyList());
-    resourceTree.decorate(method, methodContext);
+    Resource dir = new Directory("com.foo").setEffectiveKey("myProject:com.foo").setPath("src/main/java/com/foo");
+    Resource file = new File("com.foo.Bar").setEffectiveKey("myProject:com.foo.Bar").setPath("src/main/java/com/foo/Bar.java");
 
     DecoratorContext fileContext = mock(DecoratorContext.class);
     when(fileContext.getResource()).thenReturn(file);
-    when(fileContext.getChildren()).thenReturn(Arrays.asList(methodContext));
     resourceTree.decorate(file, fileContext);
 
     DecoratorContext dirContext = mock(DecoratorContext.class);
@@ -105,10 +93,10 @@ public class ResourceTreeTest {
     ResourceNode resource = resourceTree.getResource("myProject:com.foo.Bar");
     assertThat(resource).isNotNull();
     assertThat(resource.getKey()).isEqualTo("myProject:com.foo.Bar");
-    assertThat(resource.getName()).isEqualTo("My Module / com.foo.Bar");
+    assertThat(resource.getName()).isEqualTo("My Module - src/main/java/com/foo/Bar.java");
     assertThat(resource.getScope()).isEqualTo(Scopes.FILE);
     assertThat(resource.getEncoding()).isEqualTo(Charsets.UTF_8);
-    assertThat(resource.getPath()).isEqualTo(ioFile);
+    assertThat(resource.getPath()).isEqualTo(new java.io.File(baseDir, "src/main/java/com/foo/Bar.java"));
 
     assertThat(resourceTree.getResource("myProject:com.foo")).isNotNull();
     assertThat(resourceTree.getResource("myProject")).isNotNull();

@@ -29,7 +29,6 @@ import org.sonar.issuesreport.printer.html.HtmlPrinter;
 import org.sonar.issuesreport.provider.RuleNameProvider;
 import org.sonar.issuesreport.provider.SourceProvider;
 import org.sonar.issuesreport.report.IssuesReportBuilder;
-import org.sonar.issuesreport.tree.ResourceToFileMapper;
 import org.sonar.issuesreport.tree.ResourceTree;
 
 import java.util.List;
@@ -57,7 +56,6 @@ public final class IssuesReportPlugin extends SonarPlugin {
       RuleNameProvider.class,
       SourceProvider.class,
       ResourceTree.class,
-      ResourceToFileMapper.class,
       HtmlPrinter.class,
       ConsolePrinter.class);
   }

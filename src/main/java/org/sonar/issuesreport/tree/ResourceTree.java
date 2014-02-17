@@ -36,11 +36,9 @@ public class ResourceTree implements Decorator {
 
   private static final Map<String, ResourceNode> RESOURCE_BY_KEY = new HashMap<String, ResourceNode>();
   private final ModuleFileSystem fs;
-  private final ResourceToFileMapper fileMapper;
 
-  public ResourceTree(ModuleFileSystem fs, ResourceToFileMapper fileMapper) {
+  public ResourceTree(ModuleFileSystem fs) {
     this.fs = fs;
-    this.fileMapper = fileMapper;
   }
 
   @Override
@@ -53,7 +51,12 @@ public class ResourceTree implements Decorator {
     if (!ResourceUtils.isPersistable(resource)) {
       return;
     }
-    File path = fileMapper.getResourceFile(resource.getEffectiveKey());
+    File path = null;
+    if (ResourceUtils.isProject(resource)) {
+      path = fs.baseDir();
+    } else if (resource.getPath() != null) {
+      path = new File(fs.baseDir(), resource.getPath());
+    }
     ResourceNode resourceNode = new ResourceNode(resource, path, fs.sourceCharset());
     RESOURCE_BY_KEY.put(resource.getEffectiveKey(), resourceNode);
     for (DecoratorContext childContext : context.getChildren()) {

@@ -47,7 +47,7 @@
   </issueManagement>
 
   <properties>
-    <sonar.buildVersion>4.0</sonar.buildVersion>
+    <sonar.buildVersion>4.2-M12</sonar.buildVersion>
     <maven.test.redirectTestOutputToFile>true</maven.test.redirectTestOutputToFile>
   </properties>
 
@@ -93,6 +93,12 @@
       <groupId>org.easytesting</groupId>
       <artifactId>fest-assert</artifactId>
       <version>1.4</version>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.mockito</groupId>
+      <artifactId>mockito-all</artifactId>
+      <version>1.9.5</version>
       <scope>test</scope>
     </dependency>
     <dependency>
