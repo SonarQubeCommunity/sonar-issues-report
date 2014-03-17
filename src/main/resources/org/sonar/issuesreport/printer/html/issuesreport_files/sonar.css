@@ -223,19 +223,14 @@ div.vtitle {
   vertical-align: middle;
 }
 
-span.rulename, span.rulename a {
-  color: #4183C4;
-  text-decoration: none;
+.rulename {
+  color: #444;
   font-weight: bold;
 }
 
 span.issue_date {
   color: #777;
   font-size: 90%;
-}
-
-span.rulename a:hover {
-  text-decoration: underline;
 }
 
 .sources td.line {
@@ -333,4 +328,69 @@ tr.blockSep.visible {
 
 .all-masked {
   display: none;
+}
+
+/**
+ Icons
+ */
+
+@font-face {
+  font-family: 'sonar';
+  src: url('sonar.eot');
+  src: url('sonar.eot?#iefix') format('embedded-opentype'), url('sonar.ttf') format('truetype'), url('sonar.woff') format('woff'), url('sonar.svg#sonar') format('svg');
+  font-weight: normal;
+  font-style: normal;
+}
+[class^="icon-"],
+[class*=" icon-"] {
+  font-family: 'sonar';
+  speak: none;
+  font-style: normal;
+  font-weight: normal;
+  font-variant: normal;
+  text-transform: none;
+  line-height: 1;
+  vertical-align: middle;
+  /* Better Font Rendering =========== */
+
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+/*
+ * Severity
+ */
+[class^="icon-severity-"],
+[class*=" icon-severity"] {
+  position: relative;
+  top: -1px;
+}
+.icon-severity-blocker:before,
+.icon-severity-4:before {
+  content: "\f000";
+  color: #d4333f;
+  font-size: 14px;
+}
+.icon-severity-critical:before,
+.icon-severity-3:before {
+  content: "\f001";
+  color: #d4333f;
+  font-size: 14px;
+}
+.icon-severity-major:before,
+.icon-severity-2:before {
+  content: "\f002";
+  color: #d4333f;
+  font-size: 14px;
+}
+.icon-severity-minor:before,
+.icon-severity-1:before {
+  content: "\f003";
+  color: #85bb43;
+  font-size: 14px;
+}
+.icon-severity-info:before,
+.icon-severity-0:before {
+  content: "\f004";
+  color: #85bb43;
+  font-size: 14px;
 }

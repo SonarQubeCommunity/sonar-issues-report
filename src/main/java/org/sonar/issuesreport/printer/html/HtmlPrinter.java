@@ -136,11 +136,10 @@ public class HtmlPrinter implements ReportPrinter {
 
     // I don't know how to extract a directory from classpath, that's why an exhaustive list of files
     // is provided here :
-    copyDependency(target, "BLOCKER.png");
-    copyDependency(target, "CRITICAL.png");
-    copyDependency(target, "MAJOR.png");
-    copyDependency(target, "MINOR.png");
-    copyDependency(target, "INFO.png");
+    copyDependency(target, "sonar.eot");
+    copyDependency(target, "sonar.svg");
+    copyDependency(target, "sonar.ttf");
+    copyDependency(target, "sonar.woff");
     copyDependency(target, "favicon.ico");
     copyDependency(target, "PRJ.png");
     copyDependency(target, "DIR.png");

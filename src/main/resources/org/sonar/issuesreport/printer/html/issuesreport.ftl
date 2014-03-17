@@ -13,7 +13,7 @@
         <#assign issues=resourceReport.getIssues()>
         <#list issues as issue>
           <#if complete || issue.isNew()>
-          {'k': '${issue.key()}', 'r': 'R${issue.ruleKey()}', 'l': ${(issue.line()!0)?c}, 'new': ${issue.isNew()?string}, 's': '${issue.severity()}'}<#if issue_has_next>,</#if>
+          {'k': '${issue.key()}', 'r': 'R${issue.ruleKey()}', 'l': ${(issue.line()!0)?c}, 'new': ${issue.isNew()?string}, 's': '${issue.severity()?lower_case}'}<#if issue_has_next>,</#if>
           </#if>
         </#list>
       ]
@@ -231,7 +231,7 @@
           </#if>
       <tr class="hoverable ${trCss}">
         <td width="20">
-          <img alt="${ruleReport.getSeverity()}" title="${ruleReport.getSeverity()}" src="issuesreport_files/${ruleReport.getSeverity()}.png">
+          <i class="icon-severity-${ruleReport.getSeverity()?lower_case}"></i>
         </td>
         <td align="left">
           ${ruleNameProvider.nameForHTML(ruleReport.getRule())}
@@ -320,7 +320,7 @@
     <#list resourceReport.getRuleReports() as ruleReport>
       <tr class="hoverable all">
         <td width="20">
-          <img alt="${ruleReport.getSeverity()}" title="${ruleReport.getSeverity()}" src="issuesreport_files/${ruleReport.getSeverity()}.png">
+          <i class="icon-severity-${ruleReport.getSeverity()?lower_case}"></i>
         </td>
         <td align="left">
           ${ruleNameProvider.nameForHTML(ruleReport.getRule())}
@@ -359,9 +359,12 @@
           <#list issues as issue>
             <div class="issue" id="${issue.key()}">
               <div class="vtitle">
-
-                <img alt="${issue.severity()}" title="${issue.severity()}" src="issuesreport_files/${issue.severity()}.png">&nbsp;
-                <img src="issuesreport_files/sep12.png"> <span class="rulename">${ruleNameProvider.nameForHTML(issue.ruleKey())}</span>
+                <i class="icon-severity-${issue.severity()?lower_case}"></i>
+                <#if issue.message()??>
+                <span class="rulename">${issue.message()}</span>
+                <#else>
+                <span class="rulename">${ruleNameProvider.nameForHTML(issue.ruleKey())}</span>
+                </#if>
                 &nbsp;
                 <img src="issuesreport_files/sep12.png">&nbsp;
 
@@ -373,11 +376,9 @@
                   </#if>
                 </span>
               </div>
-              <#if issue.message()??>
-                <div class="discussionComment">
-                ${issue.message()}
-                </div>
-              </#if>
+              <div class="discussionComment">
+              ${ruleNameProvider.nameForHTML(issue.ruleKey())}
+              </div>
             </div>
             <#assign issueId = issueId + 1>
           </#list>
@@ -407,9 +408,12 @@
                       <#list issues as issue>
                         <div class="issue" id="${issue.key()}">
                           <div class="vtitle">
-                            <img alt="${issue.severity()}" title="${issue.severity()}" src="issuesreport_files/${issue.severity()}.png">&nbsp;
-                            <img src="issuesreport_files/sep12.png">&nbsp;<span
-                              class="rulename">${ruleNameProvider.nameForHTML(issue.ruleKey())}</span>
+                            <i class="icon-severity-${issue.severity()?lower_case}"></i>
+                            <#if issue.message()??>
+                            <span class="rulename">${issue.message()}</span>
+                            <#else>
+                            <span class="rulename">${ruleNameProvider.nameForHTML(issue.ruleKey())}</span>
+                            </#if>
                             &nbsp;
                             <img src="issuesreport_files/sep12.png">&nbsp;
 
@@ -423,11 +427,9 @@
                             &nbsp;
 
                           </div>
-                          <#if issue.message()??>
-                            <div class="discussionComment">
-                            ${issue.message()}
-                            </div>
-                          </#if>
+                          <div class="discussionComment">
+                            ${ruleNameProvider.nameForHTML(issue.ruleKey())}
+                          </div>
                         </div>
                         <#assign issueId = issueId + 1>
                       </#list>
