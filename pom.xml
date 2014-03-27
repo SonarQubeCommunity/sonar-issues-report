@@ -38,7 +38,6 @@
     <connection>scm:git:git@github.com:SonarCommunity/sonar-issues-report.git</connection>
     <developerConnection>scm:git:git@github.com:SonarCommunity/sonar-issues-report.git</developerConnection>
     <url>https://github.com/SonarSource/sonar-issues-report-plugin</url>
-    <tag>1.0</tag>
   </scm>
 
   <issueManagement>
