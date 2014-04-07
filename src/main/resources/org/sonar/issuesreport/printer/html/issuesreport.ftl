@@ -117,7 +117,7 @@
     var severityFilter = [
     <#assign severities = report.getSummary().getTotalBySeverity()>
        <#list severities?keys as severity>
-       { "key": "${severity}",
+       { "key": "${severity?lower_case}",
          "label": "${severity?lower_case?cap_first}",
          "total": ${severities[severity].getCountInCurrentAnalysis()?c},
          "newtotal": ${severities[severity].getNewIssuesCount()?c}
