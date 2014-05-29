@@ -65,14 +65,20 @@ public class HtmlPrinter implements ReportPrinter {
     return settings.getBoolean(IssuesReportPlugin.HTML_REPORT_ENABLED_KEY);
   }
 
+  public boolean isLightModeOnly() {
+    return settings.getBoolean(IssuesReportPlugin.HTML_REPORT_LIGHTMODE_ONLY);
+  }
+
   @Override
   public void print(IssuesReport report) {
     File reportFileDir = getReportFileDir();
-    File reportFile = new File(reportFileDir, "issues-report.html");
+    if ( !isLightModeOnly()){
+      File reportFile = new File(reportFileDir, "issues-report.html");
+      LOG.debug("Generating HTML Report to: " + reportFile.getAbsolutePath());
+      writeToFile(report, reportFile, true);
+      LOG.info("HTML Issues Report generated: " + reportFile.getAbsolutePath());
+    }
     File lightReportFile = new File(reportFileDir, "issues-report-light.html");
-    LOG.debug("Generating HTML Report to: " + reportFile.getAbsolutePath());
-    writeToFile(report, reportFile, true);
-    LOG.info("HTML Issues Report generated: " + reportFile.getAbsolutePath());
     LOG.debug("Generating Light HTML Report to: " + lightReportFile.getAbsolutePath());
     writeToFile(report, lightReportFile, false);
     LOG.info("Light HTML Issues Report generated: " + lightReportFile.getAbsolutePath());

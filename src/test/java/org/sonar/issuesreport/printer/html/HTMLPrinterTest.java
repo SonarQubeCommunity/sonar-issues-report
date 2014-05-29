@@ -81,6 +81,12 @@ public class HTMLPrinterTest {
   }
 
   @Test
+  public void shouldAllowOnlyLightReport() {
+    settings.setProperty(IssuesReportPlugin.HTML_REPORT_LIGHTMODE_ONLY, "true");
+    assertThat(htmlPrinter.isLightModeOnly()).isTrue();
+  }
+
+  @Test
   public void shouldGenerateEmptyReport() throws IOException {
     when(fs.sourceCharset()).thenReturn(Charsets.UTF_8);
     Project project = mock(Project.class);
@@ -146,12 +152,7 @@ public class HTMLPrinterTest {
     Project project = mock(Project.class);
     when(project.getAnalysisDate()).thenReturn(new Date());
     ResourceNode file = IssuesReportFakeUtils.fakeFile("com.foo.Bar");
-
-    when(ruleNameProvider.nameForHTML(eq(RuleKey.of("foo", "bar")))).thenReturn("My Rule 1");
-    when(ruleNameProvider.nameForHTML(eq(RuleKey.of("foo", "bar2")))).thenReturn("My Rule 2");
-    when(ruleNameProvider.nameForHTML(any(org.sonar.api.rules.Rule.class))).thenReturn("My Rule");
-    when(ruleNameProvider.nameForJS("foo:bar")).thenReturn("My Rule 2");
-    when(ruleNameProvider.nameForJS("foo:bar2")).thenReturn("My Rule 2");
+    mockRuleNameProvider();
 
     IssuesReport report = IssuesReportFakeUtils.sampleReportWith2IssuesPerFile(file);
 
@@ -159,6 +160,37 @@ public class HTMLPrinterTest {
 
     assertThat(reportFile).exists();
     assertThat(lightReportFile).exists();
+  }
+
+  @Test
+  public void shouldGenerateOnlyLightReport() throws IOException {
+    File reportDir = temp.newFolder();
+    File reportFile = new File(reportDir, "issues-report.html");
+    File lightReportFile = new File(reportDir, "issues-report-light.html");
+    settings.setProperty(IssuesReportPlugin.HTML_REPORT_LOCATION_KEY, reportDir.getAbsolutePath());
+    settings.setProperty(IssuesReportPlugin.HTML_REPORT_LIGHTMODE_ONLY, true);
+
+    when(fs.sourceCharset()).thenReturn(Charsets.UTF_8);
+
+    Project project = mock(Project.class);
+    when(project.getAnalysisDate()).thenReturn(new Date());
+    ResourceNode file = IssuesReportFakeUtils.fakeFile("com.foo.Bar");
+    mockRuleNameProvider();
+
+    IssuesReport report = IssuesReportFakeUtils.sampleReportWith2IssuesPerFile(file);
+
+    htmlPrinter.print(report);
+
+    assertThat(reportFile).doesNotExist();
+    assertThat(lightReportFile).exists();
+  }
+
+  private void mockRuleNameProvider() {
+    when(ruleNameProvider.nameForHTML(eq(RuleKey.of("foo", "bar")))).thenReturn("My Rule 1");
+    when(ruleNameProvider.nameForHTML(eq(RuleKey.of("foo", "bar2")))).thenReturn("My Rule 2");
+    when(ruleNameProvider.nameForHTML(any(org.sonar.api.rules.Rule.class))).thenReturn("My Rule");
+    when(ruleNameProvider.nameForJS("foo:bar")).thenReturn("My Rule 2");
+    when(ruleNameProvider.nameForJS("foo:bar2")).thenReturn("My Rule 2");
   }
 
   @Test
@@ -174,12 +206,7 @@ public class HTMLPrinterTest {
     when(project.getAnalysisDate()).thenReturn(new Date());
     ResourceNode file1 = IssuesReportFakeUtils.fakeFile("com.foo.Bar");
     ResourceNode file2 = IssuesReportFakeUtils.fakeFile("com.foo.Foo");
-
-    when(ruleNameProvider.nameForHTML(eq(RuleKey.of("foo", "bar")))).thenReturn("My Rule 1");
-    when(ruleNameProvider.nameForHTML(eq(RuleKey.of("foo", "bar2")))).thenReturn("My Rule 2");
-    when(ruleNameProvider.nameForHTML(any(org.sonar.api.rules.Rule.class))).thenReturn("My Rule");
-    when(ruleNameProvider.nameForJS("foo:bar")).thenReturn("My Rule 2");
-    when(ruleNameProvider.nameForJS("foo:bar2")).thenReturn("My Rule 2");
+    mockRuleNameProvider();
 
     IssuesReport report = IssuesReportFakeUtils.sampleReportWith2IssuesPerFile(file1, file2);
 
@@ -201,12 +228,7 @@ public class HTMLPrinterTest {
     Project project = mock(Project.class);
     when(project.getAnalysisDate()).thenReturn(new Date());
     ResourceNode pac = IssuesReportFakeUtils.fakePackage("com.foo");
-
-    when(ruleNameProvider.nameForHTML(eq(RuleKey.of("foo", "bar")))).thenReturn("My Rule 1");
-    when(ruleNameProvider.nameForHTML(eq(RuleKey.of("foo", "bar2")))).thenReturn("My Rule 2");
-    when(ruleNameProvider.nameForHTML(any(org.sonar.api.rules.Rule.class))).thenReturn("My Rule");
-    when(ruleNameProvider.nameForJS("foo:bar")).thenReturn("My Rule 2");
-    when(ruleNameProvider.nameForJS("foo:bar2")).thenReturn("My Rule 2");
+    mockRuleNameProvider();
 
     IssuesReport report = IssuesReportFakeUtils.sampleReportWith2IssuesPerFile(pac);
 
