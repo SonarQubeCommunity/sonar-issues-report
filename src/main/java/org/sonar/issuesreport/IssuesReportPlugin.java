@@ -39,21 +39,25 @@ import java.util.List;
   @Property(key = IssuesReportPlugin.HTML_REPORT_LOCATION_KEY, name = "HTML Report location",
     description = "Location of the generated report. Can be absolute or relative to working directory",
     type = PropertyType.STRING, defaultValue = IssuesReportPlugin.HTML_REPORT_LOCATION_DEFAULT, global = false, project = false),
+  @Property(key = IssuesReportPlugin.HTML_REPORT_NAME_KEY, name = "HTML Report name",
+    description = "Name of the generated report. Will be suffixed by .html or -light.html",
+    type = PropertyType.STRING, defaultValue = IssuesReportPlugin.HTML_REPORT_NAME_DEFAULT, global = false, project = false),
   @Property(key = IssuesReportPlugin.CONSOLE_REPORT_ENABLED_KEY, name = "Enable console report", description = "Set this to true to generate a report in console output",
     type = PropertyType.BOOLEAN, defaultValue = "false"),
-  @Property(key = IssuesReportPlugin.HTML_REPORT_LIGHTMODE_ONLY, name = "Html report in light mode only",project = true,
-          description = "Set this to true to only generate the new issues report (light report)",
+  @Property(key = IssuesReportPlugin.HTML_REPORT_LIGHTMODE_ONLY, name = "Html report in light mode only", project = true,
+    description = "Set this to true to only generate the new issues report (light report)",
     type = PropertyType.BOOLEAN, defaultValue = "false")})
 public final class IssuesReportPlugin extends SonarPlugin {
 
   public static final String HTML_REPORT_ENABLED_KEY = "sonar.issuesReport.html.enable";
   public static final String HTML_REPORT_LOCATION_KEY = "sonar.issuesReport.html.location";
   public static final String HTML_REPORT_LOCATION_DEFAULT = "issues-report";
+  public static final String HTML_REPORT_NAME_KEY = "sonar.issuesReport.html.name";
+  public static final String HTML_REPORT_NAME_DEFAULT = "issues-report";
   public static final String HTML_REPORT_LIGHTMODE_ONLY = "sonar.issuesReport.lightModeOnly";
 
   public static final String CONSOLE_REPORT_ENABLED_KEY = "sonar.issuesReport.console.enable";
 
-  
   public List getExtensions() {
     return ImmutableList.of(
       ReportJob.class,

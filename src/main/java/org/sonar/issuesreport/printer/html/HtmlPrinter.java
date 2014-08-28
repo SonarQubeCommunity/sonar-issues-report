@@ -72,13 +72,14 @@ public class HtmlPrinter implements ReportPrinter {
   @Override
   public void print(IssuesReport report) {
     File reportFileDir = getReportFileDir();
-    if ( !isLightModeOnly()){
-      File reportFile = new File(reportFileDir, "issues-report.html");
+    String reportName = settings.getString(IssuesReportPlugin.HTML_REPORT_NAME_KEY);
+    if (!isLightModeOnly()) {
+      File reportFile = new File(reportFileDir, reportName + ".html");
       LOG.debug("Generating HTML Report to: " + reportFile.getAbsolutePath());
       writeToFile(report, reportFile, true);
       LOG.info("HTML Issues Report generated: " + reportFile.getAbsolutePath());
     }
-    File lightReportFile = new File(reportFileDir, "issues-report-light.html");
+    File lightReportFile = new File(reportFileDir, reportName + "-light.html");
     LOG.debug("Generating Light HTML Report to: " + lightReportFile.getAbsolutePath());
     writeToFile(report, lightReportFile, false);
     LOG.info("Light HTML Issues Report generated: " + lightReportFile.getAbsolutePath());
