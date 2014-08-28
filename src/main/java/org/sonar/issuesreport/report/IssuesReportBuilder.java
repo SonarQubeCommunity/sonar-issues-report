@@ -32,6 +32,8 @@ import org.sonar.api.rules.RulePriority;
 import org.sonar.issuesreport.tree.ResourceNode;
 import org.sonar.issuesreport.tree.ResourceTree;
 
+import javax.annotation.CheckForNull;
+
 public class IssuesReportBuilder implements BatchExtension {
 
   private static final Logger LOG = LoggerFactory.getLogger(IssuesReportBuilder.class);
@@ -85,6 +87,7 @@ public class IssuesReportBuilder implements BatchExtension {
     return true;
   }
 
+  @CheckForNull
   private Rule findRule(Issue issue) {
     RuleKey ruleKey = issue.ruleKey();
     return ruleFinder.findByKey(ruleKey);

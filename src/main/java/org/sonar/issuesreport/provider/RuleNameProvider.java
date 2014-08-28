@@ -20,42 +20,39 @@
 package org.sonar.issuesreport.provider;
 
 import org.apache.commons.lang.StringEscapeUtils;
-import org.sonar.api.i18n.I18n;
 import org.sonar.api.rule.RuleKey;
 import org.sonar.api.rules.Rule;
+import org.sonar.api.rules.RuleFinder;
 import org.sonar.api.task.TaskExtension;
 
-import java.util.Locale;
+import javax.annotation.CheckForNull;
 
 public class RuleNameProvider implements TaskExtension {
-  private static final String RULE_PREFIX = "rule.";
-  private static final String NAME_SUFFIX = ".name";
-  private I18n i18n;
+  private RuleFinder ruleFinder;
 
-  public RuleNameProvider(I18n i18n) {
-    this.i18n = i18n;
+  public RuleNameProvider(RuleFinder ruleFinder) {
+    this.ruleFinder = ruleFinder;
   }
 
-  private String name(RuleKey ruleKey) {
-    String name = message(ruleKey.repository(), ruleKey.rule(), Locale.ENGLISH, NAME_SUFFIX);
-    return name != null ? name : ruleKey.toString();
+  @CheckForNull
+  private String nameFromDB(RuleKey ruleKey) {
+    Rule r = ruleFinder.findByKey(ruleKey);
+    return r != null ? r.getName() : null;
   }
 
   public String nameForHTML(RuleKey ruleKey) {
-    return StringEscapeUtils.escapeHtml(name(ruleKey));
+    String name = nameFromDB(ruleKey);
+    return StringEscapeUtils.escapeHtml(name != null ? name : ruleKey.toString());
   }
 
   public String nameForJS(String ruleKey) {
-    return StringEscapeUtils.escapeJavaScript(name(RuleKey.parse(ruleKey)));
+    String name = nameFromDB(RuleKey.parse(ruleKey));
+    return StringEscapeUtils.escapeJavaScript(name != null ? name : ruleKey.toString());
   }
 
   public String nameForHTML(Rule rule) {
-    String name = message(rule.getRepositoryKey(), rule.getKey(), Locale.ENGLISH, NAME_SUFFIX);
+    String name = nameFromDB(RuleKey.of(rule.getRepositoryKey(), rule.getKey()));
     return StringEscapeUtils.escapeHtml(name != null ? name : rule.getName());
   }
 
-  String message(String repositoryKey, String ruleKey, Locale locale, String suffix) {
-    String propertyKey = new StringBuilder().append(RULE_PREFIX).append(repositoryKey).append(".").append(ruleKey).append(suffix).toString();
-    return i18n.message(locale, propertyKey, null);
-  }
 }
