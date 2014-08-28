@@ -79,7 +79,7 @@ public class IssuesReportBuilder implements BatchExtension {
       return false;
     }
     if (resource == null) {
-      LOG.warn("Unknow resource with key {}", issue.componentKey());
+      LOG.debug("Unknow resource with key {}", issue.componentKey());
       return false;
     }
     return true;
