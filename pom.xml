@@ -37,7 +37,7 @@
   <scm>
     <connection>scm:git:git@github.com:SonarCommunity/sonar-issues-report.git</connection>
     <developerConnection>scm:git:git@github.com:SonarCommunity/sonar-issues-report.git</developerConnection>
-    <url>https://github.com/SonarSource/sonar-issues-report-plugin</url>
+    <url>https://github.com/SonarCommunity/sonar-issues-report</url>
     <tag>HEAD</tag>
   </scm>
 
