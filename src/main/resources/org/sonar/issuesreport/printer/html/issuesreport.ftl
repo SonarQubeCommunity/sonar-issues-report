@@ -20,7 +20,7 @@
       <#if resourceReport_has_next>,</#if>
     </#list>
     ];
-    var nbResources = ${report.getResourcesWithReport()?size};
+    var nbResources = ${report.getResourcesWithReport()?size?c};
     var separators = new Array();
 
     function showLine(fileIndex, lineId) {
