@@ -35,15 +35,15 @@
   </developers>
 
   <scm>
-    <connection>scm:git:git@github.com:SonarSource/sonar-issues-report.git</connection>
-    <developerConnection>scm:git:git@github.com:SonarSource/sonar-issues-report.git</developerConnection>
-    <url>https://github.com/SonarSource/sonar-issues-report</url>
+    <connection>scm:git:git@github.com:SonarQubeCommunity/sonar-issues-report.git</connection>
+    <developerConnection>scm:git:git@github.com:SonarQubeCommunity/sonar-issues-report.git</developerConnection>
+    <url>https://github.com/SonarQubeCommunity/sonar-issues-report</url>
     <tag>HEAD</tag>
   </scm>
 
   <issueManagement>
-    <system>JIRA</system>
-    <url>http://jira.codehaus.org/browse/SONARISSRP</url>
+    <system>GitHub Issues</system>
+    <url>https://github.com/SonarQubeCommunity/sonar-issues-report/issues</url>
   </issueManagement>
 
   <properties>
